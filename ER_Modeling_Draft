@@ -1,0 +1,15 @@
+IncomeRecord(收支記錄):
+  id(ID), year(年), month(月), day(日), item(項目), subclass(子類別), amount(金額), description(收支描述)
+  [index]
+    year(年), month(月)
+
+TotalProperty(總經費):
+  id(ID, 固定為1), year(年), month(月), day(日), hour(時), minute(分), second(秒), totalAmount(總金額)
+  
+FundingStatus(經費儲存狀況):
+  id(ID), type(儲存型態: 現金, 活存, 定存), year(定存到期日-年), month(定存到期日-月), day(定存到期日-日), 
+  bankCode(銀行代碼), bankName(銀行名稱), account(帳號), interestAccount(利息轉入帳號), balance(結餘)
+
+CheckRecord(對帳記錄):
+  id(ID), year(年), month(月), day(日), hour(時), minute(分), second(秒), 
+  difference(對帳差額, 實際-帳面), bookAmount(帳面金額), actualAmount(實際金額)
