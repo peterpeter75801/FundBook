@@ -12,63 +12,79 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import common.Contants;
 import commonUtil.ComparingUtil;
-import commonUtil.IncomeRecordUtil;
-import domain.IncomeRecord;
-import repository.IncomeRecordDAO;
+import commonUtil.TotalPropertyUtil;
+import domain.TotalProperty;
+import repository.TotalPropertyDAO;
 
-public class IncomeRecordDAOImpl implements IncomeRecordDAO {
-    
-    private final String INCOME_RECORD_CSV_FILE_ATTR_STRING = "id,year,month,day,item,subclass,amount,description";
-    private final String INITIAL_SEQ_NUMBER = "1";
-    
-    private final String INCOME_RECORD_DATA_PATH = "data\\IncomeRecord\\";
-    private final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
-    private final String FILE_CHARSET = "big5";
-    
+public class TotalPropertyDAOImpl implements TotalPropertyDAO {
+
     @Override
-    public boolean insert( IncomeRecord incomeRecord ) throws Exception {
-        IncomeRecord incomeRecordWithNewId = IncomeRecordUtil.copy( incomeRecord );
+    public boolean create( TotalProperty totalProperty ) throws Exception {
+        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
+        if( !checkIfFileExists( csvFilePath ) ) {
+            createCsvFile( csvFilePath );
+        }
+        if( totalProperty.getId() == null || findOne( totalProperty.getId() ) != null ) {
+            return false;
+        }
+        BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream( new File( csvFilePath ), true ),
+                    Contants.FILE_CHARSET
+                )
+            );
+        writer.write( TotalPropertyUtil.getCsvTupleStringFromTotalProperty( totalProperty ) );
+        writer.newLine();
+        writer.close();
         
-        // 取得Income Record目前的流水號(ID)
-        if( !checkIfFileExists( INCOME_RECORD_SEQ_FILE_PATH ) ) {
-            createSeqFile( INCOME_RECORD_SEQ_FILE_PATH );
+        return true;
+    }
+
+    @Override
+    public boolean insert( TotalProperty totalProperty ) throws Exception {
+        TotalProperty totalPropertyWithNewId = TotalPropertyUtil.copy( totalProperty );
+        
+        // 取得Total Property目前的流水號(ID)
+        if( !checkIfFileExists( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH ) ) {
+            createSeqFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
         }
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( INCOME_RECORD_SEQ_FILE_PATH ) ),
-                FILE_CHARSET
+                new FileInputStream( new File( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH ) ),
+                Contants.FILE_CHARSET
             )
         );
         Integer currentSeqNumber = null;
         try {
             currentSeqNumber = Integer.parseInt( bufReader.readLine() );
-            incomeRecordWithNewId.setId( currentSeqNumber );
+            totalPropertyWithNewId.setId( currentSeqNumber );
         } catch( NumberFormatException e ) {
             return false;
         } finally {
             bufReader.close();
         }
         
-        // 新增Income Record資料
-        String csvFilePath = INCOME_RECORD_DATA_PATH + IncomeRecordUtil.getIncomeRecordCsvFileName( incomeRecordWithNewId );
+        // 新增Total Property資料
+        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             createCsvFile( csvFilePath );
         }
         BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(
                     new FileOutputStream( new File( csvFilePath ), true ),
-                    FILE_CHARSET
+                    Contants.FILE_CHARSET
                 )
             );
-        writer.write( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( incomeRecordWithNewId ) );
+        writer.write( TotalPropertyUtil.getCsvTupleStringFromTotalProperty( totalPropertyWithNewId ) );
         writer.newLine();
         writer.close();
         
-        // 更新Income Record的流水號(ID)
+        // 更新Total Property的流水號(ID)
         writer = new BufferedWriter(
                 new OutputStreamWriter(
-                    new FileOutputStream( new File( INCOME_RECORD_SEQ_FILE_PATH ), false ),
-                    FILE_CHARSET
+                    new FileOutputStream( new File( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH ), false ),
+                    Contants.FILE_CHARSET
                 )
             );
         currentSeqNumber++;
@@ -80,28 +96,27 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
     }
 
     @Override
-    public IncomeRecord findOne( int id, int indexYear, int indexMonth ) throws Exception {
-        String csvFilePath = INCOME_RECORD_DATA_PATH + 
-                IncomeRecordUtil.getIncomeRecordCsvFileName( indexYear, indexMonth );
+    public TotalProperty findOne( int id ) throws Exception {
+        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return null;
         }
         
         String currentTuple = "";
-        IncomeRecord currentIncomeRecord = new IncomeRecord();
-        IncomeRecord searchResultIncomeRecord = null;
+        TotalProperty currentTotalProperty = new TotalProperty();
+        TotalProperty searchResultTotalProperty = null;
         try {
             BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                     new FileInputStream( new File( csvFilePath ) ),
-                    FILE_CHARSET
+                    Contants.FILE_CHARSET
                 ));
             // read attribute titles
             bufReader.readLine();
             // search data
             while( (currentTuple = bufReader.readLine()) != null ) {
-                currentIncomeRecord = IncomeRecordUtil.getIncomeRecordFromCsvTupleString( currentTuple );
-                if( ComparingUtil.compare( currentIncomeRecord.getId(), id ) == 0 ) {
-                    searchResultIncomeRecord = currentIncomeRecord;
+                currentTotalProperty = TotalPropertyUtil.getTotalPropertyFromCsvTupleString( currentTuple );
+                if( ComparingUtil.compare( currentTotalProperty.getId(), id ) == 0 ) {
+                    searchResultTotalProperty = currentTotalProperty;
                     break;
                 }
             }
@@ -110,63 +125,61 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
             return null;
         }
         
-        return searchResultIncomeRecord;
+        return searchResultTotalProperty;
     }
 
     @Override
-    public List<IncomeRecord> findByMonth( int year, int month ) throws Exception {
-        String csvFilePath = INCOME_RECORD_DATA_PATH + 
-                IncomeRecordUtil.getIncomeRecordCsvFileName( year, month );
-        ArrayList<IncomeRecord> incomeRecordList = new ArrayList<IncomeRecord>();
+    public List<TotalProperty> findAll() throws Exception {
+        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
+        ArrayList<TotalProperty> totalPropertyList = new ArrayList<TotalProperty>();
         
         if( !checkIfFileExists( csvFilePath ) ) {
-            return incomeRecordList;
+            return totalPropertyList;
         }
         
         String currentTuple = "";
-        IncomeRecord currentIncomeRecord = new IncomeRecord();
+        TotalProperty currentTotalProperty = new TotalProperty();
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                 new FileInputStream( new File( csvFilePath ) ),
-                FILE_CHARSET
+                Contants.FILE_CHARSET
             )
         );
         // read attribute titles
         bufReader.readLine();
         // fetch data
         while( (currentTuple = bufReader.readLine()) != null ) {
-            currentIncomeRecord = IncomeRecordUtil.getIncomeRecordFromCsvTupleString( currentTuple );
-            incomeRecordList.add( currentIncomeRecord );
+            currentTotalProperty = TotalPropertyUtil.getTotalPropertyFromCsvTupleString( currentTuple );
+            totalPropertyList.add( currentTotalProperty );
         }
         bufReader.close();
         
-        return incomeRecordList;
+        return totalPropertyList;
     }
 
     @Override
-    public boolean update( IncomeRecord incomeRecord, int indexYear, int indexMonth ) throws Exception {
-        String csvFilePath = INCOME_RECORD_DATA_PATH + 
-                IncomeRecordUtil.getIncomeRecordCsvFileName( indexYear, indexMonth );
+    public boolean update( TotalProperty totalProperty ) throws Exception {
+        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return false;
         }
         
         ArrayList<String> fileContentBuffer = new ArrayList<String>();
         String currentTuple = "";
-        IncomeRecord currentIncomeRecord = new IncomeRecord();
+        TotalProperty currentTotalProperty = new TotalProperty();
         
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                 new FileInputStream( new File( csvFilePath ) ),
-                FILE_CHARSET
+                Contants.FILE_CHARSET
             )
         );
         // read attribute titles
         fileContentBuffer.add( bufReader.readLine() );
         // search data & modify data
         while( (currentTuple = bufReader.readLine()) != null ) {
-            currentIncomeRecord = IncomeRecordUtil.getIncomeRecordFromCsvTupleString( currentTuple );
-            if( ComparingUtil.compare( currentIncomeRecord.getId(), incomeRecord.getId() ) == 0 ) {
+            currentTotalProperty = TotalPropertyUtil.getTotalPropertyFromCsvTupleString( currentTuple );
+            if( ComparingUtil.compare( currentTotalProperty.getId(), totalProperty.getId() ) == 0 ) {
                 // modify data
-                fileContentBuffer.add( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( incomeRecord ) );
+                fileContentBuffer.add( TotalPropertyUtil.getCsvTupleStringFromTotalProperty( totalProperty ) );
             } else {
                 // not modify data
                 fileContentBuffer.add( currentTuple );
@@ -178,7 +191,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(
                     new FileOutputStream( new File( csvFilePath ), false ),
-                    FILE_CHARSET
+                    Contants.FILE_CHARSET
                 )
             );
         for( String content : fileContentBuffer ) {
@@ -191,28 +204,27 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
     }
 
     @Override
-    public boolean delete( IncomeRecord incomeRecord, int indexYear, int indexMonth ) throws Exception {
-        String csvFilePath = INCOME_RECORD_DATA_PATH + 
-                IncomeRecordUtil.getIncomeRecordCsvFileName( indexYear, indexMonth );
+    public boolean delete( TotalProperty totalProperty ) throws Exception {
+        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return false;
         }
         
         ArrayList<String> fileContentBuffer = new ArrayList<String>();
         String currentTuple = "";
-        IncomeRecord currentIncomeRecord = new IncomeRecord();
+        TotalProperty currentTotalProperty = new TotalProperty();
         
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                 new FileInputStream( new File( csvFilePath ) ),
-                FILE_CHARSET
+                Contants.FILE_CHARSET
             )
         );
         // read attribute titles
         fileContentBuffer.add( bufReader.readLine() );
         // search data & delete data
         while( (currentTuple = bufReader.readLine()) != null ) {
-            currentIncomeRecord = IncomeRecordUtil.getIncomeRecordFromCsvTupleString( currentTuple );
-            if( ComparingUtil.compare( currentIncomeRecord.getId(), incomeRecord.getId() ) != 0 ) {
+            currentTotalProperty = TotalPropertyUtil.getTotalPropertyFromCsvTupleString( currentTuple );
+            if( ComparingUtil.compare( currentTotalProperty.getId(), totalProperty.getId() ) != 0 ) {
                 // keep data that not match the deleting data
                 fileContentBuffer.add( currentTuple );
             }
@@ -223,7 +235,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(
                     new FileOutputStream( new File( csvFilePath ), false ),
-                    FILE_CHARSET
+                    Contants.FILE_CHARSET
                 )
             );
         for( String content : fileContentBuffer ) {
@@ -237,13 +249,13 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
 
     @Override
     public int getCurrentSeqNumber() throws Exception {
-        if( !checkIfFileExists( INCOME_RECORD_SEQ_FILE_PATH ) ) {
-            return Integer.parseInt( INITIAL_SEQ_NUMBER ) - 1;
+        if( !checkIfFileExists( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH ) ) {
+            return Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) - 1;
         }
         
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( INCOME_RECORD_SEQ_FILE_PATH ) ),
-                FILE_CHARSET
+                new FileInputStream( new File( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH ) ),
+                Contants.FILE_CHARSET
             )
         );
         Integer currentSeqNumber = null;
@@ -271,31 +283,31 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
     }
     
     private void createCsvFile( String fileName ) throws IOException {
-        File f = new File( INCOME_RECORD_DATA_PATH );
+        File f = new File( Contants.TOTAL_PROPERTY_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 
                 new OutputStreamWriter( 
                     new FileOutputStream( new File( fileName ), false ), 
-                    FILE_CHARSET 
+                    Contants.FILE_CHARSET 
                 ) 
             );
-        bufWriter.write( INCOME_RECORD_CSV_FILE_ATTR_STRING );
+        bufWriter.write( Contants.TOTAL_PROPERTY_CSV_FILE_ATTR_STRING );
         bufWriter.newLine();
         bufWriter.close();
     }
     
     private void createSeqFile( String fileName ) throws IOException {
-        File f = new File( INCOME_RECORD_DATA_PATH );
+        File f = new File( Contants.TOTAL_PROPERTY_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 
                 new OutputStreamWriter( 
                     new FileOutputStream( new File( fileName ), false ), 
-                    FILE_CHARSET 
+                    Contants.FILE_CHARSET 
                 ) 
             );
-        bufWriter.write( INITIAL_SEQ_NUMBER );
+        bufWriter.write( Contants.INITIAL_SEQ_NUMBER );
         bufWriter.newLine();
         bufWriter.close();
     }
