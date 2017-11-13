@@ -1,5 +1,7 @@
 package service.impl;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import common.Contants;
@@ -33,38 +35,95 @@ public class TotalPropertyServiceImpl implements TotalPropertyService {
 
     @Override
     public TotalProperty findOne( Integer id ) throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        return totalPropertyDAO.findOne( id );
     }
 
     @Override
     public List<TotalProperty> findAll() throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        return totalPropertyDAO.findAll();
     }
 
     @Override
     public int getMainTotalAmount() throws Exception {
-        // TODO Auto-generated method stub
-        return 0;
+        final int MAIN_ID = 1;
+        TotalProperty totalProperty = totalPropertyDAO.findOne( MAIN_ID );
+        
+        if( totalProperty == null || totalProperty.getTotalAmount() == null ) {
+            return 0;
+        } else {
+            return totalProperty.getTotalAmount();
+        }
     }
 
     @Override
-    public int setMainTotalAmount() throws Exception {
-        // TODO Auto-generated method stub
-        return 0;
+    public int setMainTotalAmount( int totalAmount ) throws Exception {
+        final int MAIN_ID = 1;
+        boolean returnCode;
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        
+        TotalProperty totalProperty = new TotalProperty();
+        totalProperty.setId( MAIN_ID );
+        totalProperty.setYear( calendar.get( Calendar.YEAR ) );
+        totalProperty.setMonth( calendar.get( Calendar.MONTH ) + 1 );
+        totalProperty.setDay( calendar.get( Calendar.DAY_OF_MONTH ) );
+        totalProperty.setHour( calendar.get( Calendar.HOUR_OF_DAY ) );
+        totalProperty.setMinute( calendar.get( Calendar.MINUTE ) );
+        totalProperty.setSecond( calendar.get( Calendar.SECOND ) );
+        totalProperty.setTotalAmount( totalAmount );
+        
+        if( totalPropertyDAO.findOne( MAIN_ID ) == null ) {
+            returnCode = totalPropertyDAO.create( totalProperty );
+        } else {
+            returnCode = totalPropertyDAO.update( totalProperty );
+        }
+        
+        if( !returnCode ) {
+            return Contants.ERROR;
+        } else {
+            return Contants.SUCCESS;
+        }
     }
 
     @Override
     public int update( TotalProperty totalProperty ) throws Exception {
-        // TODO Auto-generated method stub
-        return 0;
+        boolean returnCode;
+        
+        if( totalProperty.getId() == null ) {
+            return Contants.ERROR_EMPTY_NECESSARY_PARAMETER;
+        }
+        
+        if( totalPropertyDAO.findOne( totalProperty.getId() ) == null ) {
+            return Contants.ERROR_NOT_EXIST;
+        }
+        
+        returnCode = totalPropertyDAO.update( totalProperty );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        } else {
+            return Contants.SUCCESS;
+        }
     }
 
     @Override
     public int delete( TotalProperty totalProperty ) throws Exception {
-        // TODO Auto-generated method stub
-        return 0;
+        boolean returnCode;
+        
+        if( totalProperty.getId() == null ) {
+            return Contants.ERROR_EMPTY_NECESSARY_PARAMETER;
+        }
+        
+        if( totalPropertyDAO.findOne( totalProperty.getId() ) == null ) {
+            return Contants.ERROR_NOT_EXIST;
+        }
+        
+        returnCode = totalPropertyDAO.delete( totalProperty );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        } else {
+            return Contants.SUCCESS;
+        }
     }
 
 }

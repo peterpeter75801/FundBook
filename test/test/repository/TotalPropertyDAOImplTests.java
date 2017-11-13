@@ -11,10 +11,10 @@ import java.util.List;
 import common.Contants;
 import commonUtil.TotalPropertyUtil;
 import domain.TotalProperty;
-
-import junit.framework.TestCase;
 import repository.TotalPropertyDAO;
 import repository.impl.TotalPropertyDAOImpl;
+
+import junit.framework.TestCase;
 
 public class TotalPropertyDAOImplTests extends TestCase {
 

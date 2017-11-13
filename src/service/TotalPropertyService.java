@@ -14,7 +14,7 @@ public interface TotalPropertyService {
     
     public int getMainTotalAmount() throws Exception;
     
-    public int setMainTotalAmount() throws Exception;
+    public int setMainTotalAmount( int totalAmount ) throws Exception;
     
     public int update( TotalProperty totalProperty ) throws Exception;
     

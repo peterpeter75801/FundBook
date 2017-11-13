@@ -1,3 +1,6 @@
+---- version 0.0.2-pre ----
+1. Add TotalProperty's domain, util, dao, and service.
+
 ---- version 0.0.1-pre ----
 1. Add common utils and contants.
 2. Add IncomeRecord's domain, util, dao, and service.
