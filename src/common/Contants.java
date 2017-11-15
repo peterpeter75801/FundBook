@@ -24,4 +24,10 @@ public class Contants {
     public static final String TOTAL_PROPERTY_DATA_PATH = "data\\TotalProperty\\";
     public static final String TOTAL_PROPERTY_FILENAME = "TotalProperty.csv";
     public static final String TOTAL_PROPERTY_SEQ_FILE_PATH = "data\\TotalProperty\\TotalPropertySeq.txt";
+    
+    // Funding Status Configurations
+    public static final String FUNDING_STATUS_CSV_FILE_ATTR_STRING = "id,type,year,month,day,bankCode,bankName,account,interestAccount,balance";
+    public static final String FUNDING_STATUS_DATA_PATH = "data\\FundingStatus\\";
+    public static final String FUNDING_STATUS_FILENAME = "FundingStatus.csv";
+    public static final String FUNDING_STATUS_SEQ_FILE_PATH = "data\\FundingStatus\\FundingStatusSeq.txt";
 }
