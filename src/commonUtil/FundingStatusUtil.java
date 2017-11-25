@@ -4,7 +4,7 @@ import domain.FundingStatus;
 
 public class FundingStatusUtil {
     
-private final static int ATTRIBUTE_NUMBER = 10;
+    private final static int ATTRIBUTE_NUMBER = 10;
     
     public static FundingStatus getFundingStatusFromCsvTupleString( String tuple ) throws Exception {
         String[] csvDataArray = CsvFormatParser.parseFromTuple( tuple );

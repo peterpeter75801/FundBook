@@ -30,4 +30,10 @@ public class Contants {
     public static final String FUNDING_STATUS_DATA_PATH = "data\\FundingStatus\\";
     public static final String FUNDING_STATUS_FILENAME = "FundingStatus.csv";
     public static final String FUNDING_STATUS_SEQ_FILE_PATH = "data\\FundingStatus\\FundingStatusSeq.txt";
+    
+    // Check Record Configurations
+    public static final String CHECK_RECORD_CSV_FILE_ATTR_STRING = "id,year,month,day,hour,minute,second,difference,bookAmount,actualAmount";
+    public static final String CHECK_RECORD_DATA_PATH = "data\\CheckRecord\\";
+    public static final String CHECK_RECORD_FILENAME = "CheckRecord.csv";
+    public static final String CHECK_RECORD_SEQ_FILE_PATH = "data\\CheckRecord\\CheckRecordSeq.txt";
 }
