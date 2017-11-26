@@ -126,8 +126,41 @@ public class CheckRecordServiceImplTests extends TestCase {
         }
     }
     
-    public void testDelete() {
+    public void testDelete() throws IOException {
+        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
+        CheckRecordService checkRecordService = new CheckRecordServiceImpl( checkRecordDAO );
         
+        List<CheckRecord> expectDataList = new ArrayList<CheckRecord>();
+        expectDataList.add( getTestData1() );
+        expectDataList.add( getTestData2() );
+        for( int i = 1; i <= 2; i++ ) {
+            expectDataList.get( i - 1 ).setId( i );
+        }
+        
+        try {
+            backupFile( CHECK_RECORD_CSV_FILE_PATH, CHECK_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( Contants.CHECK_RECORD_SEQ_FILE_PATH, CHECK_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            checkRecordService.insert( getTestData1() );
+            checkRecordService.insert( getTestData2() );
+            checkRecordService.insert( getTestData3() );
+            
+            CheckRecord deletedData = getTestData3();
+            deletedData.setId( 3 );
+            checkRecordService.delete( deletedData );
+            
+            List<CheckRecord> actualDataList = checkRecordService.findAll();
+            assertEquals( expectDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectDataList.size(); i++ ) {
+                assertTrue( "failed at i = " + i, CheckRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( CHECK_RECORD_SEQ_FILE_PATH_BACKUP, Contants.CHECK_RECORD_SEQ_FILE_PATH );
+            restoreFile( CHECK_RECORD_CSV_FILE_PATH_BACKUP, CHECK_RECORD_CSV_FILE_PATH );
+        }
     }
     
     private CheckRecord getTestData1() {
