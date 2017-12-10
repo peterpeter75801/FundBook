@@ -305,7 +305,7 @@ public class IncomeRecordDatePanel extends JPanel {
         
         @Override
         public void valueChanged( ListSelectionEvent event ) {
-            if( monthList.getSelectedIndex() < 0 ) {
+            if( monthList.getSelectedIndex() < 0 || incomeRecordTablePanel == null ) {
                 return;
             }
             

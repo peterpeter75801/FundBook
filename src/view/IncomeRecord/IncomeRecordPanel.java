@@ -58,6 +58,7 @@ public class IncomeRecordPanel extends JPanel {
         add( incomeRecordTablePanel );
         
         incomeRecordDatePanel.setIncomeRecordTablePanel( incomeRecordTablePanel );
+        incomeRecordTablePanel.loadIncomeRecordOfCurrentMonth();
         
         createButton = new JButton( "新增(C)" );
         createButton.setBounds( 717, 32, 64, 22 );
