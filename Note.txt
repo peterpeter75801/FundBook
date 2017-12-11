@@ -1,3 +1,7 @@
+---- version 0.0.5-pre ----
+1. Add IncomeRecord's panel.
+2. Add feature of displaying income record data with specified month in IncomeRecord's panel.
+
 ---- version 0.0.4-pre ----
 1. Add CheckRecord's domain, util, dao, and service.
 

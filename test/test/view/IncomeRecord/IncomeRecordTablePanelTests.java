@@ -87,6 +87,67 @@ public class IncomeRecordTablePanelTests extends TestCase {
         }
     }
     
+    public void testIncomeRecordTablePanelDisplay2() throws IOException {
+        int testerSelection = 0;
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
+        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( incomeRecordDAO );
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            // 新增初始資料
+            for( int i = 1; i <= 30; i++ ) {
+                IncomeRecord incomeRecord = getTestData2();
+                incomeRecord.setDay( i );
+                incomeRecord.setItem( getTestData2().getItem() + i );
+                incomeRecord.setAmount( i * 100 );
+                incomeRecordService.insert( incomeRecord );
+            }
+            
+            // 執行視窗程式
+            MainFrame mainFrame = new MainFrame();
+            mainFrame.setVisible( true );
+            
+            JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
+            
+            Robot bot =  new Robot();
+            Thread.sleep( 3000 );
+            
+            // 在月份選單選擇2017.10
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            inputString( bot, "10" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            Thread.sleep( 1000 );
+            
+            // 檢查執行結果
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, 
+                "<html><head><style type=\"text/css\">" + 
+                        "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
+                "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
+                    "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
+                    "<tr><td>2017.10.01</td><td>測試帳1</td><td>收</td><td>100</td></tr>" + 
+                    "<tr><td>2017.10.02</td><td>測試帳2</td><td>收</td><td>200</td></tr>" + 
+                    "<tr><td>2017.10.03</td><td>測試帳3</td><td>收</td><td>300</td></tr>" + 
+                    "<tr><td>...</td><td>...</td><td>...</td><td>...</td></tr>" + 
+                    "<tr><td>2017.10.20</td><td>測試帳20</td><td>收</td><td>2000</td></tr>" + 
+                    "<tr><td>...</td><td>...</td><td>...</td><td>...</td></tr>" + 
+                "</table>並在右側顯示垂直捲軸?</body></html>", 
+                "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+                
+            Thread.sleep( 1000 );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
     private IncomeRecord getTestData1() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( new Date() );
@@ -95,6 +156,19 @@ public class IncomeRecordTablePanelTests extends TestCase {
         testData.setId( 0 );
         testData.setYear( calendar.get( Calendar.YEAR ) );
         testData.setMonth( calendar.get( Calendar.MONTH ) + 1 );
+        testData.setDay( 1 );
+        testData.setItem( "測試帳" );
+        testData.setSubclass( '\0' );
+        testData.setAmount( 100 );
+        testData.setDescription( "" );
+        return testData;
+    }
+    
+    private IncomeRecord getTestData2() {
+        IncomeRecord testData = new IncomeRecord();
+        testData.setId( 0 );
+        testData.setYear( 2017 );
+        testData.setMonth( 10 );
         testData.setDay( 1 );
         testData.setItem( "測試帳" );
         testData.setSubclass( '\0' );
