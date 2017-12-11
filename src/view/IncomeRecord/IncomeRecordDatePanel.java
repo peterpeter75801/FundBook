@@ -19,6 +19,7 @@ import javax.swing.event.ListSelectionListener;
 
 import commonUtil.ComparingUtil;
 import commonUtil.StringUtil;
+import main.FundBookServices;
 
 public class IncomeRecordDatePanel extends JPanel {
     
@@ -41,7 +42,7 @@ public class IncomeRecordDatePanel extends JPanel {
     private JTextField monthTextField;
     private JList<String> monthList;
     
-    public IncomeRecordDatePanel( IncomeRecordPanel ownerPanel ) {
+    public IncomeRecordDatePanel( FundBookServices fundBookServices, IncomeRecordPanel ownerPanel ) {
         setLayout( null );
         
         this.ownerPanel = ownerPanel;

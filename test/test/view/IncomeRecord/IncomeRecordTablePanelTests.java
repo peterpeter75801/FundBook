@@ -16,10 +16,10 @@ import domain.IncomeRecord;
 import service.IncomeRecordService;
 import service.impl.IncomeRecordServiceImpl;
 import view.MainFrame;
-import repository.IncomeRecordDAO;
 import repository.impl.IncomeRecordDAOImpl;
 
 import junit.framework.TestCase;
+import main.FundBookServices;
 
 public class IncomeRecordTablePanelTests extends TestCase {
     
@@ -30,8 +30,9 @@ public class IncomeRecordTablePanelTests extends TestCase {
     
     public void testIncomeRecordTablePanelDisplay1() throws IOException {
         int testerSelection = 0;
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( incomeRecordDAO );
+        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
+        FundBookServices fundBookServices = new FundBookServices();
+        fundBookServices.setIncomeRecordService( incomeRecordService );
         
         try {
             backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
@@ -49,13 +50,10 @@ public class IncomeRecordTablePanelTests extends TestCase {
             }
             
             // 執行視窗程式
-            MainFrame mainFrame = new MainFrame();
+            MainFrame mainFrame = new MainFrame( fundBookServices );
             mainFrame.setVisible( true );
             
             JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
-            
-            Robot bot =  new Robot();
-            Thread.sleep( 3000 );
             
             // 檢查執行結果
             Calendar calendar = Calendar.getInstance();
@@ -89,8 +87,9 @@ public class IncomeRecordTablePanelTests extends TestCase {
     
     public void testIncomeRecordTablePanelDisplay2() throws IOException {
         int testerSelection = 0;
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( incomeRecordDAO );
+        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
+        FundBookServices fundBookServices = new FundBookServices();
+        fundBookServices.setIncomeRecordService( incomeRecordService );
         
         try {
             backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
@@ -106,7 +105,7 @@ public class IncomeRecordTablePanelTests extends TestCase {
             }
             
             // 執行視窗程式
-            MainFrame mainFrame = new MainFrame();
+            MainFrame mainFrame = new MainFrame( fundBookServices );
             mainFrame.setVisible( true );
             
             JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );

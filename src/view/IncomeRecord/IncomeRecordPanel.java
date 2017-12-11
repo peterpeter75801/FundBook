@@ -1,20 +1,15 @@
 package view.IncomeRecord;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.border.LineBorder;
 
+import main.FundBookServices;
 import view.MainFrame;
 
 public class IncomeRecordPanel extends JPanel {
@@ -37,23 +32,16 @@ public class IncomeRecordPanel extends JPanel {
     private JLabel totalPropertyLabel;
     private JTextField totalPropertyTextField;
     
-    public IncomeRecordPanel( MainFrame ownerFrame ) {
+    public IncomeRecordPanel( FundBookServices fundBookServices, MainFrame ownerFrame ) {
         setLayout( null );
-        
-        //setBorder( new LineBorder( Color.BLACK, 1 ) );
         
         generalFont = new Font( "細明體", Font.PLAIN, 16 );
         
-        //testLabel = new JLabel( "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" );
-        //testLabel.setBounds( 0, 0, 793, 22 );
-        //testLabel.setFont( generalFont );
-        //add( testLabel );
-        
-        incomeRecordDatePanel = new IncomeRecordDatePanel( this );
+        incomeRecordDatePanel = new IncomeRecordDatePanel( fundBookServices, this );
         incomeRecordDatePanel.setBounds( 0, 0, 120, 479 );
         add( incomeRecordDatePanel );
         
-        incomeRecordTablePanel = new IncomeRecordTablePanel( this, incomeRecordDatePanel );
+        incomeRecordTablePanel = new IncomeRecordTablePanel( fundBookServices, this, incomeRecordDatePanel );
         incomeRecordTablePanel.setBounds( 120, 0, 585, 479 );
         add( incomeRecordTablePanel );
         

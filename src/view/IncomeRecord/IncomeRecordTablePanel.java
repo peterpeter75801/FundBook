@@ -1,5 +1,6 @@
 package view.IncomeRecord;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -20,13 +22,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.border.Border;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import domain.IncomeRecord;
-import repository.IncomeRecordDAO;
-import repository.impl.IncomeRecordDAOImpl;
+import main.FundBookServices;
 import service.IncomeRecordService;
-import service.impl.IncomeRecordServiceImpl;
 
 public class IncomeRecordTablePanel extends JPanel {
     
@@ -41,6 +44,8 @@ public class IncomeRecordTablePanel extends JPanel {
     private static final int BORDER_HEIGHT_FIX = 3;
     private static final String[] COLUMN_NAMES = { "日期", "項目", "收支", "金額", "Seq(hidden)" };
     
+    private IncomeRecordService incomeRecordService;
+    
     private IncomeRecordPanel ownerPanel;
     private IncomeRecordDatePanel incomeRecordDatePanel;
     
@@ -48,8 +53,11 @@ public class IncomeRecordTablePanel extends JPanel {
     private JTable dataTable;
     private JScrollPane dataTableScrollPane;
     
-    public IncomeRecordTablePanel( IncomeRecordPanel ownerPanel, IncomeRecordDatePanel incomeRecordDatePanel ) {
+    public IncomeRecordTablePanel( FundBookServices fundBookServices, 
+            IncomeRecordPanel ownerPanel, IncomeRecordDatePanel incomeRecordDatePanel ) {
         setLayout( null );
+        
+        incomeRecordService = fundBookServices.getIncomeRecordService();
         
         this.ownerPanel = ownerPanel;
         this.incomeRecordDatePanel = incomeRecordDatePanel;
@@ -100,6 +108,9 @@ public class IncomeRecordTablePanel extends JPanel {
             public void actionPerformed( ActionEvent event ) { /* do nothing */ }
         });
         
+        // 設定 JTable 特定欄位的文字對齊方式
+        initializeTableAlignment();
+        
         dataTableScrollPane = new JScrollPane( dataTable );
         dataTableScrollPane.setBounds( 0, 10, TABLE_WIDTH, TABLE_HEIGHT + TABLE_HEADER_HEIGHT + BORDER_HEIGHT_FIX );
         
@@ -122,9 +133,6 @@ public class IncomeRecordTablePanel extends JPanel {
     }
     
     public void searchIncomeRecordByMonth( int year, int month ) {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( incomeRecordDAO );
-        
         try {
             List<IncomeRecord> incomeRecordList = incomeRecordService.findByMonth( year, month );
             for( int i = 0; i < incomeRecordList.size(); i++ ) {
@@ -149,6 +157,42 @@ public class IncomeRecordTablePanel extends JPanel {
             e.printStackTrace();
             JOptionPane.showMessageDialog( null, "讀取資料發生錯誤", "Error", JOptionPane.ERROR_MESSAGE );
         }
+    }
+    
+    private void initializeTableAlignment() {
+        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer() {
+            private static final long serialVersionUID = 1L;
+            private Border padding = BorderFactory.createEmptyBorder( 0, 3, 0, 0 );
+            @Override
+            public Component getTableCellRendererComponent( JTable table, Object value, 
+                    boolean isSelected, boolean hasFocus, int row, int column ) {
+                super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
+                setBorder( BorderFactory.createCompoundBorder( getBorder(), padding ) );
+                return this;
+            }
+        };
+        leftRenderer.setHorizontalAlignment( SwingConstants.LEFT );
+        dataTable.getColumnModel().getColumn( 0 ).setCellRenderer( leftRenderer );
+        dataTable.getColumnModel().getColumn( 1 ).setCellRenderer( leftRenderer );
+        
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment( SwingConstants.CENTER );
+        dataTable.getColumnModel().getColumn( 2 ).setCellRenderer( centerRenderer );
+        
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer() {
+            private static final long serialVersionUID = 1L;
+            private Border padding = BorderFactory.createEmptyBorder( 0, 0, 0, 3 );
+            @Override
+            public Component getTableCellRendererComponent( JTable table, Object value, 
+                    boolean isSelected, boolean hasFocus, int row, int column ) {
+                super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
+                setBorder( BorderFactory.createCompoundBorder( getBorder(), padding ) );
+                return this;
+            }
+        };
+        rightRenderer.setHorizontalAlignment( SwingConstants.RIGHT );
+        dataTable.getColumnModel().getColumn( 3 ).setCellRenderer( rightRenderer );
+        
     }
     
     private class SpecialFocusTraversalPolicyHandler implements KeyListener {

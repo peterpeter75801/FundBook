@@ -1,3 +1,7 @@
+---- version 0.0.6-pre ----
+1. Adjust DAOs and services object initializing mechanism.
+2. Adjust IncomeRecord table's alignment and padding.
+
 ---- version 0.0.5-pre ----
 1. Add IncomeRecord's panel.
 2. Add feature of displaying income record data with specified month in IncomeRecord's panel.
