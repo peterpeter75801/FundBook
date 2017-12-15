@@ -3,6 +3,8 @@ package view.IncomeRecord;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -18,6 +20,8 @@ public class IncomeRecordPanel extends JPanel {
     
     private IncomeRecordDatePanel incomeRecordDatePanel; 
     private IncomeRecordTablePanel incomeRecordTablePanel;
+    
+    private IncomeRecordCreateDialog incomeRecordCreateDialog;
     
     private JLabel testLabel;
     private Font generalFont;
@@ -48,10 +52,19 @@ public class IncomeRecordPanel extends JPanel {
         incomeRecordDatePanel.setIncomeRecordTablePanel( incomeRecordTablePanel );
         incomeRecordTablePanel.loadIncomeRecordOfCurrentMonth();
         
+        incomeRecordCreateDialog = new IncomeRecordCreateDialog( fundBookServices.getIncomeRecordService(), ownerFrame );
+        
         createButton = new JButton( "新增(C)" );
         createButton.setBounds( 717, 32, 64, 22 );
-        createButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         createButton.setFont( generalFont );
+        createButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        createButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                // incomeRecordCreateDialog.openDialog();
+                openIncomeRecordCreateDialog();
+            }
+        });
         add( createButton );
         
         incomeStateInCurrentMonthLabel = new JLabel( "本月收支狀況(收入-支出): " );
@@ -81,5 +94,19 @@ public class IncomeRecordPanel extends JPanel {
     
     public JButton getCreateButton() {
         return createButton;
+    }
+    
+    private void openIncomeRecordCreateDialog() {
+        int selectedYear, selectedMonth;
+        String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
+        try {
+            selectedYear = Integer.parseInt( selectedMonthString.substring( 0, 4 ) );
+            selectedMonth = Integer.parseInt( selectedMonthString.substring( 5, 7 ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            selectedYear = 1900;
+            selectedMonth = 1;
+        }
+        incomeRecordCreateDialog.openDialog( selectedYear, selectedMonth );
     }
 }
