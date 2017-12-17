@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -76,8 +77,67 @@ public class IncomeRecordCreateDialogTests extends TestCase {
             testerSelection = JOptionPane.showConfirmDialog( 
                 mainFrame, "已新增資料筆數是否有更新為'1'", "Check", JOptionPane.YES_NO_OPTION );
             assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            Thread.sleep( 500 );
+            
+            // 新增資料
+            inputString( bot, "test item 2" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            inputString( bot, "200" );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( 100 );
+            Thread.sleep( 1000 );
+
+            inputString( bot, "test item 3" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            inputString( bot, "300" );
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_LEFT ); bot.keyRelease( KeyEvent.VK_LEFT ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( 100 );
+            Thread.sleep( 1000 );
+            bot.keyPress( KeyEvent.VK_ESCAPE ); bot.keyRelease( KeyEvent.VK_ESCAPE ); Thread.sleep( 100 );
             Thread.sleep( 1000 );
             
+            // 檢查是否有新增成功
+            List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
+            for( int i = 1; i <= 3; i++ ) {
+                IncomeRecord incomeRecord = getTestData1();
+                incomeRecord.setId( i );
+                incomeRecord.setItem( getTestData1().getItem() + i );
+                if( i == 3 ) {
+                    incomeRecord.setAmount( i * 100 );
+                } else {
+                    incomeRecord.setAmount( i * (-100) );
+                }
+                expectDataList.add( incomeRecord );
+            }
+            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData1().getYear(), getTestData1().getMonth() );
+            assertEquals( expectDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectDataList.size(); i++ ) {
+                assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
+            }
+            
+            // 檢查畫面是否顯示正確
+            String expectDateString = String.format( "%04d.%02d.%02d", 
+                calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1, 1 );
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, 
+                "<html><head><style type=\"text/css\">" + 
+                    "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
+                "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
+                    "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
+                    "<tr><td>" + expectDateString + "</td><td>test item 1</td><td>支</td><td>100</td></tr>" + 
+                    "<tr><td>" + expectDateString + "</td><td>test item 2</td><td>支</td><td>200</td></tr>" + 
+                    "<tr><td>" + expectDateString + "</td><td>test item 3</td><td>收</td><td>300</td></tr>" + 
+                "</table></body></html>", 
+                "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            
+            Thread.sleep( 1000 );
         } catch ( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
