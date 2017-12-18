@@ -36,4 +36,7 @@ public class Contants {
     public static final String CHECK_RECORD_DATA_PATH = "data\\CheckRecord\\";
     public static final String CHECK_RECORD_FILENAME = "CheckRecord.csv";
     public static final String CHECK_RECORD_SEQ_FILE_PATH = "data\\CheckRecord\\CheckRecordSeq.txt";
+    
+    // Version Number
+    public static final String VERSION = "Version 0.0.7-pre";
 }

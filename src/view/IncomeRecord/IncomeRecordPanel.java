@@ -10,7 +10,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
+import common.Contants;
 import main.FundBookServices;
 import view.MainFrame;
 
@@ -35,6 +37,7 @@ public class IncomeRecordPanel extends JPanel {
     private JTextField incomeStateInCurrentMonthTextField;
     private JLabel totalPropertyLabel;
     private JTextField totalPropertyTextField;
+    private JLabel versionLabel;
     
     public IncomeRecordPanel( FundBookServices fundBookServices, MainFrame ownerFrame ) {
         setLayout( null );
@@ -89,11 +92,20 @@ public class IncomeRecordPanel extends JPanel {
         totalPropertyTextField.setEditable( false );
         add( totalPropertyTextField );
         
+        versionLabel = new JLabel( Contants.VERSION, SwingConstants.RIGHT );
+        versionLabel.setBounds( 561, 506, 224, 22 );
+        versionLabel.setFont( generalFont );
+        add( versionLabel );
+        
         setPreferredSize( new Dimension( 793, 533 ) );
     }
     
     public JButton getCreateButton() {
         return createButton;
+    }
+    
+    public void reselectDateList() {
+        incomeRecordDatePanel.reselectDateList();
     }
     
     private void openIncomeRecordCreateDialog() {

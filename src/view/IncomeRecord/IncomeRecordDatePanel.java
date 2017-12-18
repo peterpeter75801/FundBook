@@ -124,6 +124,12 @@ public class IncomeRecordDatePanel extends JPanel {
         return monthList.getSelectedValue();
     }
     
+    public void reselectDateList() {
+        int currentSelectedIndex = monthList.getSelectedIndex();
+        monthList.clearSelection();
+        monthList.setSelectedIndex( currentSelectedIndex );
+    }
+    
     public void setIncomeRecordTablePanel( IncomeRecordTablePanel incomeRecordTablePanel ) {
         this.incomeRecordTablePanel = incomeRecordTablePanel;
     }

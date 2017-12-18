@@ -1,3 +1,7 @@
+---- version 0.0.7-pre ----
+1. Add IncomeRecord's user interface.
+2. Add IncomeRecord creating dialog.
+
 ---- version 0.0.6-pre ----
 1. Adjust DAOs and services object initializing mechanism.
 2. Adjust IncomeRecord table's alignment and padding.

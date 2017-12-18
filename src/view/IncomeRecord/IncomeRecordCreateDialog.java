@@ -6,8 +6,12 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -17,6 +21,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -24,6 +29,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import common.Contants;
+import commonUtil.CsvFormatParser;
+import domain.IncomeRecord;
 import service.IncomeRecordService;
 import view.MainFrame;
 
@@ -36,6 +44,7 @@ public class IncomeRecordCreateDialog extends JDialog {
     private MainFrame ownerFrame;
     
     private FocusHandler focusHandler;
+    private MnemonicKeyHandler mnemonicKeyHandler;
     private Font generalFont;
     private Font createdCountFont;
     private JPanel dialogPanel;
@@ -75,6 +84,7 @@ public class IncomeRecordCreateDialog extends JDialog {
         this.ownerFrame = ownerFrame;
         
         focusHandler = new FocusHandler();
+        mnemonicKeyHandler = new MnemonicKeyHandler();
         
         generalFont = new Font( "細明體", Font.PLAIN, 16 );
         createdCountFont = new Font( "細明體", Font.ITALIC, 16 );
@@ -91,6 +101,7 @@ public class IncomeRecordCreateDialog extends JDialog {
         classTextField.setBounds( 64, 10, 56, 22 );
         classTextField.setFont( generalFont );
         classTextField.addFocusListener( focusHandler );
+        classTextField.addKeyListener( mnemonicKeyHandler );
         dialogPanel.add( classTextField );
         
         classNameTextField = new JTextField();
@@ -115,12 +126,14 @@ public class IncomeRecordCreateDialog extends JDialog {
         incomeRadioButton.setBounds( 64, 42, 64, 22 );
         incomeRadioButton.setFont( generalFont );
         incomeRadioButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        incomeRadioButton.addKeyListener( mnemonicKeyHandler );
         dialogPanel.add( incomeRadioButton );
         
         expenditureRadioButton = new JRadioButton( "支(E)", true );
         expenditureRadioButton.setBounds( 136, 42, 64, 22 );
         expenditureRadioButton.setFont( generalFont );
         expenditureRadioButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        expenditureRadioButton.addKeyListener( mnemonicKeyHandler );
         dialogPanel.add( expenditureRadioButton );
         
         incomeTypeButtonGroup = new ButtonGroup();
@@ -136,6 +149,7 @@ public class IncomeRecordCreateDialog extends JDialog {
         yearTextField.setBounds( 264+65, 42, 40, 22 );
         yearTextField.setFont( generalFont );
         yearTextField.addFocusListener( focusHandler );
+        yearTextField.addKeyListener( mnemonicKeyHandler );
         dialogPanel.add( yearTextField );
         
         yearLabel = new JLabel( "年" );
@@ -147,6 +161,7 @@ public class IncomeRecordCreateDialog extends JDialog {
         monthTextField.setBounds( 320+65, 42, 24, 22 );
         monthTextField.setFont( generalFont );
         monthTextField.addFocusListener( focusHandler );
+        monthTextField.addKeyListener( mnemonicKeyHandler );
         dialogPanel.add( monthTextField );
         
         monthLabel = new JLabel( "月" );
@@ -158,6 +173,7 @@ public class IncomeRecordCreateDialog extends JDialog {
         dayTextField.setBounds( 360+65, 42, 24, 22 );
         dayTextField.setFont( generalFont );
         dayTextField.addFocusListener( focusHandler );
+        dayTextField.addKeyListener( mnemonicKeyHandler );
         dialogPanel.add( dayTextField );
         
         dayLabel = new JLabel( "日" );
@@ -174,6 +190,7 @@ public class IncomeRecordCreateDialog extends JDialog {
         itemTextField.setBounds( 64, 74, 240-31, 22 );
         itemTextField.setFont( generalFont );
         itemTextField.addFocusListener( focusHandler );
+        itemTextField.addKeyListener( mnemonicKeyHandler );
         dialogPanel.add( itemTextField );
         
         amountLabel = new JLabel( "金額: " );
@@ -185,6 +202,7 @@ public class IncomeRecordCreateDialog extends JDialog {
         amountTextField.setBounds( 376-47, 74, 72, 22 );
         amountTextField.setFont( generalFont );
         amountTextField.addFocusListener( focusHandler );
+        amountTextField.addKeyListener( mnemonicKeyHandler );
         dialogPanel.add( amountTextField );
         
         dollarLabel = new JLabel( "元" );
@@ -222,24 +240,40 @@ public class IncomeRecordCreateDialog extends JDialog {
         createdCountLabel.setBounds( 16, 253, 128, 22 );
         createdCountLabel.setFont( createdCountFont );
         createdCountLabel.setForeground( Color.BLUE );
+        createdCountLabel.setVisible( false );
         dialogPanel.add( createdCountLabel );
         
         createdCountValueLabel = new JLabel( "_" );
         createdCountValueLabel.setBounds( 144, 253, 24, 22 );
         createdCountValueLabel.setFont( createdCountFont );
         createdCountValueLabel.setForeground( Color.BLUE );
+        createdCountValueLabel.setVisible( false );
         dialogPanel.add( createdCountValueLabel );
         
         createButton = new JButton( "新增" );
         createButton.setBounds( 168, 290, 48, 22 );
         createButton.setFont( generalFont );
         createButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        createButton.addKeyListener( mnemonicKeyHandler );
+        createButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                createIncomeRecord();
+            }
+        });
         dialogPanel.add( createButton );
         
         finishButton = new JButton( "取消" );
         finishButton.setBounds( 264, 290, 48, 22 );
         finishButton.setFont( generalFont );
         finishButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        finishButton.addKeyListener( mnemonicKeyHandler );
+        finishButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                finishCreating();
+            }
+        });
         dialogPanel.add( finishButton );
         
         dialogPanel.setPreferredSize( new Dimension( 482, 340 ) );
@@ -249,6 +283,57 @@ public class IncomeRecordCreateDialog extends JDialog {
         setLocationRelativeTo( ownerFrame );
         setDefaultCloseOperation( JDialog.HIDE_ON_CLOSE );
         setVisible( false );
+    }
+    
+    public void createIncomeRecord() {
+        int returnCode = 0;
+        try {
+            IncomeRecord incomeRecord = new IncomeRecord();
+            incomeRecord.setYear( Integer.parseInt( yearTextField.getText() ) );
+            incomeRecord.setMonth( Integer.parseInt( monthTextField.getText() ) );
+            incomeRecord.setDay( Integer.parseInt( dayTextField.getText() ) );
+            incomeRecord.setItem( itemTextField.getText() );
+            incomeRecord.setSubclass( '\0' );
+            if( incomeRadioButton.isSelected() ) {
+                incomeRecord.setAmount( Integer.parseInt( amountTextField.getText() ) );
+            } else {
+                incomeRecord.setAmount( Integer.parseInt( amountTextField.getText() ) * (-1) );
+            }
+            if( CsvFormatParser.checkSpecialCharacter( descriptionTextArea.getText() ) ) {
+                incomeRecord.setDescription( CsvFormatParser.specialCharacterToHtmlFormat( descriptionTextArea.getText() ) );
+            } else {
+                incomeRecord.setDescription( descriptionTextArea.getText() );
+            }
+            
+            returnCode = incomeRecordService.insert( incomeRecord );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            returnCode = Contants.ERROR;
+        }
+        
+        switch( returnCode ) {
+        case Contants.SUCCESS:
+            createdCountLabel.setVisible( true );
+            createdCountValueLabel.setVisible( true );
+            createdCountValueLabel.setText( 
+                String.format( "%d" ,Integer.parseInt( createdCountValueLabel.getText() ) + 1 ) );
+            finishButton.setText( "結束" );
+            itemTextField.requestFocus();
+            break;
+        case Contants.ERROR_EXCEED_UPPER_LIMIT:
+            JOptionPane.showMessageDialog( null, "排程事項的序號已達上限", "Error", JOptionPane.ERROR_MESSAGE );
+            break;
+        case Contants.ERROR:
+            JOptionPane.showMessageDialog( null, "新增失敗", "Error", JOptionPane.ERROR_MESSAGE );
+            break;
+        default:
+            break;
+        }
+    }
+    
+    public void finishCreating() {
+        setVisible( false );
+        ownerFrame.getIncomeRecordPanel().reselectDateList();
     }
     
     public void openDialog( int year, int month ) {
@@ -273,6 +358,10 @@ public class IncomeRecordCreateDialog extends JDialog {
             dayTextField.setText( "01" );
         }
         
+        createdCountLabel.setVisible( false );
+        createdCountValueLabel.setVisible( false );
+        createdCountValueLabel.setText( "0" );
+        
         itemTextField.requestFocus();
         setVisible( true );
     }
@@ -283,5 +372,30 @@ public class IncomeRecordCreateDialog extends JDialog {
             JTextField sourceComponent = (JTextField) event.getSource();
             sourceComponent.selectAll();
         }
+    }
+    
+    private class MnemonicKeyHandler implements KeyListener {
+        
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            switch( event.getKeyCode() ) {
+            case KeyEvent.VK_ENTER:
+                if( event.getSource() != finishButton ) {
+                    createIncomeRecord();
+                } else {
+                    finishCreating();
+                }
+                break;
+            case KeyEvent.VK_ESCAPE:
+                finishCreating();
+                break;
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
     }
 }
