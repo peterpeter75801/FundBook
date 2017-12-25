@@ -12,31 +12,25 @@ import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import common.Contants;
 import commonUtil.ComparingUtil;
 import commonUtil.IncomeRecordUtil;
 import domain.IncomeRecord;
 import repository.IncomeRecordDAO;
 
 public class IncomeRecordDAOImpl implements IncomeRecordDAO {
-    
-    private final String INCOME_RECORD_CSV_FILE_ATTR_STRING = "id,year,month,day,item,subclass,amount,description";
-    private final String INITIAL_SEQ_NUMBER = "1";
-    
-    private final String INCOME_RECORD_DATA_PATH = "data\\IncomeRecord\\";
-    private final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
-    private final String FILE_CHARSET = "big5";
-    
+        
     @Override
     public boolean insert( IncomeRecord incomeRecord ) throws Exception {
         IncomeRecord incomeRecordWithNewId = IncomeRecordUtil.copy( incomeRecord );
         
         // 取得Income Record目前的流水號(ID)
-        if( !checkIfFileExists( INCOME_RECORD_SEQ_FILE_PATH ) ) {
-            createSeqFile( INCOME_RECORD_SEQ_FILE_PATH );
+        if( !checkIfFileExists( Contants.INCOME_RECORD_SEQ_FILE_PATH ) ) {
+            createSeqFile( Contants.INCOME_RECORD_SEQ_FILE_PATH );
         }
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( INCOME_RECORD_SEQ_FILE_PATH ) ),
-                FILE_CHARSET
+                new FileInputStream( new File( Contants.INCOME_RECORD_SEQ_FILE_PATH ) ),
+                Contants.FILE_CHARSET
             )
         );
         Integer currentSeqNumber = null;
@@ -50,14 +44,14 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         }
         
         // 新增Income Record資料
-        String csvFilePath = INCOME_RECORD_DATA_PATH + IncomeRecordUtil.getIncomeRecordCsvFileName( incomeRecordWithNewId );
+        String csvFilePath = Contants.INCOME_RECORD_DATA_PATH + IncomeRecordUtil.getIncomeRecordCsvFileName( incomeRecordWithNewId );
         if( !checkIfFileExists( csvFilePath ) ) {
             createCsvFile( csvFilePath );
         }
         BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(
                     new FileOutputStream( new File( csvFilePath ), true ),
-                    FILE_CHARSET
+                    Contants.FILE_CHARSET
                 )
             );
         writer.write( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( incomeRecordWithNewId ) );
@@ -67,8 +61,8 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         // 更新Income Record的流水號(ID)
         writer = new BufferedWriter(
                 new OutputStreamWriter(
-                    new FileOutputStream( new File( INCOME_RECORD_SEQ_FILE_PATH ), false ),
-                    FILE_CHARSET
+                    new FileOutputStream( new File( Contants.INCOME_RECORD_SEQ_FILE_PATH ), false ),
+                    Contants.FILE_CHARSET
                 )
             );
         currentSeqNumber++;
@@ -81,7 +75,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
 
     @Override
     public IncomeRecord findOne( int id, int indexYear, int indexMonth ) throws Exception {
-        String csvFilePath = INCOME_RECORD_DATA_PATH + 
+        String csvFilePath = Contants.INCOME_RECORD_DATA_PATH + 
                 IncomeRecordUtil.getIncomeRecordCsvFileName( indexYear, indexMonth );
         if( !checkIfFileExists( csvFilePath ) ) {
             return null;
@@ -93,7 +87,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         try {
             BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                     new FileInputStream( new File( csvFilePath ) ),
-                    FILE_CHARSET
+                    Contants.FILE_CHARSET
                 ));
             // read attribute titles
             bufReader.readLine();
@@ -115,7 +109,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
 
     @Override
     public List<IncomeRecord> findByMonth( int year, int month ) throws Exception {
-        String csvFilePath = INCOME_RECORD_DATA_PATH + 
+        String csvFilePath = Contants.INCOME_RECORD_DATA_PATH + 
                 IncomeRecordUtil.getIncomeRecordCsvFileName( year, month );
         ArrayList<IncomeRecord> incomeRecordList = new ArrayList<IncomeRecord>();
         
@@ -127,7 +121,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         IncomeRecord currentIncomeRecord = new IncomeRecord();
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                 new FileInputStream( new File( csvFilePath ) ),
-                FILE_CHARSET
+                Contants.FILE_CHARSET
             )
         );
         // read attribute titles
@@ -144,7 +138,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
 
     @Override
     public boolean update( IncomeRecord incomeRecord, int indexYear, int indexMonth ) throws Exception {
-        String csvFilePath = INCOME_RECORD_DATA_PATH + 
+        String csvFilePath = Contants.INCOME_RECORD_DATA_PATH + 
                 IncomeRecordUtil.getIncomeRecordCsvFileName( indexYear, indexMonth );
         if( !checkIfFileExists( csvFilePath ) ) {
             return false;
@@ -156,7 +150,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                 new FileInputStream( new File( csvFilePath ) ),
-                FILE_CHARSET
+                Contants.FILE_CHARSET
             )
         );
         // read attribute titles
@@ -178,7 +172,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(
                     new FileOutputStream( new File( csvFilePath ), false ),
-                    FILE_CHARSET
+                    Contants.FILE_CHARSET
                 )
             );
         for( String content : fileContentBuffer ) {
@@ -192,7 +186,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
 
     @Override
     public boolean delete( IncomeRecord incomeRecord, int indexYear, int indexMonth ) throws Exception {
-        String csvFilePath = INCOME_RECORD_DATA_PATH + 
+        String csvFilePath = Contants.INCOME_RECORD_DATA_PATH + 
                 IncomeRecordUtil.getIncomeRecordCsvFileName( indexYear, indexMonth );
         if( !checkIfFileExists( csvFilePath ) ) {
             return false;
@@ -204,7 +198,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                 new FileInputStream( new File( csvFilePath ) ),
-                FILE_CHARSET
+                Contants.FILE_CHARSET
             )
         );
         // read attribute titles
@@ -223,7 +217,7 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(
                     new FileOutputStream( new File( csvFilePath ), false ),
-                    FILE_CHARSET
+                    Contants.FILE_CHARSET
                 )
             );
         for( String content : fileContentBuffer ) {
@@ -237,13 +231,13 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
 
     @Override
     public int getCurrentSeqNumber() throws Exception {
-        if( !checkIfFileExists( INCOME_RECORD_SEQ_FILE_PATH ) ) {
-            return Integer.parseInt( INITIAL_SEQ_NUMBER ) - 1;
+        if( !checkIfFileExists( Contants.INCOME_RECORD_SEQ_FILE_PATH ) ) {
+            return Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) - 1;
         }
         
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( INCOME_RECORD_SEQ_FILE_PATH ) ),
-                FILE_CHARSET
+                new FileInputStream( new File( Contants.INCOME_RECORD_SEQ_FILE_PATH ) ),
+                Contants.FILE_CHARSET
             )
         );
         Integer currentSeqNumber = null;
@@ -271,31 +265,31 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
     }
     
     private void createCsvFile( String fileName ) throws IOException {
-        File f = new File( INCOME_RECORD_DATA_PATH );
+        File f = new File( Contants.INCOME_RECORD_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 
                 new OutputStreamWriter( 
                     new FileOutputStream( new File( fileName ), false ), 
-                    FILE_CHARSET 
+                    Contants.FILE_CHARSET 
                 ) 
             );
-        bufWriter.write( INCOME_RECORD_CSV_FILE_ATTR_STRING );
+        bufWriter.write( Contants.INCOME_RECORD_CSV_FILE_ATTR_STRING );
         bufWriter.newLine();
         bufWriter.close();
     }
     
     private void createSeqFile( String fileName ) throws IOException {
-        File f = new File( INCOME_RECORD_DATA_PATH );
+        File f = new File( Contants.INCOME_RECORD_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 
                 new OutputStreamWriter( 
                     new FileOutputStream( new File( fileName ), false ), 
-                    FILE_CHARSET 
+                    Contants.FILE_CHARSET 
                 ) 
             );
-        bufWriter.write( INITIAL_SEQ_NUMBER );
+        bufWriter.write( Contants.INITIAL_SEQ_NUMBER );
         bufWriter.newLine();
         bufWriter.close();
     }

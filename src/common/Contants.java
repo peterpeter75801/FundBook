@@ -19,6 +19,11 @@ public class Contants {
     public static final String FILE_CHARSET = "big5";
     public static final String INITIAL_SEQ_NUMBER = "1";
     
+    // Income Record Configurations
+    public static final String INCOME_RECORD_CSV_FILE_ATTR_STRING = "id,year,month,day,item,classNo,amount,description,orderNo";
+    public static final String INCOME_RECORD_DATA_PATH = "data\\IncomeRecord\\";
+    public static final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
+    
     // Total Property Configurations
     public static final String TOTAL_PROPERTY_CSV_FILE_ATTR_STRING = "id,year,month,day,hour,minute,second,totalAmount";
     public static final String TOTAL_PROPERTY_DATA_PATH = "data\\TotalProperty\\";
@@ -38,5 +43,5 @@ public class Contants {
     public static final String CHECK_RECORD_SEQ_FILE_PATH = "data\\CheckRecord\\CheckRecordSeq.txt";
     
     // Version Number
-    public static final String VERSION = "Version 0.0.7-pre";
+    public static final String VERSION = "Version 0.0.8-pre";
 }

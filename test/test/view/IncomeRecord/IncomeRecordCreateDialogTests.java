@@ -302,9 +302,10 @@ public class IncomeRecordCreateDialogTests extends TestCase {
         testData.setMonth( calendar.get( Calendar.MONTH ) + 1 );
         testData.setDay( calendar.get( Calendar.DAY_OF_MONTH ) );
         testData.setItem( "test item" );
-        testData.setSubclass( '\0' );
+        testData.setClassNo( 0 );
         testData.setAmount( -100 );
         testData.setDescription( "" );
+        testData.setOrderNo( 0 );
         return testData;
     }
     
@@ -318,9 +319,10 @@ public class IncomeRecordCreateDialogTests extends TestCase {
         testData.setMonth( 10 );
         testData.setDay( 1 );
         testData.setItem( "test item" );
-        testData.setSubclass( '\0' );
+        testData.setClassNo( 0 );
         testData.setAmount( -100 );
         testData.setDescription( "" );
+        testData.setOrderNo( 0 );
         return testData;
     }
     

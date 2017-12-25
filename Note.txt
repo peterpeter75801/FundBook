@@ -1,3 +1,8 @@
+---- version 0.0.8-pre ----
+1. Change "subclass" column in IncomeRecord domain to "classNo", and change the column type from Character to Integer.
+2. Add "orderNo" column in IncomeRecord domain.
+3. Modify creating IncomeRecord behavior related to "classNo" and "orderNo" column.
+
 ---- version 0.0.7-pre ----
 1. Add IncomeRecord's user interface.
 2. Add IncomeRecord creating dialog.

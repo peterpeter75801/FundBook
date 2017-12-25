@@ -7,9 +7,10 @@ public class IncomeRecord {
     private Integer month;          // 月
     private Integer day;            // 日
     private String item;            // 項目
-    private Character subclass;     // 子類別
+    private Integer classNo;        // 類別代號
     private Integer amount;         // 金額
     private String description;     // 收支描述
+    private Integer orderNo;        // 排序編號
 
     public void setId( Integer id ) {
         this.id = id;
@@ -51,12 +52,12 @@ public class IncomeRecord {
         return item;
     }
 
-    public void setSubclass( Character subclass ) {
-        this.subclass = subclass;
+    public void setClassNo( Integer classNo ) {
+        this.classNo = classNo;
     }
 
-    public Character getSubclass() {
-        return subclass;
+    public Integer getClassNo() {
+        return classNo;
     }
 
     public void setAmount( Integer amount ) {
@@ -73,5 +74,13 @@ public class IncomeRecord {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setOrderNo( Integer orderNo ) {
+        this.orderNo = orderNo;
+    }
+
+    public Integer getOrderNo() {
+        return orderNo;
     }
 }

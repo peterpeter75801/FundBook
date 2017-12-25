@@ -26,9 +26,9 @@ public class IncomeRecordDAOImplTests extends TestCase {
     public void testInsert() throws IOException {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         String[] expectedData = {
-                "1,2017,10,1,\"測試帳1\",,100,\"\"",
-                "2,2017,10,1,\"測試帳2\",,200,\"\"",
-                "3,2017,10,1,\"測試帳3\",,300,\"\"" };
+                "1,2017,10,1,\"測試帳1\",0,100,\"\",0",
+                "2,2017,10,1,\"測試帳2\",0,200,\"\",0",
+                "3,2017,10,1,\"測試帳3\",0,300,\"\",0" };
         String[] actualData = new String[ 3 ];
         try {
             backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
@@ -140,9 +140,9 @@ public class IncomeRecordDAOImplTests extends TestCase {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         
         List<String> expectedDataList = new ArrayList<String>();
-        expectedDataList.add( "1,2017,10,1,\"測試帳1\",,100,\"\"" );
-        expectedDataList.add( "2,2017,10,1,\"測試帳2\",,250,\"\"" );
-        expectedDataList.add( "3,2017,10,1,\"測試帳3\",,300,\"\"" );
+        expectedDataList.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",0" );
+        expectedDataList.add( "2,2017,10,1,\"測試帳2\",0,250,\"\",0" );
+        expectedDataList.add( "3,2017,10,1,\"測試帳3\",0,300,\"\",0" );
         List<String> actualDataList = new ArrayList<String>();
         
         try {
@@ -193,8 +193,8 @@ public class IncomeRecordDAOImplTests extends TestCase {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         
         List<String> expectedDataList = new ArrayList<String>();
-        expectedDataList.add( "2,2017,10,1,\"測試帳2\",,200,\"\"" );
-        expectedDataList.add( "3,2017,10,1,\"測試帳3\",,300,\"\"" );
+        expectedDataList.add( "2,2017,10,1,\"測試帳2\",0,200,\"\",0" );
+        expectedDataList.add( "3,2017,10,1,\"測試帳3\",0,300,\"\",0" );
         List<String> actualDataList = new ArrayList<String>();
         
         try {
@@ -276,9 +276,10 @@ public class IncomeRecordDAOImplTests extends TestCase {
         testData.setMonth( 10 );
         testData.setDay( 1 );
         testData.setItem( "測試帳" );
-        testData.setSubclass( '\0' );
+        testData.setClassNo( 0 );
         testData.setAmount( 100 );
         testData.setDescription( "" );
+        testData.setOrderNo( 0 );
         return testData;
     }
     

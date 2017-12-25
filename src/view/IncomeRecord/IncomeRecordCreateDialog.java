@@ -293,7 +293,7 @@ public class IncomeRecordCreateDialog extends JDialog {
             incomeRecord.setMonth( Integer.parseInt( monthTextField.getText() ) );
             incomeRecord.setDay( Integer.parseInt( dayTextField.getText() ) );
             incomeRecord.setItem( itemTextField.getText() );
-            incomeRecord.setSubclass( '\0' );
+            incomeRecord.setClassNo( 0 );
             if( incomeRadioButton.isSelected() ) {
                 incomeRecord.setAmount( Integer.parseInt( amountTextField.getText() ) );
             } else {
@@ -304,6 +304,7 @@ public class IncomeRecordCreateDialog extends JDialog {
             } else {
                 incomeRecord.setDescription( descriptionTextArea.getText() );
             }
+            incomeRecord.setOrderNo( 0 );
             
             returnCode = incomeRecordService.insert( incomeRecord );
         } catch ( Exception e ) {

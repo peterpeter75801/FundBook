@@ -4,7 +4,7 @@ import domain.IncomeRecord;
 
 public class IncomeRecordUtil {
     
-    private final static int ATTRIBUTE_NUMBER = 8;
+    private final static int ATTRIBUTE_NUMBER = 9;
     
     public static IncomeRecord getIncomeRecordFromCsvTupleString( String tuple ) throws Exception {
         String[] csvDataArray = CsvFormatParser.parseFromTuple( tuple );
@@ -14,9 +14,10 @@ public class IncomeRecordUtil {
         incomeRecord.setMonth( Integer.parseInt( csvDataArray[ 2 ] ) );
         incomeRecord.setDay( Integer.parseInt( csvDataArray[ 3 ] ) );
         incomeRecord.setItem( csvDataArray[ 4 ] );
-        incomeRecord.setSubclass( (csvDataArray[ 5 ].length() <= 0) ? '\0' : csvDataArray[ 5 ].charAt( 0 ) );
+        incomeRecord.setClassNo( Integer.parseInt( csvDataArray[ 5 ] ) );
         incomeRecord.setAmount( Integer.parseInt( csvDataArray[ 6 ] ) );
         incomeRecord.setDescription( csvDataArray[ 7 ] );
+        incomeRecord.setOrderNo( Integer.parseInt( csvDataArray[ 8 ] ) );
         return incomeRecord;
     }
     
@@ -27,9 +28,10 @@ public class IncomeRecordUtil {
         csvDataArray[ 2 ] = CsvFormatParser.toCsvData( incomeRecord.getMonth() );
         csvDataArray[ 3 ] = CsvFormatParser.toCsvData( incomeRecord.getDay() );
         csvDataArray[ 4 ] = CsvFormatParser.toCsvData( incomeRecord.getItem() );
-        csvDataArray[ 5 ] = CsvFormatParser.toCsvData( incomeRecord.getSubclass() );
+        csvDataArray[ 5 ] = CsvFormatParser.toCsvData( incomeRecord.getClassNo() );
         csvDataArray[ 6 ] = CsvFormatParser.toCsvData( incomeRecord.getAmount() );
         csvDataArray[ 7 ] = CsvFormatParser.toCsvData( incomeRecord.getDescription() );
+        csvDataArray[ 8 ] = CsvFormatParser.toCsvData( incomeRecord.getOrderNo() );
         return CsvFormatParser.mergeCsvDataToATuple( csvDataArray );
     }
     
@@ -51,9 +53,10 @@ public class IncomeRecordUtil {
             clone.setMonth( incomeRecord.getMonth() );
             clone.setDay( incomeRecord.getDay() );
             clone.setItem( incomeRecord.getItem() );
-            clone.setSubclass( incomeRecord.getSubclass() );
+            clone.setClassNo( incomeRecord.getClassNo() );
             clone.setAmount( incomeRecord.getAmount() );
             clone.setDescription( incomeRecord.getDescription() );
+            clone.setOrderNo( incomeRecord.getOrderNo() );
             return clone;
         }
     }
@@ -73,11 +76,13 @@ public class IncomeRecordUtil {
             return false;
         } else if( ComparingUtil.compare( data1.getItem(), data2.getItem() ) != 0 ) {
             return false;
-        } else if( ComparingUtil.compare( data1.getSubclass(), data2.getSubclass() ) != 0 ) {
+        } else if( ComparingUtil.compare( data1.getClassNo(), data2.getClassNo() ) != 0 ) {
             return false;
         } else if( ComparingUtil.compare( data1.getAmount(), data2.getAmount() ) != 0 ) {
             return false;
         } else if( ComparingUtil.compare( data1.getDescription(), data2.getDescription() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getOrderNo(), data2.getOrderNo() ) != 0 ) {
             return false;
         } else {
             return true;

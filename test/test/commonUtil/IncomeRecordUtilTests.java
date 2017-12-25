@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 public class IncomeRecordUtilTests extends TestCase {
     
     public void testGetIncomeRecordFromCsvTupleString() {
-        String input = "1,2017,10,1,\"測試帳\",,100,\"\"";
+        String input = "1,2017,10,1,\"測試帳\",0,100,\"\",0";
         IncomeRecord expect = getTestData1();
         IncomeRecord actual = null;
         try {
@@ -20,7 +20,7 @@ public class IncomeRecordUtilTests extends TestCase {
     
     public void testGetCsvTupleStringFromIncomeRecord() {
         IncomeRecord input = getTestData1();
-        String expect = "1,2017,10,1,\"測試帳\",,100,\"\"";
+        String expect = "1,2017,10,1,\"測試帳\",0,100,\"\",0";
         String actual = "";
         try {
             actual = IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( input );
@@ -63,9 +63,10 @@ public class IncomeRecordUtilTests extends TestCase {
         testData.setMonth( 10 );
         testData.setDay( 1 );
         testData.setItem( "測試帳" );
-        testData.setSubclass( '\0' );
+        testData.setClassNo( 0 );
         testData.setAmount( 100 );
         testData.setDescription( "" );
+        testData.setOrderNo( 0 );
         return testData;
     }
 }

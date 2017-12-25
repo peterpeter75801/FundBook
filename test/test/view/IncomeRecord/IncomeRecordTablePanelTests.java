@@ -157,9 +157,10 @@ public class IncomeRecordTablePanelTests extends TestCase {
         testData.setMonth( calendar.get( Calendar.MONTH ) + 1 );
         testData.setDay( 1 );
         testData.setItem( "測試帳" );
-        testData.setSubclass( '\0' );
+        testData.setClassNo( 0 );
         testData.setAmount( 100 );
         testData.setDescription( "" );
+        testData.setOrderNo( 0 );
         return testData;
     }
     
@@ -170,9 +171,10 @@ public class IncomeRecordTablePanelTests extends TestCase {
         testData.setMonth( 10 );
         testData.setDay( 1 );
         testData.setItem( "測試帳" );
-        testData.setSubclass( '\0' );
+        testData.setClassNo( 0 );
         testData.setAmount( 100 );
         testData.setDescription( "" );
+        testData.setOrderNo( 0 );
         return testData;
     }
     
