@@ -28,6 +28,7 @@ public class IncomeRecordPanel extends JPanel {
     private IncomeRecordDatePanel incomeRecordDatePanel; 
     private IncomeRecordTablePanel incomeRecordTablePanel;
     private IncomeRecordCreateDialog incomeRecordCreateDialog;
+    private IncomeRecordUpdateDialog incomeRecordUpdateDialog;
     
     private JLabel testLabel;
     private Font generalFont;
@@ -65,6 +66,7 @@ public class IncomeRecordPanel extends JPanel {
         incomeRecordTablePanel.loadIncomeRecordOfCurrentMonth();
         
         incomeRecordCreateDialog = new IncomeRecordCreateDialog( fundBookServices.getIncomeRecordService(), ownerFrame );
+        incomeRecordUpdateDialog = new IncomeRecordUpdateDialog( fundBookServices.getIncomeRecordService(), ownerFrame );
         
         createButton = new JButton( "新增(C)" );
         createButton.setBounds( 717, 32, 64, 22 );
@@ -82,6 +84,12 @@ public class IncomeRecordPanel extends JPanel {
         updateButton.setBounds( 717, 76, 64, 22 );
         updateButton.setFont( generalFont );
         updateButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        updateButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                incomeRecordUpdateDialog.openDialog();
+            }
+        });
         add( updateButton );
         
         deleteButton = new JButton( "刪除(D)" );
