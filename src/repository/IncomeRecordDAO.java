@@ -17,4 +17,14 @@ public interface IncomeRecordDAO {
     public boolean delete( IncomeRecord incomeRecord, int indexYear, int indexMonth ) throws Exception;
     
     public int getCurrentSeqNumber() throws Exception;
+    
+    public boolean refreshOrderNo( int year, int month ) throws Exception;
+    
+    public int getCount( int year, int month ) throws Exception;
+    
+    public boolean moveUp( int year, int month, int orderNo ) throws Exception;
+    
+    public boolean moveDown( int year, int month, int orderNo ) throws Exception;
+    
+    public boolean sort( int year, int month ) throws Exception;
 }

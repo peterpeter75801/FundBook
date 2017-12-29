@@ -14,6 +14,7 @@ public class Contants {
     public static final int ERROR_EMPTY_FILE = -9;
     public static final int ERROR_EMPTY_NECESSARY_PARAMETER = -10;
     public static final int DUPLICATE_DATA = -3;
+    public static final int NO_DATA_MODIFIED = -11;
     
     // Storage Configurations
     public static final String FILE_CHARSET = "big5";

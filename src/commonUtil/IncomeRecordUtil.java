@@ -1,5 +1,7 @@
 package commonUtil;
 
+import java.util.List;
+
 import domain.IncomeRecord;
 
 public class IncomeRecordUtil {
@@ -41,6 +43,38 @@ public class IncomeRecordUtil {
     
     public static String getIncomeRecordCsvFileName( int year, int month ) {
         return String.format( "%04d.%02d.csv", year, month );
+    }
+    
+    public static List<IncomeRecord> sortById( List<IncomeRecord> incomeRecordList ) {
+        if( incomeRecordList == null ) {
+            return incomeRecordList;
+        }
+        for( int i = 1; i < incomeRecordList.size(); i++ ) {
+            for( int j = 0; j < incomeRecordList.size() - 1; j++ ) {
+                if( incomeRecordList.get( j ).getId() > incomeRecordList.get( j + 1 ).getId() ) {
+                    IncomeRecord swap = incomeRecordList.get( j );
+                    incomeRecordList.set( j, incomeRecordList.get( j + 1 ) );
+                    incomeRecordList.set( j + 1, swap );
+                }
+            }
+        }
+        return incomeRecordList;
+    }
+    
+    public static List<IncomeRecord> sortByDay( List<IncomeRecord> incomeRecordList ) {
+        if( incomeRecordList == null ) {
+            return incomeRecordList;
+        }
+        for( int i = 1; i < incomeRecordList.size(); i++ ) {
+            for( int j = 0; j < incomeRecordList.size() - 1; j++ ) {
+                if( incomeRecordList.get( j ).getDay() > incomeRecordList.get( j + 1 ).getDay() ) {
+                    IncomeRecord swap = incomeRecordList.get( j );
+                    incomeRecordList.set( j, incomeRecordList.get( j + 1 ) );
+                    incomeRecordList.set( j + 1, swap );
+                }
+            }
+        }
+        return incomeRecordList;
     }
     
     public static IncomeRecord copy( IncomeRecord incomeRecord ) {

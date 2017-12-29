@@ -8,21 +8,25 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import common.Contants;
 import main.FundBookServices;
+import service.IncomeRecordService;
 import view.MainFrame;
 
 public class IncomeRecordPanel extends JPanel {
     
     private static final long serialVersionUID = 1L;
     
+    private IncomeRecordService incomeRecordService;
+    
+    private MainFrame ownerFrame;
     private IncomeRecordDatePanel incomeRecordDatePanel; 
     private IncomeRecordTablePanel incomeRecordTablePanel;
-    
     private IncomeRecordCreateDialog incomeRecordCreateDialog;
     
     private JLabel testLabel;
@@ -32,6 +36,7 @@ public class IncomeRecordPanel extends JPanel {
     private JButton deleteButton;
     private JButton moveUpButton;
     private JButton moveDownButton;
+    private JButton sortButton;
     private JButton detailButton;
     private JLabel incomeStateInCurrentMonthLabel;
     private JTextField incomeStateInCurrentMonthTextField;
@@ -42,7 +47,11 @@ public class IncomeRecordPanel extends JPanel {
     public IncomeRecordPanel( FundBookServices fundBookServices, MainFrame ownerFrame ) {
         setLayout( null );
         
+        incomeRecordService = fundBookServices.getIncomeRecordService();
+        
         generalFont = new Font( "細明體", Font.PLAIN, 16 );
+        
+        this.ownerFrame = ownerFrame;
         
         incomeRecordDatePanel = new IncomeRecordDatePanel( fundBookServices, this );
         incomeRecordDatePanel.setBounds( 0, 0, 120, 479 );
@@ -64,11 +73,64 @@ public class IncomeRecordPanel extends JPanel {
         createButton.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed( ActionEvent event ) {
-                // incomeRecordCreateDialog.openDialog();
                 openIncomeRecordCreateDialog();
             }
         });
         add( createButton );
+        
+        updateButton = new JButton( "修改(U)" );
+        updateButton.setBounds( 717, 76, 64, 22 );
+        updateButton.setFont( generalFont );
+        updateButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        add( updateButton );
+        
+        deleteButton = new JButton( "刪除(D)" );
+        deleteButton.setBounds( 717, 120, 64, 22 );
+        deleteButton.setFont( generalFont );
+        deleteButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        add( deleteButton );
+        
+        moveUpButton = new JButton( "上移(P)" );
+        moveUpButton.setBounds( 717, 164, 64, 22 );
+        moveUpButton.setFont( generalFont );
+        moveUpButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        moveUpButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                moveUpIncomeRecordData();
+            }
+        });
+        add( moveUpButton );
+        
+        moveDownButton = new JButton( "下移(N)" );
+        moveDownButton.setBounds( 717, 208, 64, 22 );
+        moveDownButton.setFont( generalFont );
+        moveDownButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        moveDownButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                moveDownIncomeRecordData();
+            }
+        });
+        add( moveDownButton );
+        
+        sortButton = new JButton( "排序(S)" );
+        sortButton.setBounds( 717, 252, 64, 22 );
+        sortButton.setFont( generalFont );
+        sortButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        sortButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                sortIncomeRecordData();
+            }
+        });
+        add( sortButton );
+        
+        detailButton = new JButton( "詳細(R)" );
+        detailButton.setBounds( 717, 296, 64, 22 );
+        detailButton.setFont( generalFont );
+        detailButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        add( detailButton );
         
         incomeStateInCurrentMonthLabel = new JLabel( "本月收支狀況(收入-支出): " );
         incomeStateInCurrentMonthLabel.setBounds( 16, 479, 200, 22 );
@@ -120,5 +182,99 @@ public class IncomeRecordPanel extends JPanel {
             selectedMonth = 1;
         }
         incomeRecordCreateDialog.openDialog( selectedYear, selectedMonth );
+    }
+    
+    private void moveUpIncomeRecordData() {
+        int selectedYear, selectedMonth;
+        int selectedIndex = incomeRecordTablePanel.getDataTable().getSelectedRow();
+        int status = Contants.SUCCESS;
+        
+        String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
+        try {
+            selectedYear = Integer.parseInt( selectedMonthString.substring( 0, 4 ) );
+            selectedMonth = Integer.parseInt( selectedMonthString.substring( 5, 7 ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            return;
+        }
+        
+        try {
+            status = incomeRecordService.moveUp( selectedYear, selectedMonth, selectedIndex + 1 );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            status = Contants.ERROR;
+        }
+        
+        if( status == Contants.SUCCESS ) {
+            reselectDateList();
+            incomeRecordTablePanel.getDataTable().setRowSelectionInterval( selectedIndex - 1, selectedIndex - 1 );
+        } else if( status == Contants.NO_DATA_MODIFIED ) {
+            incomeRecordTablePanel.getDataTable().setRowSelectionInterval( selectedIndex, selectedIndex );
+        } else {
+            JOptionPane.showMessageDialog( ownerFrame, "移動帳目發生錯誤", "Error", JOptionPane.ERROR_MESSAGE );
+        }
+    }
+    
+    private void moveDownIncomeRecordData() {
+        int selectedYear, selectedMonth;
+        int selectedIndex = incomeRecordTablePanel.getDataTable().getSelectedRow();
+        int status = Contants.SUCCESS;
+        
+        String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
+        try {
+            selectedYear = Integer.parseInt( selectedMonthString.substring( 0, 4 ) );
+            selectedMonth = Integer.parseInt( selectedMonthString.substring( 5, 7 ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            return;
+        }
+        
+        try {
+            status = incomeRecordService.moveDown( selectedYear, selectedMonth, selectedIndex + 1 );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            status = Contants.ERROR;
+        }
+        
+        if( status == Contants.SUCCESS ) {
+            reselectDateList();
+            incomeRecordTablePanel.getDataTable().setRowSelectionInterval( selectedIndex + 1, selectedIndex + 1 );
+        } else if( status == Contants.NO_DATA_MODIFIED ) {
+            incomeRecordTablePanel.getDataTable().setRowSelectionInterval( selectedIndex, selectedIndex );
+        } else {
+            JOptionPane.showMessageDialog( ownerFrame, "移動帳目發生錯誤", "Error", JOptionPane.ERROR_MESSAGE );
+        }
+    }
+    
+    private void sortIncomeRecordData() {
+        int selectedYear, selectedMonth;
+        int selectedIndex = incomeRecordTablePanel.getDataTable().getSelectedRow();
+        int status = Contants.SUCCESS;
+        
+        String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
+        try {
+            selectedYear = Integer.parseInt( selectedMonthString.substring( 0, 4 ) );
+            selectedMonth = Integer.parseInt( selectedMonthString.substring( 5, 7 ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            return;
+        }
+        
+        try {
+            status = incomeRecordService.sort( selectedYear, selectedMonth );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            status = Contants.ERROR;
+        }
+        
+        if( status == Contants.SUCCESS ) {
+            reselectDateList();
+        } else {
+            JOptionPane.showMessageDialog( ownerFrame, "排序帳目發生錯誤", "Error", JOptionPane.ERROR_MESSAGE );
+            return;
+        }
+        if( selectedIndex >= 0 ) {
+            incomeRecordTablePanel.getDataTable().setRowSelectionInterval( selectedIndex, selectedIndex );
+        }
     }
 }

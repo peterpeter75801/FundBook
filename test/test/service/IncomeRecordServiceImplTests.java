@@ -31,6 +31,7 @@ public class IncomeRecordServiceImplTests extends TestCase {
             incomeRecord.setId( i );
             incomeRecord.setItem( getTestData1().getItem() + i );
             incomeRecord.setAmount( i * 100 );
+            incomeRecord.setOrderNo( i );
             expectDataList.add( incomeRecord );
         }
         
@@ -67,6 +68,7 @@ public class IncomeRecordServiceImplTests extends TestCase {
         expect.setId( 2 );
         expect.setItem( getTestData1().getItem() + 2 );
         expect.setAmount( 200 );
+        expect.setOrderNo( 2 );
         
         try {
             backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
@@ -103,6 +105,7 @@ public class IncomeRecordServiceImplTests extends TestCase {
             if( i == 3 ) {
                 incomeRecord.setItem( "test123" );
             }
+            incomeRecord.setOrderNo( i );
             expectDataList.add( incomeRecord );
         }
         
@@ -148,6 +151,7 @@ public class IncomeRecordServiceImplTests extends TestCase {
                 incomeRecord.setId( i );
                 incomeRecord.setItem( getTestData1().getItem() + i );
                 incomeRecord.setAmount( i * 100 );
+                incomeRecord.setOrderNo( i - 1 );
                 expectDataList.add( incomeRecord );
             }
         }
@@ -181,6 +185,155 @@ public class IncomeRecordServiceImplTests extends TestCase {
         }
     }
     
+    public void testMoveUp() throws IOException {
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
+        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( incomeRecordDAO );
+        
+        List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
+        for( int i = 1; i <= 5; i++ ) {
+            IncomeRecord incomeRecord = getTestData1();
+            if( i == 3 ) {
+                incomeRecord.setId( 5 );
+                incomeRecord.setItem( getTestData1().getItem() + 5 );
+                incomeRecord.setAmount( 500 );
+            } else if( i == 4 || i == 5 ) {
+                incomeRecord.setId( i - 1 );
+                incomeRecord.setItem( getTestData1().getItem() + (i - 1) );
+                incomeRecord.setAmount( (i - 1) * 100 );
+            } else {
+                incomeRecord.setId( i );
+                incomeRecord.setItem( getTestData1().getItem() + i );
+                incomeRecord.setAmount( i * 100 );
+            }
+            incomeRecord.setOrderNo( i );
+            expectDataList.add( incomeRecord );
+        }
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            for( int i = 1; i <= 5; i++ ) {
+                IncomeRecord incomeRecord = getTestData1();
+                incomeRecord.setItem( getTestData1().getItem() + i );
+                incomeRecord.setAmount( i * 100 );
+                incomeRecordService.insert( incomeRecord );
+            }
+            
+            incomeRecordService.moveUp( 2017, 10, 1 );
+            incomeRecordService.moveUp( 2017, 10, 5 );
+            incomeRecordService.moveUp( 2017, 10, 4 );
+            
+            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData1().getYear(), getTestData1().getMonth() );
+            assertEquals( expectDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectDataList.size(); i++ ) {
+                assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
+    public void testMoveDown() throws IOException {
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
+        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( incomeRecordDAO );
+        
+        List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
+        for( int i = 1; i <= 3; i++ ) {
+            IncomeRecord incomeRecord = getTestData1();
+            if( i == 1 ) {
+                incomeRecord.setId( 2 );
+                incomeRecord.setItem( getTestData1().getItem() + 2 );
+                incomeRecord.setAmount( 2 * 100 );
+            } else if( i == 2 ) {
+                incomeRecord.setId( 1 );
+                incomeRecord.setItem( getTestData1().getItem() + 1 );
+                incomeRecord.setAmount( 1 * 100 );
+            } else {
+                incomeRecord.setId( i );
+                incomeRecord.setItem( getTestData1().getItem() + i );
+                incomeRecord.setAmount( i * 100 );
+            }
+            incomeRecord.setOrderNo( i );
+            expectDataList.add( incomeRecord );
+        }
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            for( int i = 1; i <= 3; i++ ) {
+                IncomeRecord incomeRecord = getTestData1();
+                incomeRecord.setItem( getTestData1().getItem() + i );
+                incomeRecord.setAmount( i * 100 );
+                incomeRecordService.insert( incomeRecord );
+            }
+            
+            incomeRecordService.moveDown( 2017, 10, 1 );
+            
+            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData1().getYear(), getTestData1().getMonth() );
+            assertEquals( expectDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectDataList.size(); i++ ) {
+                assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
+    public void testSort() throws IOException {
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
+        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( incomeRecordDAO );
+        
+        List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
+        expectDataList.add( getTestData1() );
+        expectDataList.get( expectDataList.size() - 1 ).setId( 1 );
+        expectDataList.add( getTestData3() );
+        expectDataList.get( expectDataList.size() - 1 ).setId( 3 );
+        expectDataList.add( getTestData4() );
+        expectDataList.get( expectDataList.size() - 1 ).setId( 4 );
+        expectDataList.add( getTestData2() );
+        expectDataList.get( expectDataList.size() - 1 ).setId( 2 );
+        expectDataList.add( getTestData5() );
+        expectDataList.get( expectDataList.size() - 1 ).setId( 5 );
+        for( int i = 0; i < expectDataList.size(); i++ ) {
+            expectDataList.get( i ).setOrderNo( i + 1 );
+        }
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            incomeRecordService.insert( getTestData1() );
+            incomeRecordService.insert( getTestData2() );
+            incomeRecordService.insert( getTestData3() );
+            incomeRecordService.insert( getTestData4() );
+            incomeRecordService.insert( getTestData5() );
+            
+            incomeRecordService.sort( 2017, 10 );
+            
+            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData1().getYear(), getTestData1().getMonth() );
+            assertEquals( expectDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectDataList.size(); i++ ) {
+                assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
     private IncomeRecord getTestData1() {
         IncomeRecord testData = new IncomeRecord();
         testData.setId( 0 );
@@ -190,6 +343,62 @@ public class IncomeRecordServiceImplTests extends TestCase {
         testData.setItem( "測試帳" );
         testData.setClassNo( 0 );
         testData.setAmount( 100 );
+        testData.setDescription( "" );
+        testData.setOrderNo( 0 );
+        return testData;
+    }
+    
+    private IncomeRecord getTestData2() {
+        IncomeRecord testData = new IncomeRecord();
+        testData.setId( 0 );
+        testData.setYear( 2017 );
+        testData.setMonth( 10 );
+        testData.setDay( 2 );
+        testData.setItem( "測試帳" );
+        testData.setClassNo( 0 );
+        testData.setAmount( 200 );
+        testData.setDescription( "" );
+        testData.setOrderNo( 0 );
+        return testData;
+    }
+    
+    private IncomeRecord getTestData3() {
+        IncomeRecord testData = new IncomeRecord();
+        testData.setId( 0 );
+        testData.setYear( 2017 );
+        testData.setMonth( 10 );
+        testData.setDay( 1 );
+        testData.setItem( "測試帳" );
+        testData.setClassNo( 0 );
+        testData.setAmount( 300 );
+        testData.setDescription( "" );
+        testData.setOrderNo( 0 );
+        return testData;
+    }
+    
+    private IncomeRecord getTestData4() {
+        IncomeRecord testData = new IncomeRecord();
+        testData.setId( 0 );
+        testData.setYear( 2017 );
+        testData.setMonth( 10 );
+        testData.setDay( 1 );
+        testData.setItem( "測試帳" );
+        testData.setClassNo( 0 );
+        testData.setAmount( 400 );
+        testData.setDescription( "" );
+        testData.setOrderNo( 0 );
+        return testData;
+    }
+    
+    private IncomeRecord getTestData5() {
+        IncomeRecord testData = new IncomeRecord();
+        testData.setId( 0 );
+        testData.setYear( 2017 );
+        testData.setMonth( 10 );
+        testData.setDay( 2 );
+        testData.setItem( "測試帳" );
+        testData.setClassNo( 0 );
+        testData.setAmount( 500 );
         testData.setDescription( "" );
         testData.setOrderNo( 0 );
         return testData;

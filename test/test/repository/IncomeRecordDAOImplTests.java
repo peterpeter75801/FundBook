@@ -269,6 +269,229 @@ public class IncomeRecordDAOImplTests extends TestCase {
         }
     }
     
+    public void testRefreshOrderNo() throws IOException {
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
+        List<String> expectedDataList = new ArrayList<String>();
+        expectedDataList.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",1" );
+        expectedDataList.add( "2,2017,10,1,\"測試帳2\",0,200,\"\",2" );
+        expectedDataList.add( "3,2017,10,1,\"測試帳3\",0,300,\"\",3" );
+        List<String> actualDataList = new ArrayList<String>();
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            for( int i = 1; i <= 3; i++ ) {
+                IncomeRecord incomeRecord = getTestData1();
+                incomeRecord.setItem( "測試帳" + i );
+                incomeRecord.setAmount( 100 * i );
+                incomeRecordDAO.insert( incomeRecord );
+            }
+            
+            incomeRecordDAO.refreshOrderNo( 2017, 10 );
+            
+            BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                    new FileInputStream( new File( INCOME_RECORD_CSV_FILE_PATH ) ),
+                    FILE_CHARSET
+                )
+            );
+            bufReader.readLine();    // skip attribute titles
+            
+            String currentTuple = "";
+            while( (currentTuple = bufReader.readLine()) != null ){
+                actualDataList.add( currentTuple );
+            }
+            bufReader.close();
+            
+            assertEquals( expectedDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectedDataList.size(); i++ ) {
+                assertEquals( "failed at i = " + i, expectedDataList.get( i ), actualDataList.get( i ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
+    public void testGetCount() throws IOException {
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
+        int expect = 3;
+        int actual = 0;
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            for( int i = 1; i <= 3; i++ ) {
+                IncomeRecord incomeRecord = getTestData1();
+                incomeRecord.setItem( "測試帳" + i );
+                incomeRecord.setAmount( 100 * i );
+                incomeRecordDAO.insert( incomeRecord );
+            }
+            
+            actual = incomeRecordDAO.getCount( 2017, 10 );
+            assertEquals( expect, actual );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
+    public void testMoveUp() throws IOException {
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
+        List<String> expectedDataList = new ArrayList<String>();
+        expectedDataList.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",1" );
+        expectedDataList.add( "3,2017,10,1,\"測試帳3\",0,300,\"\",3" );
+        expectedDataList.add( "2,2017,10,1,\"測試帳2\",0,200,\"\",2" );
+        List<String> actualDataList = new ArrayList<String>();
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            for( int i = 1; i <= 3; i++ ) {
+                IncomeRecord incomeRecord = getTestData1();
+                incomeRecord.setItem( "測試帳" + i );
+                incomeRecord.setAmount( 100 * i );
+                incomeRecord.setOrderNo( i );
+                incomeRecordDAO.insert( incomeRecord );
+            }
+            
+            incomeRecordDAO.moveUp( 2017, 10, 3 );
+            
+            BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                    new FileInputStream( new File( INCOME_RECORD_CSV_FILE_PATH ) ),
+                    FILE_CHARSET
+                )
+            );
+            bufReader.readLine();    // skip attribute titles
+            
+            String currentTuple = "";
+            while( (currentTuple = bufReader.readLine()) != null ){
+                actualDataList.add( currentTuple );
+            }
+            bufReader.close();
+            
+            assertEquals( expectedDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectedDataList.size(); i++ ) {
+                assertEquals( "failed at i = " + i, expectedDataList.get( i ), actualDataList.get( i ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
+    public void testMoveDown() throws IOException {
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
+        List<String> expectedDataList = new ArrayList<String>();
+        expectedDataList.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",1" );
+        expectedDataList.add( "3,2017,10,1,\"測試帳3\",0,300,\"\",3" );
+        expectedDataList.add( "2,2017,10,1,\"測試帳2\",0,200,\"\",2" );
+        List<String> actualDataList = new ArrayList<String>();
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            for( int i = 1; i <= 3; i++ ) {
+                IncomeRecord incomeRecord = getTestData1();
+                incomeRecord.setItem( "測試帳" + i );
+                incomeRecord.setAmount( 100 * i );
+                incomeRecord.setOrderNo( i );
+                incomeRecordDAO.insert( incomeRecord );
+            }
+            
+            incomeRecordDAO.moveDown( 2017, 10, 2 );
+            
+            BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                    new FileInputStream( new File( INCOME_RECORD_CSV_FILE_PATH ) ),
+                    FILE_CHARSET
+                )
+            );
+            bufReader.readLine();    // skip attribute titles
+            
+            String currentTuple = "";
+            while( (currentTuple = bufReader.readLine()) != null ){
+                actualDataList.add( currentTuple );
+            }
+            bufReader.close();
+            
+            assertEquals( expectedDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectedDataList.size(); i++ ) {
+                assertEquals( "failed at i = " + i, expectedDataList.get( i ), actualDataList.get( i ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
+    public void testSort() throws IOException {
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
+        List<String> expectedDataList = new ArrayList<String>();
+        expectedDataList.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",1" );
+        expectedDataList.add( "3,2017,10,1,\"測試帳3\",0,300,\"\",3" );
+        expectedDataList.add( "4,2017,10,1,\"測試帳4\",0,400,\"\",4" );
+        expectedDataList.add( "2,2017,10,2,\"測試帳2\",0,200,\"\",2" );
+        expectedDataList.add( "5,2017,10,2,\"測試帳5\",0,500,\"\",5" );
+        List<String> actualDataList = new ArrayList<String>();
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            for( int i = 1; i <= 5; i++ ) {
+                IncomeRecord incomeRecord = getTestData1();
+                if( i == 2 || i == 5 ) {
+                    incomeRecord.setDay( 2 );
+                }
+                incomeRecord.setItem( "測試帳" + i );
+                incomeRecord.setAmount( 100 * i );
+                incomeRecord.setOrderNo( i );
+                incomeRecordDAO.insert( incomeRecord );
+            }
+            
+            incomeRecordDAO.sort( 2017, 10 );
+            
+            BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                    new FileInputStream( new File( INCOME_RECORD_CSV_FILE_PATH ) ),
+                    FILE_CHARSET
+                )
+            );
+            bufReader.readLine();    // skip attribute titles
+            
+            String currentTuple = "";
+            while( (currentTuple = bufReader.readLine()) != null ){
+                actualDataList.add( currentTuple );
+            }
+            bufReader.close();
+            
+            assertEquals( expectedDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectedDataList.size(); i++ ) {
+                assertEquals( "failed at i = " + i, expectedDataList.get( i ), actualDataList.get( i ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
     private IncomeRecord getTestData1() {
         IncomeRecord testData = new IncomeRecord();
         testData.setId( 0 );

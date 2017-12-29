@@ -1,3 +1,7 @@
+---- version 0.0.9-pre ----
+1. Add IncomeRecord item moving up and moving down feature for IncomeRecord's screen displaying.
+2. Add IncomeRecord item sorting feature for IncomeRecord's screen displaying.
+
 ---- version 0.0.8-pre ----
 1. Change "subclass" column in IncomeRecord domain to "classNo", and change the column type from Character to Integer.
 2. Add "orderNo" column in IncomeRecord domain.

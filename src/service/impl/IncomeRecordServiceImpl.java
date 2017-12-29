@@ -31,6 +31,10 @@ public class IncomeRecordServiceImpl implements IncomeRecordService {
         if( !returnCode ) {
             return Contants.ERROR;
         }
+        returnCode = incomeRecordDAO.refreshOrderNo( incomeRecord.getYear(), incomeRecord.getMonth() );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
                 
         return Contants.SUCCESS;
     }
@@ -61,9 +65,13 @@ public class IncomeRecordServiceImpl implements IncomeRecordService {
         returnCode = incomeRecordDAO.update( incomeRecord, incomeRecord.getYear(), incomeRecord.getMonth() );
         if( !returnCode ) {
             return Contants.ERROR;
-        } else {
-            return Contants.SUCCESS;
         }
+        returnCode = incomeRecordDAO.refreshOrderNo( incomeRecord.getYear(), incomeRecord.getMonth() );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        return Contants.SUCCESS;
     }
 
     @Override
@@ -81,9 +89,70 @@ public class IncomeRecordServiceImpl implements IncomeRecordService {
         returnCode = incomeRecordDAO.delete( incomeRecord, incomeRecord.getYear(), incomeRecord.getMonth() );
         if( !returnCode ) {
             return Contants.ERROR;
-        } else {
-            return Contants.SUCCESS;
         }
+        returnCode = incomeRecordDAO.refreshOrderNo( incomeRecord.getYear(), incomeRecord.getMonth() );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        return Contants.SUCCESS;
+    }
+
+    @Override
+    public int moveUp( int year, int month, int orderNo ) throws Exception {
+        boolean returnCode;
+        
+        if( orderNo <= 1 ) {
+            return Contants.NO_DATA_MODIFIED;
+        }
+        
+        returnCode = incomeRecordDAO.moveUp( year, month, orderNo );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        returnCode = incomeRecordDAO.refreshOrderNo( year, month );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        return Contants.SUCCESS;
+    }
+
+    @Override
+    public int moveDown( int year, int month, int orderNo ) throws Exception {
+        int count = incomeRecordDAO.getCount( year, month );
+        boolean returnCode;
+        
+        if( orderNo >= count ) {
+            return Contants.NO_DATA_MODIFIED;
+        }
+        
+        returnCode = incomeRecordDAO.moveDown( year, month, orderNo );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        returnCode = incomeRecordDAO.refreshOrderNo( year, month );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        return Contants.SUCCESS;
+    }
+
+    @Override
+    public int sort( int year, int month ) throws Exception {
+        boolean returnCode;
+        
+        returnCode = incomeRecordDAO.sort( year, month );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        returnCode = incomeRecordDAO.refreshOrderNo( year, month );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        return Contants.SUCCESS;
     }
 
 }

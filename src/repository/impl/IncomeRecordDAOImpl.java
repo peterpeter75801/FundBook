@@ -251,6 +251,51 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         
         return currentSeqNumber;
     }
+
+    @Override
+    public boolean refreshOrderNo( int year, int month ) throws Exception {
+        String csvFilePath = Contants.INCOME_RECORD_DATA_PATH + 
+                IncomeRecordUtil.getIncomeRecordCsvFileName( year, month );
+        if( !checkIfFileExists( csvFilePath ) ) {
+            return false;
+        }
+        
+        ArrayList<String> fileContentBuffer = new ArrayList<String>();
+        String currentTuple = "";
+        IncomeRecord currentIncomeRecord = new IncomeRecord();
+        
+        BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                new FileInputStream( new File( csvFilePath ) ),
+                Contants.FILE_CHARSET
+            )
+        );
+        // read attribute titles
+        fileContentBuffer.add( bufReader.readLine() );
+        // read data & refresh order number
+        int currentOrderNumber = 1;
+        while( (currentTuple = bufReader.readLine()) != null ) {
+            currentIncomeRecord = IncomeRecordUtil.getIncomeRecordFromCsvTupleString( currentTuple );
+            currentIncomeRecord.setOrderNo( currentOrderNumber );
+            fileContentBuffer.add( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( currentIncomeRecord ) );
+            currentOrderNumber++;
+        }
+        bufReader.close();
+        
+        // write file content buffer to CSV data file
+        BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream( new File( csvFilePath ), false ),
+                    Contants.FILE_CHARSET
+                )
+            );
+        for( String content : fileContentBuffer ) {
+            writer.write( content );
+            writer.newLine();
+        }
+        writer.close();
+        
+        return true;
+    }
     
     private boolean checkIfFileExists( String fileName ) {
         File f = new File( fileName );
@@ -292,5 +337,191 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         bufWriter.write( Contants.INITIAL_SEQ_NUMBER );
         bufWriter.newLine();
         bufWriter.close();
+    }
+
+    @Override
+    public int getCount( int year, int month ) throws Exception {
+        String csvFilePath = Contants.INCOME_RECORD_DATA_PATH + 
+                IncomeRecordUtil.getIncomeRecordCsvFileName( year, month );
+        int count = 0;
+        
+        if( !checkIfFileExists( csvFilePath ) ) {
+            return count;
+        }
+        
+        String currentTuple = "";
+        BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                new FileInputStream( new File( csvFilePath ) ),
+                Contants.FILE_CHARSET
+            )
+        );
+        // read attribute titles
+        bufReader.readLine();
+        // compute data count
+        while( (currentTuple = bufReader.readLine()) != null ) {
+            if( currentTuple.length() > 0 ) {
+                count++;
+            }
+        }
+        bufReader.close();
+        
+        return count;
+    }
+
+    @Override
+    public boolean moveUp( int year, int month, int orderNo ) throws Exception {
+        String csvFilePath = Contants.INCOME_RECORD_DATA_PATH + 
+                IncomeRecordUtil.getIncomeRecordCsvFileName( year, month );
+        if( !checkIfFileExists( csvFilePath ) ) {
+            return false;
+        }
+        
+        ArrayList<String> fileContentBuffer = new ArrayList<String>();
+        String currentTuple = "";
+        IncomeRecord currentIncomeRecord = new IncomeRecord();
+        IncomeRecord swap = null;
+        
+        BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                new FileInputStream( new File( csvFilePath ) ),
+                Contants.FILE_CHARSET
+            )
+        );
+        // read attribute titles
+        fileContentBuffer.add( bufReader.readLine() );
+        // read data & refresh order number
+        while( (currentTuple = bufReader.readLine()) != null ) {
+            currentIncomeRecord = IncomeRecordUtil.getIncomeRecordFromCsvTupleString( currentTuple );
+            if( currentIncomeRecord.getOrderNo() == (orderNo - 1) ) {
+                swap = currentIncomeRecord;
+            } else if( swap != null && currentIncomeRecord.getOrderNo() == orderNo ) {
+                fileContentBuffer.add( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( currentIncomeRecord ) );
+                fileContentBuffer.add( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( swap ) );
+                swap = null;
+            } else {
+                fileContentBuffer.add( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( currentIncomeRecord ) );
+            }
+        }
+        bufReader.close();
+        
+        // write file content buffer to CSV data file
+        BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream( new File( csvFilePath ), false ),
+                    Contants.FILE_CHARSET
+                )
+            );
+        for( String content : fileContentBuffer ) {
+            writer.write( content );
+            writer.newLine();
+        }
+        writer.close();
+        
+        return true;
+    }
+
+    @Override
+    public boolean moveDown(int year, int month, int orderNo) throws Exception {
+        String csvFilePath = Contants.INCOME_RECORD_DATA_PATH + 
+                IncomeRecordUtil.getIncomeRecordCsvFileName( year, month );
+        if( !checkIfFileExists( csvFilePath ) ) {
+            return false;
+        }
+        
+        ArrayList<String> fileContentBuffer = new ArrayList<String>();
+        String currentTuple = "";
+        IncomeRecord currentIncomeRecord = new IncomeRecord();
+        IncomeRecord swap = null;
+        
+        BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                new FileInputStream( new File( csvFilePath ) ),
+                Contants.FILE_CHARSET
+            )
+        );
+        // read attribute titles
+        fileContentBuffer.add( bufReader.readLine() );
+        // read data & refresh order number
+        while( (currentTuple = bufReader.readLine()) != null ) {
+            currentIncomeRecord = IncomeRecordUtil.getIncomeRecordFromCsvTupleString( currentTuple );
+            if( currentIncomeRecord.getOrderNo() == orderNo ) {
+                swap = currentIncomeRecord;
+            } else if( swap != null && currentIncomeRecord.getOrderNo() == (orderNo + 1) ) {
+                fileContentBuffer.add( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( currentIncomeRecord ) );
+                fileContentBuffer.add( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( swap ) );
+                swap = null;
+            } else {
+                fileContentBuffer.add( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( currentIncomeRecord ) );
+            }
+        }
+        if( swap != null ) {
+            fileContentBuffer.add( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( swap ) );
+        }
+        bufReader.close();
+        
+        // write file content buffer to CSV data file
+        BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream( new File( csvFilePath ), false ),
+                    Contants.FILE_CHARSET
+                )
+            );
+        for( String content : fileContentBuffer ) {
+            writer.write( content );
+            writer.newLine();
+        }
+        writer.close();
+        
+        return true;
+    }
+
+    @Override
+    public boolean sort( int year, int month ) throws Exception {
+        String csvFilePath = Contants.INCOME_RECORD_DATA_PATH + 
+                IncomeRecordUtil.getIncomeRecordCsvFileName( year, month );
+        List<IncomeRecord> incomeRecordList = new ArrayList<IncomeRecord>();
+        
+        if( !checkIfFileExists( csvFilePath ) ) {
+            return true;
+        }
+        
+        ArrayList<String> fileContentBuffer = new ArrayList<String>();
+        String currentTuple = "";
+        IncomeRecord currentIncomeRecord = new IncomeRecord();
+        BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                new FileInputStream( new File( csvFilePath ) ),
+                Contants.FILE_CHARSET
+            )
+        );
+        // read attribute titles
+        fileContentBuffer.add( bufReader.readLine() );
+        // fetch data
+        while( (currentTuple = bufReader.readLine()) != null ) {
+            currentIncomeRecord = IncomeRecordUtil.getIncomeRecordFromCsvTupleString( currentTuple );
+            incomeRecordList.add( currentIncomeRecord );
+        }
+        bufReader.close();
+        
+        // sort data ordered by (1)day (2)id
+        incomeRecordList = IncomeRecordUtil.sortById( incomeRecordList );
+        incomeRecordList = IncomeRecordUtil.sortByDay( incomeRecordList );
+        
+        // translate sorted data list to file content buffer
+        
+        for( int i = 0; i < incomeRecordList.size(); i++ ) {
+            fileContentBuffer.add( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( incomeRecordList.get( i ) ) );
+        }
+        // write file content buffer to CSV data file
+        BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream( new File( csvFilePath ), false ),
+                    Contants.FILE_CHARSET
+                )
+            );
+        for( String content : fileContentBuffer ) {
+            writer.write( content );
+            writer.newLine();
+        }
+        writer.close();
+        
+        return true;
     }
 }

@@ -15,4 +15,10 @@ public interface IncomeRecordService {
     public int update( IncomeRecord incomeRecord ) throws Exception;
     
     public int delete( IncomeRecord incomeRecord ) throws Exception;
+    
+    public int moveUp( int year, int month, int orderNo ) throws Exception;
+    
+    public int moveDown( int year, int month, int orderNo ) throws Exception;
+    
+    public int sort( int year, int month ) throws Exception;
 }
