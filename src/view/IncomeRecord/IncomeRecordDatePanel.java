@@ -326,7 +326,7 @@ public class IncomeRecordDatePanel extends JPanel {
             yearTextField.setText( String.format( "%04d", year ) );
             monthTextField.setText( String.format( "%02d", month ) );
             
-            incomeRecordTablePanel.searchIncomeRecordByMonth( year, month );
+            incomeRecordTablePanel.loadIncomeRecordByMonth( year, month );
         }
     }
     

@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import common.Contants;
+import domain.IncomeRecord;
 import main.FundBookServices;
 import service.IncomeRecordService;
 import view.MainFrame;
@@ -87,7 +88,7 @@ public class IncomeRecordPanel extends JPanel {
         updateButton.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed( ActionEvent event ) {
-                incomeRecordUpdateDialog.openDialog();
+                openIncomeRecordUpdateDialog();
             }
         });
         add( updateButton );
@@ -96,6 +97,12 @@ public class IncomeRecordPanel extends JPanel {
         deleteButton.setBounds( 717, 120, 64, 22 );
         deleteButton.setFont( generalFont );
         deleteButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        deleteButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                deleteIncomeRecord();
+            }
+        });
         add( deleteButton );
         
         moveUpButton = new JButton( "上移(P)" );
@@ -174,8 +181,59 @@ public class IncomeRecordPanel extends JPanel {
         return createButton;
     }
     
+    public MainFrame getOwnerFrame() {
+        return ownerFrame;
+    }
+    
     public void reselectDateList() {
         incomeRecordDatePanel.reselectDateList();
+    }
+    
+    private void deleteIncomeRecord() {
+        int selectedYear, selectedMonth;
+        String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
+        try {
+            selectedYear = Integer.parseInt( selectedMonthString.substring( 0, 4 ) );
+            selectedMonth = Integer.parseInt( selectedMonthString.substring( 5, 7 ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            selectedYear = 1900;
+            selectedMonth = 1;
+        }
+        
+        int selectedId = incomeRecordTablePanel.getItemTableSelectedId();
+        if( selectedId == -1 ) {
+            return;
+        }
+        
+        int comfirmation = JOptionPane.showConfirmDialog( 
+                ownerFrame, "確認刪除?", "Check", JOptionPane.YES_NO_OPTION );
+        if( comfirmation != JOptionPane.YES_OPTION ) {
+            return;
+        }
+        
+        IncomeRecord incomeRecordForDelete = new IncomeRecord();
+        incomeRecordForDelete.setId( selectedId );
+        incomeRecordForDelete.setYear( selectedYear );
+        incomeRecordForDelete.setMonth( selectedMonth );
+        
+        int returnCode = 0;
+        try {
+            returnCode = incomeRecordService.delete( incomeRecordForDelete );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            returnCode = Contants.ERROR;
+        }
+        switch( returnCode ) {
+        case Contants.SUCCESS:
+            reselectDateList();
+            break;
+        case Contants.ERROR:
+            JOptionPane.showMessageDialog( null, "刪除失敗", "Error", JOptionPane.ERROR_MESSAGE );
+            break;
+        default:
+            break;
+        }
     }
     
     private void openIncomeRecordCreateDialog() {
@@ -190,6 +248,24 @@ public class IncomeRecordPanel extends JPanel {
             selectedMonth = 1;
         }
         incomeRecordCreateDialog.openDialog( selectedYear, selectedMonth );
+    }
+    
+    private void openIncomeRecordUpdateDialog() {
+        int selectedYear, selectedMonth;
+        String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
+        try {
+            selectedYear = Integer.parseInt( selectedMonthString.substring( 0, 4 ) );
+            selectedMonth = Integer.parseInt( selectedMonthString.substring( 5, 7 ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            selectedYear = 1900;
+            selectedMonth = 1;
+        }
+        
+        int selectedId = incomeRecordTablePanel.getItemTableSelectedId();
+        if( selectedId != -1 ) {
+            incomeRecordUpdateDialog.openDialog( selectedId, selectedYear, selectedMonth );
+        }
     }
     
     private void moveUpIncomeRecordData() {

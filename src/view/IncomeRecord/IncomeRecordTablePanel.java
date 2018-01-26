@@ -123,21 +123,58 @@ public class IncomeRecordTablePanel extends JPanel {
         return dataTable;
     }
     
+    public int getItemTableSelectedId() {
+        int itemTableSelectedIndex = dataTable.getSelectedRow();
+        
+        if( itemTableSelectedIndex < 0 ) {
+            JOptionPane.showMessageDialog( ownerPanel.getOwnerFrame(), "未選擇資料", "Warning", JOptionPane.WARNING_MESSAGE );
+            return -1;
+        }
+        
+        int id = -1;
+        String itemTableSelectedIdValue = (String) dataTable.getModel().getValueAt( itemTableSelectedIndex, 4 );
+        try {
+            id = Integer.parseInt( itemTableSelectedIdValue );
+        } catch( NumberFormatException e ) {
+            JOptionPane.showMessageDialog( ownerPanel.getOwnerFrame(), "選擇無效的資料", "Warning", JOptionPane.WARNING_MESSAGE );
+            return -1;
+        } catch( StringIndexOutOfBoundsException e ) {
+            JOptionPane.showMessageDialog( ownerPanel.getOwnerFrame(), "選擇無效的資料", "Warning", JOptionPane.WARNING_MESSAGE );
+            return -1;
+        }
+        
+        return id;
+    }
+    
     public void loadIncomeRecordOfCurrentMonth() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( new Date() );
         int year = calendar.get( Calendar.YEAR );
         int month = calendar.get( Calendar.MONTH ) + 1;
         
-        searchIncomeRecordByMonth( year, month );
+        loadIncomeRecordByMonth( year, month );
     }
     
-    public void searchIncomeRecordByMonth( int year, int month ) {
+    public void loadIncomeRecordByMonth( int year, int month ) {
+        DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+        if( dataTable.getRowCount() > DEFAULT_ROW_COUNT ) {
+            for( int i = dataTable.getRowCount() - 1; i >= DEFAULT_ROW_COUNT; i-- ) {
+                model.removeRow( i );
+            }
+        }
+        for( int i = 0; i < dataTable.getRowCount(); i++ ) {
+            model.setValueAt( "", i, 0 );
+            model.setValueAt( "", i, 1 );
+            model.setValueAt( "", i, 2 );
+            model.setValueAt( "", i, 3 );
+            model.setValueAt( "", i, 4 );
+        }
+        
         try {
             List<IncomeRecord> incomeRecordList = incomeRecordService.findByMonth( year, month );
             for( int i = 0; i < incomeRecordList.size(); i++ ) {
                 IncomeRecord data = incomeRecordList.get( i );
-                DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+                //DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
                 if( i >= dataTable.getRowCount() ) {
                     model.addRow( new Object[] {
                         String.format( "%04d.%02d.%02d", data.getYear(), data.getMonth(), data.getDay() ),
