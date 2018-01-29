@@ -72,8 +72,6 @@ public class IncomeRecordDeletingTests extends TestCase {
             bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
             Thread.sleep( 1000 );
             
-            //JOptionPane.showMessageDialog( mainFrame, "Debuging...", "Message", JOptionPane.INFORMATION_MESSAGE );
-            
             // 檢查是否刪除成功
             List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
             for( int i = 1; i <= 4; i++ ) {
@@ -123,6 +121,110 @@ public class IncomeRecordDeletingTests extends TestCase {
         } finally {
             restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
             restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
+        }
+    }
+    
+    public void testDeleteIncomeRecord2() throws IOException {
+        final String INCOME_RECORD_CSV_FILE_PATH = "data\\IncomeRecord\\2017.10.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "data\\IncomeRecord\\2017.10_backup.csv";
+        
+        int testerSelection = 0;
+        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
+        FundBookServices fundBookServices = new FundBookServices();
+        fundBookServices.setIncomeRecordService( incomeRecordService );
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            // 新增初始資料
+            for( int i = 1; i <= 5; i++ ) {
+                IncomeRecord incomeRecord = getTestData2();
+                incomeRecord.setItem( getTestData2().getItem() + " " + i );
+                incomeRecord.setAmount( i * (-100) );
+                incomeRecord.setDay( i );
+                incomeRecordService.insert( incomeRecord );
+            }
+            
+            // 執行視窗程式
+            MainFrame mainFrame = new MainFrame( fundBookServices );
+            mainFrame.setVisible( true );
+            
+            JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
+            
+            Robot bot =  new Robot();
+            Thread.sleep( 3000 );
+            
+            // 選擇年月份為2017.10
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            inputString( bot, "2017" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            inputString( bot, "10" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            
+            // 選擇第四筆資料，點選"刪除"按鈕
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
+            Thread.sleep( 500 );
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
+            Thread.sleep( 1000 );
+            
+            // 檢查是否刪除成功
+            List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
+            for( int i = 1; i <= 4; i++ ) {
+                IncomeRecord incomeRecord = getTestData2();
+                incomeRecord.setId( i );
+                incomeRecord.setDay( i );
+                incomeRecord.setItem( getTestData2().getItem() + " " + i );
+                incomeRecord.setAmount( i * (-100) );
+                if( i == 4 ) {
+                    incomeRecord.setId( 5 );
+                    incomeRecord.setDay( 5 );
+                    incomeRecord.setItem( getTestData2().getItem() + " " + 5 );
+                    incomeRecord.setAmount( 5 * (-100) );
+                } 
+                incomeRecord.setOrderNo( i );
+                expectDataList.add( incomeRecord );
+            }
+            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData2().getYear(), getTestData2().getMonth() );
+            assertEquals( expectDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectDataList.size(); i++ ) {
+                assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
+            }
+            
+            // 檢查畫面是否顯示正確
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime( new Date() );
+            String expectDateString = String.format( "%04d.%02d.", 
+                    getTestData2().getYear(), getTestData2().getMonth() );
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, 
+                "<html><head><style type=\"text/css\">" + 
+                    "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
+                "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
+                    "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
+                    "<tr><td>" + expectDateString + "01" + "</td><td>test item 1</td><td>支</td><td>100</td></tr>" + 
+                    "<tr><td>" + expectDateString + "02" + "</td><td>test item 2</td><td>支</td><td>200</td></tr>" + 
+                    "<tr><td>" + expectDateString + "03" + "</td><td>test item 3</td><td>支</td><td>300</td></tr>" + 
+                    "<tr><td>" + expectDateString + "05" + "</td><td>test item 5</td><td>支</td><td>500</td></tr>" + 
+                "</table></body></html>", 
+                "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            
+            Thread.sleep( 1000 );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
     
