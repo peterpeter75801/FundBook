@@ -13,22 +13,21 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 import domain.IncomeRecord;
+import junit.framework.TestCase;
+import main.FundBookServices;
+import repository.impl.IncomeRecordDAOImpl;
 import service.IncomeRecordService;
 import service.impl.IncomeRecordServiceImpl;
 import view.MainFrame;
-import repository.impl.IncomeRecordDAOImpl;
 
-import junit.framework.TestCase;
-import main.FundBookServices;
-
-public class IncomeRecordTablePanelTests extends TestCase {
+public class IncomeRecordCalculatingTests extends TestCase {
     
     private final String INCOME_RECORD_CSV_FILE_PATH = "data\\IncomeRecord\\2017.10.csv";
     private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "data\\IncomeRecord\\2017.10_backup.csv";
     private final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "data\\IncomeRecord\\IncomeRecordSeq_backup.txt";
     
-    public void testIncomeRecordTablePanelDisplay1() throws IOException {
+    public void testIncomeRecordMonthSubtotalCalculating1() throws IOException {
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
         FundBookServices fundBookServices = new FundBookServices();
@@ -56,23 +55,8 @@ public class IncomeRecordTablePanelTests extends TestCase {
             JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
             
             // 檢查執行結果
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime( new Date() );
-            String expectDateString = String.format( "%04d.%02d.%02d", 
-                calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1, 1 );
-            
             testerSelection = JOptionPane.showConfirmDialog( 
-                mainFrame, 
-                "<html><head><style type=\"text/css\">" + 
-                        "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
-                "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
-                    "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
-                    "<tr><td>" + expectDateString + "</td><td>測試帳1</td><td>收</td><td>100</td></tr>" + 
-                    "<tr><td>" + expectDateString + "</td><td>測試帳2</td><td>收</td><td>200</td></tr>" + 
-                    "<tr><td>" + expectDateString + "</td><td>測試帳3</td><td>收</td><td>300</td></tr>" + 
-                    "<tr><td>" + expectDateString + "</td><td>測試帳4</td><td>支</td><td>400</td></tr>" +
-                "</table></body></html>", 
-                "Check", JOptionPane.YES_NO_OPTION );
+                mainFrame, "本月收支狀況(收入-支出)是否為 200 ?", "Check", JOptionPane.YES_NO_OPTION );
             assertEquals( JOptionPane.YES_OPTION, testerSelection );
                 
             Thread.sleep( 1000 );
@@ -85,7 +69,7 @@ public class IncomeRecordTablePanelTests extends TestCase {
         }
     }
     
-    public void testIncomeRecordTablePanelDisplay2() throws IOException {
+    public void testIncomeRecordMonthSubtotalCalculating2() throws IOException {
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
         FundBookServices fundBookServices = new FundBookServices();
@@ -96,11 +80,13 @@ public class IncomeRecordTablePanelTests extends TestCase {
             backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
             
             // 新增初始資料
-            for( int i = 1; i <= 30; i++ ) {
+            for( int i = 1; i <= 5; i++ ) {
                 IncomeRecord incomeRecord = getTestData2();
-                incomeRecord.setDay( i );
                 incomeRecord.setItem( getTestData2().getItem() + i );
                 incomeRecord.setAmount( i * 100 );
+                if( i == 4 || i == 5 ) {
+                    incomeRecord.setAmount( incomeRecord.getAmount() * (-1) );
+                }
                 incomeRecordService.insert( incomeRecord );
             }
             
@@ -123,19 +109,7 @@ public class IncomeRecordTablePanelTests extends TestCase {
             
             // 檢查執行結果
             testerSelection = JOptionPane.showConfirmDialog( 
-                mainFrame, 
-                "<html><head><style type=\"text/css\">" + 
-                        "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
-                "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
-                    "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
-                    "<tr><td>2017.10.01</td><td>測試帳1</td><td>收</td><td>100</td></tr>" + 
-                    "<tr><td>2017.10.02</td><td>測試帳2</td><td>收</td><td>200</td></tr>" + 
-                    "<tr><td>2017.10.03</td><td>測試帳3</td><td>收</td><td>300</td></tr>" + 
-                    "<tr><td>...</td><td>...</td><td>...</td><td>...</td></tr>" + 
-                    "<tr><td>2017.10.20</td><td>測試帳20</td><td>收</td><td>2000</td></tr>" + 
-                    "<tr><td>...</td><td>...</td><td>...</td><td>...</td></tr>" + 
-                "</table>並在右側顯示垂直捲軸?</body></html>", 
-                "Check", JOptionPane.YES_NO_OPTION );
+                mainFrame, "本月收支狀況(收入-支出)是否為 -300 ?", "Check", JOptionPane.YES_NO_OPTION );
             assertEquals( JOptionPane.YES_OPTION, testerSelection );
                 
             Thread.sleep( 1000 );

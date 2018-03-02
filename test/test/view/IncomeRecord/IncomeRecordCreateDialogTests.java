@@ -71,6 +71,7 @@ public class IncomeRecordCreateDialogTests extends TestCase {
             IncomeRecord expect = getTestData1();
             expect.setId( 1 );
             expect.setItem( "test item 1" );
+            expect.setOrderNo( 1 );
             IncomeRecord actual = incomeRecordService.findOne( 1, currentYear, currentMonth );
             assertTrue( IncomeRecordUtil.equals( expect, actual ) );
             
@@ -109,6 +110,7 @@ public class IncomeRecordCreateDialogTests extends TestCase {
                 IncomeRecord incomeRecord = getTestData1();
                 incomeRecord.setId( i );
                 incomeRecord.setItem( getTestData1().getItem() + " " + i );
+                incomeRecord.setOrderNo( i );
                 if( i == 3 ) {
                     incomeRecord.setAmount( i * 100 );
                 } else {
@@ -183,7 +185,10 @@ public class IncomeRecordCreateDialogTests extends TestCase {
             bot.keyPress( KeyEvent.VK_SHIFT );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             bot.keyRelease( KeyEvent.VK_SHIFT );
+            inputString( bot, "2017" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             inputString( bot, "10" );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             inputString( bot, "01" );
@@ -198,6 +203,7 @@ public class IncomeRecordCreateDialogTests extends TestCase {
             IncomeRecord expect = getTestData2();
             expect.setId( 1 );
             expect.setItem( "test item 1" );
+            expect.setOrderNo( 1 );
             IncomeRecord actual = incomeRecordService.findOne( 1, 2017, 10 );
             assertTrue( IncomeRecordUtil.equals( expect, actual ) );
             
@@ -241,6 +247,7 @@ public class IncomeRecordCreateDialogTests extends TestCase {
                 IncomeRecord incomeRecord = getTestData2();
                 incomeRecord.setId( i );
                 incomeRecord.setItem( getTestData2().getItem() + " " + i );
+                incomeRecord.setOrderNo( i );
                 if( i == 3 ) {
                     incomeRecord.setAmount( i * 100 );
                     incomeRecord.setDescription( "test comment<br />123" );

@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -30,8 +31,8 @@ public class IncomeRecordPanel extends JPanel {
     private IncomeRecordTablePanel incomeRecordTablePanel;
     private IncomeRecordCreateDialog incomeRecordCreateDialog;
     private IncomeRecordUpdateDialog incomeRecordUpdateDialog;
+    private IncomeRecordPropertyDialog incomeRecordPropertyDialog;
     
-    private JLabel testLabel;
     private Font generalFont;
     private JButton createButton;
     private JButton updateButton;
@@ -64,10 +65,10 @@ public class IncomeRecordPanel extends JPanel {
         add( incomeRecordTablePanel );
         
         incomeRecordDatePanel.setIncomeRecordTablePanel( incomeRecordTablePanel );
-        incomeRecordTablePanel.loadIncomeRecordOfCurrentMonth();
         
         incomeRecordCreateDialog = new IncomeRecordCreateDialog( fundBookServices.getIncomeRecordService(), ownerFrame );
         incomeRecordUpdateDialog = new IncomeRecordUpdateDialog( fundBookServices.getIncomeRecordService(), ownerFrame );
+        incomeRecordPropertyDialog = new IncomeRecordPropertyDialog( fundBookServices.getIncomeRecordService(), ownerFrame );
         
         createButton = new JButton( "新增(C)" );
         createButton.setBounds( 717, 32, 64, 22 );
@@ -145,6 +146,12 @@ public class IncomeRecordPanel extends JPanel {
         detailButton.setBounds( 717, 296, 64, 22 );
         detailButton.setFont( generalFont );
         detailButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        detailButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                openIncomeRecordPropertyDialog();
+            }
+        });
         add( detailButton );
         
         incomeStateInCurrentMonthLabel = new JLabel( "本月收支狀況(收入-支出): " );
@@ -175,6 +182,9 @@ public class IncomeRecordPanel extends JPanel {
         add( versionLabel );
         
         setPreferredSize( new Dimension( 793, 533 ) );
+        
+        // 載入目前月份資料
+        incomeRecordDatePanel.reselectDateList();
     }
     
     public JButton getCreateButton() {
@@ -183,6 +193,15 @@ public class IncomeRecordPanel extends JPanel {
     
     public MainFrame getOwnerFrame() {
         return ownerFrame;
+    }
+    
+    public void computeIncomeStateInCurrentMonth() {
+        int totalAmount = 0;
+        List<Integer> amountsOfSelectedMonth = incomeRecordTablePanel.getAllAmount();
+        for( Integer amount : amountsOfSelectedMonth ) {
+            totalAmount += amount;
+        }
+        incomeStateInCurrentMonthTextField.setText( String.format( "%d", totalAmount ) );
     }
     
     public void reselectDateList() {
@@ -265,6 +284,24 @@ public class IncomeRecordPanel extends JPanel {
         int selectedId = incomeRecordTablePanel.getItemTableSelectedId();
         if( selectedId != -1 ) {
             incomeRecordUpdateDialog.openDialog( selectedId, selectedYear, selectedMonth );
+        }
+    }
+    
+    private void openIncomeRecordPropertyDialog() {
+        int selectedYear, selectedMonth;
+        String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
+        try {
+            selectedYear = Integer.parseInt( selectedMonthString.substring( 0, 4 ) );
+            selectedMonth = Integer.parseInt( selectedMonthString.substring( 5, 7 ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            selectedYear = 1900;
+            selectedMonth = 1;
+        }
+        
+        int selectedId = incomeRecordTablePanel.getItemTableSelectedId();
+        if( selectedId != -1 ) {
+            incomeRecordPropertyDialog.openDialog( selectedId, selectedYear, selectedMonth );
         }
     }
     

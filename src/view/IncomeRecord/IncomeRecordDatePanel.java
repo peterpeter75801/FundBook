@@ -326,7 +326,11 @@ public class IncomeRecordDatePanel extends JPanel {
             yearTextField.setText( String.format( "%04d", year ) );
             monthTextField.setText( String.format( "%02d", month ) );
             
+            // 載入選擇月份的收支資料
             incomeRecordTablePanel.loadIncomeRecordByMonth( year, month );
+            
+            // 計算選擇月份的收支小計
+            ownerPanel.computeIncomeStateInCurrentMonth();
         }
     }
     

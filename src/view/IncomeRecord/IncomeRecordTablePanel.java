@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +43,12 @@ public class IncomeRecordTablePanel extends JPanel {
     private static final int TABLE_ROW_HEIGHT = 22;
     private static final int[] TABLE_COLUMN_WIDTH = { 96, 352, 40, 97, 0 };
     private static final int BORDER_HEIGHT_FIX = 3;
+    
+    private static final int DATE_COLUMN = 0;
+    private static final int ITEM_COLUMN = 1;
+    private static final int TYPE_COLUMN = 2;
+    private static final int AMOUNT_COLUMN = 3;
+    private static final int ID_COLUMN = 4;
     private static final String[] COLUMN_NAMES = { "日期", "項目", "收支", "金額", "Seq(hidden)" };
     
     private IncomeRecordService incomeRecordService;
@@ -121,6 +128,29 @@ public class IncomeRecordTablePanel extends JPanel {
     
     public JTable getDataTable() {
         return dataTable;
+    }
+    
+    public List<Integer> getAllAmount() {
+        List<Integer> amountList = new ArrayList<Integer>();
+        DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+        
+        for( int i = 0; i < model.getRowCount(); i++ ) {
+            int currentAmount = 0;
+            try {
+                currentAmount = Integer.parseInt( (String)model.getValueAt( i, AMOUNT_COLUMN ) );
+            } catch ( NumberFormatException e ) {
+                //e.printStackTrace();
+                currentAmount = 0;
+            }
+            
+            if( model.getValueAt( i, TYPE_COLUMN ) != null && model.getValueAt( i, TYPE_COLUMN ).equals( "收" ) ) {
+                amountList.add( currentAmount );
+            } else {
+                amountList.add( currentAmount * (-1) );
+            }
+        }
+        
+        return amountList;
     }
     
     public int getItemTableSelectedId() {

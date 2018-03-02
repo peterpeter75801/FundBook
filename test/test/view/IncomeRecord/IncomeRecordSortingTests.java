@@ -57,6 +57,7 @@ public class IncomeRecordSortingTests extends TestCase {
             
             // 在月份選單選擇2017.10
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            inputString( bot, "2017" );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             inputString( bot, "10" );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
@@ -172,6 +173,7 @@ public class IncomeRecordSortingTests extends TestCase {
             
             // 在月份選單選擇2017.10
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            inputString( bot, "2017" );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             inputString( bot, "10" );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
@@ -292,6 +294,7 @@ public class IncomeRecordSortingTests extends TestCase {
             
             // 在月份選單選擇2017.10
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            inputString( bot, "2017" );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             inputString( bot, "10" );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );

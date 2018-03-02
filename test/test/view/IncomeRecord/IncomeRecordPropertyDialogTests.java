@@ -13,22 +13,19 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 import domain.IncomeRecord;
+import junit.framework.TestCase;
+import main.FundBookServices;
+import repository.impl.IncomeRecordDAOImpl;
 import service.IncomeRecordService;
 import service.impl.IncomeRecordServiceImpl;
 import view.MainFrame;
-import repository.impl.IncomeRecordDAOImpl;
 
-import junit.framework.TestCase;
-import main.FundBookServices;
-
-public class IncomeRecordTablePanelTests extends TestCase {
+public class IncomeRecordPropertyDialogTests extends TestCase {
     
-    private final String INCOME_RECORD_CSV_FILE_PATH = "data\\IncomeRecord\\2017.10.csv";
-    private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "data\\IncomeRecord\\2017.10_backup.csv";
     private final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "data\\IncomeRecord\\IncomeRecordSeq_backup.txt";
     
-    public void testIncomeRecordTablePanelDisplay1() throws IOException {
+    public void testDisplayIncomeRecordProperty() throws IOException {
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
         FundBookServices fundBookServices = new FundBookServices();
@@ -39,68 +36,11 @@ public class IncomeRecordTablePanelTests extends TestCase {
             backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
             
             // 新增初始資料
-            for( int i = 1; i <= 4; i++ ) {
+            for( int i = 1; i <= 5; i++ ) {
                 IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setItem( getTestData1().getItem() + i );
-                incomeRecord.setAmount( i * 100 );
-                if( i == 4 ) {
-                    incomeRecord.setAmount( incomeRecord.getAmount() * (-1) );
-                }
-                incomeRecordService.insert( incomeRecord );
-            }
-            
-            // 執行視窗程式
-            MainFrame mainFrame = new MainFrame( fundBookServices );
-            mainFrame.setVisible( true );
-            
-            JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
-            
-            // 檢查執行結果
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime( new Date() );
-            String expectDateString = String.format( "%04d.%02d.%02d", 
-                calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1, 1 );
-            
-            testerSelection = JOptionPane.showConfirmDialog( 
-                mainFrame, 
-                "<html><head><style type=\"text/css\">" + 
-                        "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
-                "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
-                    "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
-                    "<tr><td>" + expectDateString + "</td><td>測試帳1</td><td>收</td><td>100</td></tr>" + 
-                    "<tr><td>" + expectDateString + "</td><td>測試帳2</td><td>收</td><td>200</td></tr>" + 
-                    "<tr><td>" + expectDateString + "</td><td>測試帳3</td><td>收</td><td>300</td></tr>" + 
-                    "<tr><td>" + expectDateString + "</td><td>測試帳4</td><td>支</td><td>400</td></tr>" +
-                "</table></body></html>", 
-                "Check", JOptionPane.YES_NO_OPTION );
-            assertEquals( JOptionPane.YES_OPTION, testerSelection );
-                
-            Thread.sleep( 1000 );
-        } catch ( Exception e ) {
-            e.printStackTrace();
-            assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
-        }
-    }
-    
-    public void testIncomeRecordTablePanelDisplay2() throws IOException {
-        int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
-        try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
-            // 新增初始資料
-            for( int i = 1; i <= 30; i++ ) {
-                IncomeRecord incomeRecord = getTestData2();
+                incomeRecord.setItem( getTestData1().getItem() + " " + i );
+                incomeRecord.setAmount( i * (-100) );
                 incomeRecord.setDay( i );
-                incomeRecord.setItem( getTestData2().getItem() + i );
-                incomeRecord.setAmount( i * 100 );
                 incomeRecordService.insert( incomeRecord );
             }
             
@@ -113,31 +53,109 @@ public class IncomeRecordTablePanelTests extends TestCase {
             Robot bot =  new Robot();
             Thread.sleep( 3000 );
             
-            // 在月份選單選擇2017.10
+            // 選擇第一筆資料，點選"詳細"按鈕
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
+            Thread.sleep( 1000 );
+            
+            // 檢查資料是否正確顯示
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime( new Date() );
+            String expectDateString = String.format( "%04d年%02d月01日", 
+                calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, 
+                "顯示的資料是否為:\n類別: \n收支: 支    日期: " + expectDateString + "\n" + 
+                    "項目: test item 1    金額: 100 元\n描述: \ntest\n123", 
+                "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            Thread.sleep( 500 );
+            
+            // 回到主畫面
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
+            Thread.sleep( 1000 );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
+        }
+    }
+    
+    public void testDisplayIncomeRecordProperty2() throws IOException {
+        final String INCOME_RECORD_CSV_FILE_PATH = "data\\IncomeRecord\\2017.10.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "data\\IncomeRecord\\2017.10_backup.csv";
+        
+        int testerSelection = 0;
+        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
+        FundBookServices fundBookServices = new FundBookServices();
+        fundBookServices.setIncomeRecordService( incomeRecordService );
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            // 新增初始資料
+            for( int i = 1; i <= 5; i++ ) {
+                IncomeRecord incomeRecord = getTestData2();
+                incomeRecord.setItem( getTestData2().getItem() + " " + i );
+                incomeRecord.setAmount( i * (-100) );
+                incomeRecord.setDay( i );
+                incomeRecordService.insert( incomeRecord );
+            }
+            
+            // 執行視窗程式
+            MainFrame mainFrame = new MainFrame( fundBookServices );
+            mainFrame.setVisible( true );
+            
+            JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
+            
+            Robot bot =  new Robot();
+            Thread.sleep( 3000 );
+            
+            // 選擇年月份為2017.10
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             inputString( bot, "2017" );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             inputString( bot, "10" );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            
+            // 選擇第一筆資料，點選"詳細"按鈕
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
             Thread.sleep( 1000 );
             
-            // 檢查執行結果
+            // 檢查資料是否正確顯示
             testerSelection = JOptionPane.showConfirmDialog( 
                 mainFrame, 
-                "<html><head><style type=\"text/css\">" + 
-                        "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
-                "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
-                    "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
-                    "<tr><td>2017.10.01</td><td>測試帳1</td><td>收</td><td>100</td></tr>" + 
-                    "<tr><td>2017.10.02</td><td>測試帳2</td><td>收</td><td>200</td></tr>" + 
-                    "<tr><td>2017.10.03</td><td>測試帳3</td><td>收</td><td>300</td></tr>" + 
-                    "<tr><td>...</td><td>...</td><td>...</td><td>...</td></tr>" + 
-                    "<tr><td>2017.10.20</td><td>測試帳20</td><td>收</td><td>2000</td></tr>" + 
-                    "<tr><td>...</td><td>...</td><td>...</td><td>...</td></tr>" + 
-                "</table>並在右側顯示垂直捲軸?</body></html>", 
+                "顯示的資料是否為:\n類別: \n收支: 支    日期: 2017年10月01日\n" + 
+                    "項目: test item 1    金額: 100 元\n描述: \ntest\n123", 
                 "Check", JOptionPane.YES_NO_OPTION );
             assertEquals( JOptionPane.YES_OPTION, testerSelection );
-                
+            Thread.sleep( 500 );
+            
+            // 回到主畫面
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
             Thread.sleep( 1000 );
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -156,25 +174,28 @@ public class IncomeRecordTablePanelTests extends TestCase {
         testData.setId( 0 );
         testData.setYear( calendar.get( Calendar.YEAR ) );
         testData.setMonth( calendar.get( Calendar.MONTH ) + 1 );
-        testData.setDay( 1 );
-        testData.setItem( "測試帳" );
+        testData.setDay( calendar.get( Calendar.DAY_OF_MONTH ) );
+        testData.setItem( "test item" );
         testData.setClassNo( 0 );
-        testData.setAmount( 100 );
-        testData.setDescription( "" );
+        testData.setAmount( -100 );
+        testData.setDescription( "test<br />123" );
         testData.setOrderNo( 0 );
         return testData;
     }
     
     private IncomeRecord getTestData2() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        
         IncomeRecord testData = new IncomeRecord();
         testData.setId( 0 );
         testData.setYear( 2017 );
         testData.setMonth( 10 );
         testData.setDay( 1 );
-        testData.setItem( "測試帳" );
+        testData.setItem( "test item" );
         testData.setClassNo( 0 );
-        testData.setAmount( 100 );
-        testData.setDescription( "" );
+        testData.setAmount( -100 );
+        testData.setDescription( "test<br />123" );
         testData.setOrderNo( 0 );
         return testData;
     }
