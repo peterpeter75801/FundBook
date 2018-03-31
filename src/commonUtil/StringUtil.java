@@ -16,4 +16,32 @@ public class StringUtil {
         }
         return true;
     }
+    
+    public static String decreaseDateTimeTextFieldValue( String value, int minValue, int maxValue, int length, boolean cycle ) {
+        try {
+            if( !cycle && (Integer.parseInt( value ) - 1 < minValue) ) {
+                return String.format( "%0" + ((length > 0) ? length : "") + "d", minValue );
+            } else if( cycle && (Integer.parseInt( value ) - 1 < minValue) ) {
+                return String.format( "%0" + ((length > 0) ? length : "") + "d", maxValue );
+            } else {
+                return String.format( "%0" + ((length > 0) ? length : "") + "d", Integer.parseInt( value ) - 1 );
+            }
+        } catch( NumberFormatException e ) {
+            return value;
+        }
+    }
+    
+    public static String increaseDateTimeTextFieldValue( String value, int minValue, int maxValue, int length, boolean cycle ) {
+        try {
+            if( !cycle && (Integer.parseInt( value ) + 1 > maxValue) ) {
+                return String.format( "%0" + ((length > 0) ? length : "") + "d", maxValue );
+            } else if( cycle && (Integer.parseInt( value ) + 1 > maxValue) ) {
+                return String.format( "%0" + ((length > 0) ? length : "") + "d", minValue );
+            } else {
+                return String.format( "%0" + ((length > 0) ? length : "") + "d", Integer.parseInt( value ) + 1 );
+            }
+        } catch( NumberFormatException e ) {
+            return value;
+        }
+    }
 }

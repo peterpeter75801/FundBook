@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -33,6 +35,7 @@ public class IncomeRecordPanel extends JPanel {
     private IncomeRecordUpdateDialog incomeRecordUpdateDialog;
     private IncomeRecordPropertyDialog incomeRecordPropertyDialog;
     
+    private MnemonicKeyHandler mnemonicKeyHandler;
     private Font generalFont;
     private JButton createButton;
     private JButton updateButton;
@@ -51,6 +54,8 @@ public class IncomeRecordPanel extends JPanel {
         setLayout( null );
         
         incomeRecordService = fundBookServices.getIncomeRecordService();
+
+        mnemonicKeyHandler = new MnemonicKeyHandler();
         
         generalFont = new Font( "細明體", Font.PLAIN, 16 );
         
@@ -73,6 +78,7 @@ public class IncomeRecordPanel extends JPanel {
         createButton = new JButton( "新增(C)" );
         createButton.setBounds( 717, 32, 64, 22 );
         createButton.setFont( generalFont );
+        createButton.addKeyListener( mnemonicKeyHandler );
         createButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         createButton.addActionListener( new ActionListener() {
             @Override
@@ -85,6 +91,7 @@ public class IncomeRecordPanel extends JPanel {
         updateButton = new JButton( "修改(U)" );
         updateButton.setBounds( 717, 76, 64, 22 );
         updateButton.setFont( generalFont );
+        updateButton.addKeyListener( mnemonicKeyHandler );
         updateButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         updateButton.addActionListener( new ActionListener() {
             @Override
@@ -97,6 +104,7 @@ public class IncomeRecordPanel extends JPanel {
         deleteButton = new JButton( "刪除(D)" );
         deleteButton.setBounds( 717, 120, 64, 22 );
         deleteButton.setFont( generalFont );
+        deleteButton.addKeyListener( mnemonicKeyHandler );
         deleteButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         deleteButton.addActionListener( new ActionListener() {
             @Override
@@ -109,6 +117,7 @@ public class IncomeRecordPanel extends JPanel {
         moveUpButton = new JButton( "上移(P)" );
         moveUpButton.setBounds( 717, 164, 64, 22 );
         moveUpButton.setFont( generalFont );
+        moveUpButton.addKeyListener( mnemonicKeyHandler );
         moveUpButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         moveUpButton.addActionListener( new ActionListener() {
             @Override
@@ -121,6 +130,7 @@ public class IncomeRecordPanel extends JPanel {
         moveDownButton = new JButton( "下移(N)" );
         moveDownButton.setBounds( 717, 208, 64, 22 );
         moveDownButton.setFont( generalFont );
+        moveDownButton.addKeyListener( mnemonicKeyHandler );
         moveDownButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         moveDownButton.addActionListener( new ActionListener() {
             @Override
@@ -133,6 +143,7 @@ public class IncomeRecordPanel extends JPanel {
         sortButton = new JButton( "排序(S)" );
         sortButton.setBounds( 717, 252, 64, 22 );
         sortButton.setFont( generalFont );
+        sortButton.addKeyListener( mnemonicKeyHandler );
         sortButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         sortButton.addActionListener( new ActionListener() {
             @Override
@@ -145,6 +156,7 @@ public class IncomeRecordPanel extends JPanel {
         detailButton = new JButton( "詳細(R)" );
         detailButton.setBounds( 717, 296, 64, 22 );
         detailButton.setFont( generalFont );
+        detailButton.addKeyListener( mnemonicKeyHandler );
         detailButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         detailButton.addActionListener( new ActionListener() {
             @Override
@@ -397,5 +409,81 @@ public class IncomeRecordPanel extends JPanel {
         if( selectedIndex >= 0 ) {
             incomeRecordTablePanel.getDataTable().setRowSelectionInterval( selectedIndex, selectedIndex );
         }
+    }
+    
+    public class MnemonicKeyHandler implements KeyListener {
+        
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            switch( event.getKeyCode() ) {
+            case KeyEvent.VK_ENTER:
+                if( event.getSource() == createButton ) {
+                    openIncomeRecordCreateDialog();
+                } else if( event.getSource() == updateButton ) {
+                    openIncomeRecordUpdateDialog();
+                } else if( event.getSource() == deleteButton ) {
+                    deleteIncomeRecord();
+                } else if( event.getSource() == moveUpButton ) {
+                    moveUpIncomeRecordData();
+                } else if( event.getSource() == moveDownButton ) {
+                    moveDownIncomeRecordData();
+                } else if( event.getSource() == sortButton ) {
+                    sortIncomeRecordData();
+                } else if( event.getSource() == detailButton ) {
+                    openIncomeRecordPropertyDialog();
+                } 
+                break;
+            case KeyEvent.VK_C:
+                if( event.getSource() != incomeRecordTablePanel.getDataTable() ) {
+                    createButton.requestFocus();
+                }
+                openIncomeRecordCreateDialog();
+                break;
+            case KeyEvent.VK_U:
+                if( event.getSource() != incomeRecordTablePanel.getDataTable() ) {
+                    updateButton.requestFocus();
+                }
+                openIncomeRecordUpdateDialog();
+                break;
+            case KeyEvent.VK_D:
+                if( event.getSource() != incomeRecordTablePanel.getDataTable() ) {
+                    deleteButton.requestFocus();
+                }
+                deleteIncomeRecord();
+                break;
+            case KeyEvent.VK_P:
+                if( event.getSource() != incomeRecordTablePanel.getDataTable() ) {
+                    moveUpButton.requestFocus();
+                }
+                moveUpIncomeRecordData();
+                break;
+            case KeyEvent.VK_N:
+                if( event.getSource() != incomeRecordTablePanel.getDataTable() ) {
+                    moveDownButton.requestFocus();
+                }
+                moveDownIncomeRecordData();
+                break;
+            case KeyEvent.VK_S:
+                if( event.getSource() != incomeRecordTablePanel.getDataTable() ) {
+                    sortButton.requestFocus();
+                }
+                sortIncomeRecordData();
+                break;
+            case KeyEvent.VK_R:
+                if( event.getSource() != incomeRecordTablePanel.getDataTable() ) {
+                    detailButton.requestFocus();
+                }
+                openIncomeRecordPropertyDialog();
+                break;
+            default:
+                break;
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
     }
 }

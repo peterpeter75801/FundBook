@@ -28,9 +28,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.UndoManager;
 
 import common.Contants;
 import commonUtil.CsvFormatParser;
+import commonUtil.DateUtil;
+import commonUtil.StringUtil;
 import domain.IncomeRecord;
 import service.IncomeRecordService;
 import view.MainFrame;
@@ -43,8 +48,13 @@ public class IncomeRecordCreateDialog extends JDialog {
     
     private MainFrame ownerFrame;
     
+    private UndoManager undoManager;
     private FocusHandler focusHandler;
     private MnemonicKeyHandler mnemonicKeyHandler;
+    private RadioButtonKeyHandler radioButtonKeyHandler;
+    private UndoEditHandler undoEditHandler;
+    private UndoHotKeyHandler undoHotKeyHandler;
+    private DateTimeTextFieldHotKeyHandler dateTimeTextFieldHotKeyHandler;
     private Font generalFont;
     private Font createdCountFont;
     private JPanel dialogPanel;
@@ -82,9 +92,14 @@ public class IncomeRecordCreateDialog extends JDialog {
         this.incomeRecordService = incomeRecordService;
         
         this.ownerFrame = ownerFrame;
-        
+
+        undoManager = new UndoManager();
         focusHandler = new FocusHandler();
         mnemonicKeyHandler = new MnemonicKeyHandler();
+        radioButtonKeyHandler = new RadioButtonKeyHandler();
+        undoEditHandler = new UndoEditHandler();
+        undoHotKeyHandler = new UndoHotKeyHandler();
+        dateTimeTextFieldHotKeyHandler = new DateTimeTextFieldHotKeyHandler();
         
         generalFont = new Font( "細明體", Font.PLAIN, 16 );
         createdCountFont = new Font( "細明體", Font.ITALIC, 16 );
@@ -127,6 +142,7 @@ public class IncomeRecordCreateDialog extends JDialog {
         incomeRadioButton.setFont( generalFont );
         incomeRadioButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         incomeRadioButton.addKeyListener( mnemonicKeyHandler );
+        incomeRadioButton.addKeyListener( radioButtonKeyHandler );
         dialogPanel.add( incomeRadioButton );
         
         expenditureRadioButton = new JRadioButton( "支(E)", true );
@@ -134,6 +150,7 @@ public class IncomeRecordCreateDialog extends JDialog {
         expenditureRadioButton.setFont( generalFont );
         expenditureRadioButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         expenditureRadioButton.addKeyListener( mnemonicKeyHandler );
+        expenditureRadioButton.addKeyListener( radioButtonKeyHandler );
         dialogPanel.add( expenditureRadioButton );
         
         incomeTypeButtonGroup = new ButtonGroup();
@@ -150,6 +167,9 @@ public class IncomeRecordCreateDialog extends JDialog {
         yearTextField.setFont( generalFont );
         yearTextField.addFocusListener( focusHandler );
         yearTextField.addKeyListener( mnemonicKeyHandler );
+        yearTextField.addKeyListener( dateTimeTextFieldHotKeyHandler );
+        yearTextField.addKeyListener( undoHotKeyHandler );
+        yearTextField.getDocument().addUndoableEditListener( undoEditHandler );
         dialogPanel.add( yearTextField );
         
         yearLabel = new JLabel( "年" );
@@ -162,6 +182,9 @@ public class IncomeRecordCreateDialog extends JDialog {
         monthTextField.setFont( generalFont );
         monthTextField.addFocusListener( focusHandler );
         monthTextField.addKeyListener( mnemonicKeyHandler );
+        monthTextField.addKeyListener( dateTimeTextFieldHotKeyHandler );
+        monthTextField.addKeyListener( undoHotKeyHandler );
+        monthTextField.getDocument().addUndoableEditListener( undoEditHandler );
         dialogPanel.add( monthTextField );
         
         monthLabel = new JLabel( "月" );
@@ -174,6 +197,9 @@ public class IncomeRecordCreateDialog extends JDialog {
         dayTextField.setFont( generalFont );
         dayTextField.addFocusListener( focusHandler );
         dayTextField.addKeyListener( mnemonicKeyHandler );
+        dayTextField.addKeyListener( dateTimeTextFieldHotKeyHandler );
+        dayTextField.addKeyListener( undoHotKeyHandler );
+        dayTextField.getDocument().addUndoableEditListener( undoEditHandler );
         dialogPanel.add( dayTextField );
         
         dayLabel = new JLabel( "日" );
@@ -191,6 +217,8 @@ public class IncomeRecordCreateDialog extends JDialog {
         itemTextField.setFont( generalFont );
         itemTextField.addFocusListener( focusHandler );
         itemTextField.addKeyListener( mnemonicKeyHandler );
+        itemTextField.addKeyListener( undoHotKeyHandler );
+        itemTextField.getDocument().addUndoableEditListener( undoEditHandler );
         dialogPanel.add( itemTextField );
         
         amountLabel = new JLabel( "金額: " );
@@ -203,6 +231,8 @@ public class IncomeRecordCreateDialog extends JDialog {
         amountTextField.setFont( generalFont );
         amountTextField.addFocusListener( focusHandler );
         amountTextField.addKeyListener( mnemonicKeyHandler );
+        amountTextField.addKeyListener( undoHotKeyHandler );
+        amountTextField.getDocument().addUndoableEditListener( undoEditHandler );
         dialogPanel.add( amountTextField );
         
         dollarLabel = new JLabel( "元" );
@@ -220,8 +250,8 @@ public class IncomeRecordCreateDialog extends JDialog {
         descriptionTextArea.setFont( generalFont );
         descriptionTextArea.setLineWrap( true );
         descriptionTextArea.setWrapStyleWord( true );
-        //descriptionTextArea.addKeyListener( undoHotKeyHandler );
-        //descriptionTextArea.getDocument().addUndoableEditListener( undoEditHandler );
+        descriptionTextArea.addKeyListener( undoHotKeyHandler );
+        descriptionTextArea.getDocument().addUndoableEditListener( undoEditHandler );
         descriptionScrollPane = new JScrollPane( descriptionTextArea );
         descriptionScrollPane.setBounds( 16, 128, 449, 115 );
         descriptionScrollPane.setPreferredSize( new Dimension( 449, 115 ) );
@@ -399,4 +429,121 @@ public class IncomeRecordCreateDialog extends JDialog {
         @Override
         public void keyTyped( KeyEvent event ) {}
     }
+    
+    private class RadioButtonKeyHandler implements KeyListener {
+
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            if( event.getKeyCode() == KeyEvent.VK_I || event.getKeyCode() == KeyEvent.VK_E ) {
+                incomeRadioButton.setSelected( false );
+                expenditureRadioButton.setSelected( false );
+            }
+            switch( event.getKeyCode() ) {
+            case KeyEvent.VK_I:
+                incomeRadioButton.requestFocus();
+                incomeRadioButton.setSelected( true );
+                break;
+            case KeyEvent.VK_E:
+                expenditureRadioButton.requestFocus();
+                expenditureRadioButton.setSelected( true );
+                break;
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
+    }
+    
+    private class UndoEditHandler implements UndoableEditListener {
+        
+        @Override
+        public void undoableEditHappened( UndoableEditEvent event ) {
+            undoManager.addEdit( event.getEdit() );
+        }
+    }
+    
+    private class UndoHotKeyHandler implements KeyListener {
+        
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            if( event.isControlDown() && event.getKeyCode() == KeyEvent.VK_Z && undoManager.canUndo() ) {
+                undoManager.undo();
+            } else if( event.isControlDown() && event.getKeyCode() == KeyEvent.VK_Y && undoManager.canRedo() ) {
+                undoManager.redo();
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
+    }
+    
+    private class DateTimeTextFieldHotKeyHandler implements KeyListener {
+        
+        private final int YEAR_MAX_VALUE = Integer.MAX_VALUE;
+        private final int YEAR_MIN_VALUE = 1900;
+        private final int MONTH_MAX_VALUE = 12;
+        private final int MONTH_MIN_VALUE = 1;
+        private final int DAY_MIN_VALUE = 1;
+
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            Calendar calendar = Calendar.getInstance();
+            
+            switch( event.getKeyCode() ) {
+            case KeyEvent.VK_UP:
+                if( event.getSource() == yearTextField ) {
+                    yearTextField.setText( StringUtil.isNumber( yearTextField.getText() )
+                        ? StringUtil.decreaseDateTimeTextFieldValue( yearTextField.getText(), YEAR_MIN_VALUE, Integer.MAX_VALUE, 4, false )
+                        : String.format( "%04d", calendar.get( Calendar.YEAR ) )
+                    );
+                    yearTextField.selectAll();
+                } else if( event.getSource() == monthTextField ) {
+                    monthTextField.setText( StringUtil.isNumber( monthTextField.getText() )
+                        ? StringUtil.decreaseDateTimeTextFieldValue( monthTextField.getText(), MONTH_MIN_VALUE, MONTH_MAX_VALUE, 2, true )
+                        : String.format( "%02d", calendar.get( Calendar.MONTH ) + 1 )
+                    );
+                } else if( event.getSource() == dayTextField ) {
+                    dayTextField.setText( StringUtil.isNumber( dayTextField.getText() )
+                        ? StringUtil.decreaseDateTimeTextFieldValue( dayTextField.getText(), DAY_MIN_VALUE, 
+                                DateUtil.getMaxDayValue( yearTextField.getText(), monthTextField.getText() ), 2, true )
+                        : String.format( "%02d", calendar.get( Calendar.DAY_OF_MONTH ) )
+                    );
+                }
+                break;
+            case KeyEvent.VK_DOWN:
+                if( event.getSource() == yearTextField ) {
+                    yearTextField.setText( StringUtil.isNumber( yearTextField.getText() )
+                        ? StringUtil.increaseDateTimeTextFieldValue( yearTextField.getText(), YEAR_MIN_VALUE, YEAR_MAX_VALUE, 4, true )
+                        : String.format( "%04d", calendar.get( Calendar.YEAR ) )
+                    );
+                    yearTextField.selectAll();
+                } else if( event.getSource() == monthTextField ) {
+                    monthTextField.setText( StringUtil.isNumber( monthTextField.getText() )
+                        ? StringUtil.increaseDateTimeTextFieldValue( monthTextField.getText(), MONTH_MIN_VALUE, MONTH_MAX_VALUE, 2, true )
+                        : String.format( "%02d", calendar.get( Calendar.MONTH ) + 1 )
+                    );
+                } else if( event.getSource() == dayTextField ) {
+                    dayTextField.setText( StringUtil.isNumber( dayTextField.getText() )
+                        ? StringUtil.increaseDateTimeTextFieldValue( dayTextField.getText(), DAY_MIN_VALUE,
+                            DateUtil.getMaxDayValue( yearTextField.getText(), monthTextField.getText() ), 2, true )
+                        : String.format( "%02d", calendar.get( Calendar.DAY_OF_MONTH ) )
+                    );
+                }
+                break;
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) { }
+
+        @Override
+        public void keyTyped( KeyEvent event ) { }
+    }
+    
 }

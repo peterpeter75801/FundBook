@@ -6,6 +6,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -16,6 +18,9 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.UndoManager;
 
 import commonUtil.ComparingUtil;
 import commonUtil.StringUtil;
@@ -30,11 +35,16 @@ public class IncomeRecordDatePanel extends JPanel {
     private IncomeRecordPanel ownerPanel;
     private IncomeRecordTablePanel incomeRecordTablePanel;
     
+    private UndoManager undoManager;
     private FocusHandler focusHandler;
+    //private MnemonicKeyHandler mnemonicKeyHandler;
+    private UndoEditHandler undoEditHandler;
+    private UndoHotKeyHandler undoHotKeyHandler;
     private MonthListArrowKeyHandler monthListArrowKeyHandler;
     private MonthListSelectionHandler monthListSelectionHandler;
     private MonthTextFieldCheckingHandler monthTextFieldCheckingHandler;
     private MonthTextFieldArrowKeyHandler monthTextFieldArrowKeyHandler;
+    private MouseWheelHandler mouseWheelHandler;
     private Font generalFont;
     private JLabel yearLabel;
     private JTextField yearTextField;
@@ -42,16 +52,22 @@ public class IncomeRecordDatePanel extends JPanel {
     private JTextField monthTextField;
     private JList<String> monthList;
     
+    private boolean monthListScrollFlag;
+    
     public IncomeRecordDatePanel( FundBookServices fundBookServices, IncomeRecordPanel ownerPanel ) {
         setLayout( null );
         
         this.ownerPanel = ownerPanel;
         
+        undoManager = new UndoManager();
         focusHandler = new FocusHandler();
+        undoEditHandler = new UndoEditHandler();
+        undoHotKeyHandler = new UndoHotKeyHandler();
         monthListArrowKeyHandler = new MonthListArrowKeyHandler();
         monthListSelectionHandler = new MonthListSelectionHandler();
         monthTextFieldCheckingHandler = new MonthTextFieldCheckingHandler();
         monthTextFieldArrowKeyHandler = new MonthTextFieldArrowKeyHandler();
+        mouseWheelHandler = new MouseWheelHandler();
         
         generalFont = new Font( "細明體", Font.PLAIN, 16 );
         
@@ -67,8 +83,8 @@ public class IncomeRecordDatePanel extends JPanel {
         yearTextField.addFocusListener( monthTextFieldCheckingHandler );
         yearTextField.addKeyListener( monthTextFieldArrowKeyHandler );
         //yearTextField.addKeyListener( mnemonicKeyHandler );
-        //yearTextField.addKeyListener( undoHotKeyHandler );
-        //yearTextField.getDocument().addUndoableEditListener( undoEditHandler );
+        yearTextField.addKeyListener( undoHotKeyHandler );
+        yearTextField.getDocument().addUndoableEditListener( undoEditHandler );
         yearTextField.setText( String.format( "%04d", year ) );
         add( yearTextField );
         
@@ -84,8 +100,8 @@ public class IncomeRecordDatePanel extends JPanel {
         monthTextField.addFocusListener( monthTextFieldCheckingHandler );
         monthTextField.addKeyListener( monthTextFieldArrowKeyHandler );
         //monthTextField.addKeyListener( mnemonicKeyHandler );
-        //monthTextField.addKeyListener( undoHotKeyHandler );
-        //monthTextField.getDocument().addUndoableEditListener( undoEditHandler );
+        monthTextField.addKeyListener( undoHotKeyHandler );
+        monthTextField.getDocument().addUndoableEditListener( undoEditHandler );
         monthTextField.setText( String.format( "%02d", month ) );
         add( monthTextField );
         
@@ -111,9 +127,12 @@ public class IncomeRecordDatePanel extends JPanel {
         //monthList.addKeyListener( mnemonicKeyHandler );
         //monthList.setFocusTraversalKeysEnabled( false );
         //monthList.addKeyListener( specialFocusTraversalPolicyHandler );
+        monthList.addMouseWheelListener( mouseWheelHandler );
         add( monthList );
         
         setPreferredSize( new Dimension( 120, 479 ) );
+        
+        monthListScrollFlag = false;
     }
     
     public JList<String> getMonthList() {
@@ -274,6 +293,80 @@ public class IncomeRecordDatePanel extends JPanel {
         }
     }
     
+    private void monthListScrollUp() {
+        final int SCROLL_NOTCHES = 3;
+        int currentHeadYear, currentHeadMonth;
+        try {
+            currentHeadYear = Integer.parseInt( monthList.getModel().getElementAt( 0 ).substring( 0, 4 ) );
+            currentHeadMonth = Integer.parseInt( monthList.getModel().getElementAt( 0 ).substring( 5 ) );
+        } catch( NumberFormatException e ) {
+            currentHeadYear = 1900;
+            currentHeadMonth = 1;
+        }
+        
+        int scrolledHeadYear, scrolledHeadMonth;
+        scrolledHeadMonth = currentHeadMonth - SCROLL_NOTCHES;
+        if( scrolledHeadMonth <= 0 ) {
+            scrolledHeadMonth += 12;
+            scrolledHeadYear = currentHeadYear - 1;
+        } else {
+            scrolledHeadYear = currentHeadYear;
+        }
+        
+        String[] monthListString = new String[ DEFAULT_MONTH_LIST_COUNT ];
+        for( int i = 0; i < monthListString.length; i++ ) {
+            monthListString[ i ] = String.format( "%04d.%02d", 
+                scrolledHeadYear + (scrolledHeadMonth + i - 1) / 12, (scrolledHeadMonth + i - 1) % 12 + 1 );
+        }
+        monthList.setListData( monthListString );
+
+        int scrolledSelectedIndex = findDataIndexInMonthList( 
+            Integer.parseInt( yearTextField.getText() ), Integer.parseInt( monthTextField.getText() ) );
+        if( scrolledSelectedIndex < 0 ) {
+            monthList.clearSelection();
+        } else {
+            monthListScrollFlag = true;
+            monthList.setSelectedIndex( scrolledSelectedIndex );
+        }
+    }
+    
+    private void monthListScrollDown() {
+        final int SCROLL_NOTCHES = 3;
+        int currentHeadYear, currentHeadMonth;
+        try {
+            currentHeadYear = Integer.parseInt( monthList.getModel().getElementAt( 0 ).substring( 0, 4 ) );
+            currentHeadMonth = Integer.parseInt( monthList.getModel().getElementAt( 0 ).substring( 5 ) );
+        } catch( NumberFormatException e ) {
+            currentHeadYear = 1900;
+            currentHeadMonth = 1;
+        }
+        
+        int scrolledHeadYear, scrolledHeadMonth;
+        scrolledHeadMonth = currentHeadMonth + SCROLL_NOTCHES;
+        if( scrolledHeadMonth > 12 ) {
+            scrolledHeadMonth -= 12;
+            scrolledHeadYear = currentHeadYear + 1;
+        } else {
+            scrolledHeadYear = currentHeadYear;
+        }
+        
+        String[] monthListString = new String[ DEFAULT_MONTH_LIST_COUNT ];
+        for( int i = 0; i < monthListString.length; i++ ) {
+            monthListString[ i ] = String.format( "%04d.%02d", 
+                scrolledHeadYear + (scrolledHeadMonth + i - 1) / 12, (scrolledHeadMonth + i - 1) % 12 + 1 );
+        }
+        monthList.setListData( monthListString );
+        
+        int scrolledSelectedIndex = findDataIndexInMonthList( 
+            Integer.parseInt( yearTextField.getText() ), Integer.parseInt( monthTextField.getText() ) );
+        if( scrolledSelectedIndex < 0 ) {
+            monthList.clearSelection();
+        } else {
+            monthListScrollFlag = true;
+            monthList.setSelectedIndex( scrolledSelectedIndex );
+        }
+    }
+    
     private class FocusHandler extends FocusAdapter {
         
         @Override
@@ -281,6 +374,32 @@ public class IncomeRecordDatePanel extends JPanel {
             JTextField sourceComponent = (JTextField) event.getSource();
             sourceComponent.selectAll();
         }
+    }
+    
+    private class UndoEditHandler implements UndoableEditListener {
+        
+        @Override
+        public void undoableEditHappened( UndoableEditEvent event ) {
+            undoManager.addEdit( event.getEdit() );
+        }
+    }
+    
+    private class UndoHotKeyHandler implements KeyListener {
+        
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            if( event.isControlDown() && event.getKeyCode() == KeyEvent.VK_Z && undoManager.canUndo() ) {
+                undoManager.undo();
+            } else if( event.isControlDown() && event.getKeyCode() == KeyEvent.VK_Y && undoManager.canRedo() ) {
+                undoManager.redo();
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
     }
     
     private class MonthListArrowKeyHandler implements KeyListener {
@@ -316,6 +435,11 @@ public class IncomeRecordDatePanel extends JPanel {
         
         @Override
         public void valueChanged( ListSelectionEvent event ) {
+            if( monthListScrollFlag ) {
+                monthListScrollFlag = false;
+                return; 
+            }
+            
             if( monthList.getSelectedIndex() < 0 || incomeRecordTablePanel == null ) {
                 return;
             }
@@ -430,6 +554,19 @@ public class IncomeRecordDatePanel extends JPanel {
                 month = Integer.parseInt( monthTextFieldCache );
             }
             selectMonthListData( year, month );
+        }
+    }
+    
+    private class MouseWheelHandler implements MouseWheelListener {
+
+        @Override
+        public void mouseWheelMoved( MouseWheelEvent event ) {
+            int notches = event.getWheelRotation();
+            if( notches < 0 ) {
+                monthListScrollUp();
+            } else {
+                monthListScrollDown();
+            }
         }
     }
 }

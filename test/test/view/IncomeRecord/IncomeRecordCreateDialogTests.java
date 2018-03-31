@@ -1,5 +1,6 @@
 package test.view.IncomeRecord;
 
+import java.awt.Component;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import commonUtil.IncomeRecordUtil;
@@ -24,6 +26,7 @@ import view.MainFrame;
 
 public class IncomeRecordCreateDialogTests extends TestCase {
     
+    private final int TAB_DELAY = 300;
     private final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "data\\IncomeRecord\\IncomeRecordSeq_backup.txt";
     
@@ -47,19 +50,19 @@ public class IncomeRecordCreateDialogTests extends TestCase {
             Thread.sleep( 3000 );
             
             // 點選收支記錄頁籤"新增"按鈕
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
             
             // 新增資料
             inputString( bot, "test item 1" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "100" );
-            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
             
             // 檢查是否有新增成功
@@ -83,25 +86,25 @@ public class IncomeRecordCreateDialogTests extends TestCase {
             
             // 新增資料
             inputString( bot, "test item 2" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "200" );
-            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
 
             inputString( bot, "test item 3" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "300" );
             bot.keyPress( KeyEvent.VK_SHIFT );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             bot.keyRelease( KeyEvent.VK_SHIFT );
-            bot.keyPress( KeyEvent.VK_LEFT ); bot.keyRelease( KeyEvent.VK_LEFT ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_LEFT ); bot.keyRelease( KeyEvent.VK_LEFT ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
-            bot.keyPress( KeyEvent.VK_ESCAPE ); bot.keyRelease( KeyEvent.VK_ESCAPE ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_ESCAPE ); bot.keyRelease( KeyEvent.VK_ESCAPE ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
             
             // 檢查是否有新增成功
@@ -173,30 +176,30 @@ public class IncomeRecordCreateDialogTests extends TestCase {
             Thread.sleep( 3000 );
             
             // 點選收支記錄頁籤"新增"按鈕
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
             
             // 新增資料
             bot.keyPress( KeyEvent.VK_SHIFT );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             bot.keyRelease( KeyEvent.VK_SHIFT );
             inputString( bot, "2017" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "10" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "01" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "test item 1" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "100" );
-            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
             
             // 檢查是否有新增成功
@@ -215,30 +218,30 @@ public class IncomeRecordCreateDialogTests extends TestCase {
             
             // 新增資料
             inputString( bot, "test item 2" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "200" );
-            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
 
             inputString( bot, "test item 3" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "300" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "test comment" );
-            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
             inputString( bot, "123" );
             bot.keyPress( KeyEvent.VK_SHIFT );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             bot.keyRelease( KeyEvent.VK_SHIFT );
-            bot.keyPress( KeyEvent.VK_LEFT ); bot.keyRelease( KeyEvent.VK_LEFT ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_I ); bot.keyRelease( KeyEvent.VK_I ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
-            bot.keyPress( KeyEvent.VK_ESCAPE ); bot.keyRelease( KeyEvent.VK_ESCAPE ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_ESCAPE ); bot.keyRelease( KeyEvent.VK_ESCAPE ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
             
             // 檢查是否有新增成功
@@ -264,15 +267,15 @@ public class IncomeRecordCreateDialogTests extends TestCase {
             
             // 檢查畫面是否顯示正確
             bot.keyPress( KeyEvent.VK_SHIFT );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             bot.keyRelease( KeyEvent.VK_SHIFT );
             inputString( bot, "2017" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "10" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 500 );
             
             String expectDateString = String.format( "%04d.%02d.%02d", 2017, 10, 1 );
@@ -295,6 +298,172 @@ public class IncomeRecordCreateDialogTests extends TestCase {
             assertTrue( e.getMessage(), false );
         } finally {
             restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
+    public void testCreateIncomeRecord3() throws IOException {
+        final String INCOME_RECORD_CSV_FILE_PATH = "data\\IncomeRecord\\2017.10.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "data\\IncomeRecord\\2017.10_backup.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_2 = "data\\IncomeRecord\\2018.01.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "data\\IncomeRecord\\2018.01_backup.csv";
+        
+        int testerSelection = 0;
+        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
+        FundBookServices fundBookServices = new FundBookServices();
+        fundBookServices.setIncomeRecordService( incomeRecordService );
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            // 執行視窗程式
+            MainFrame mainFrame = new MainFrame( fundBookServices );
+            mainFrame.setVisible( true );
+            
+            JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
+            
+            Robot bot =  new Robot();
+            Thread.sleep( 3000 );
+            
+            // 點選收支記錄頁籤"新增"按鈕
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            
+            // 新增資料 (日期: 2017.10.01  項目: test item 1  金額: 100(支出))
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            inputString( bot, "2017" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "10" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "01" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "test item 1" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "100" );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            
+            // 檢查是否有新增成功
+            IncomeRecord expect1 = getTestData2();
+            expect1.setId( 1 );
+            expect1.setItem( "test item 1" );
+            expect1.setOrderNo( 1 );
+            IncomeRecord actual1 = incomeRecordService.findOne( 1, 2017, 10 );
+            assertTrue( IncomeRecordUtil.equals( expect1, actual1 ) );
+            
+            // 檢查畫面是否有更新
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, "已新增資料筆數是否有更新為'1'", "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            Thread.sleep( 500 );
+            
+            // 新增資料 (日期: 2018.01.31  項目: test item 2  金額: 100(支出))
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            // 年: 2017 -> 2018
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            // 月: 10 -> 01
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            // 日: 01 -> 31
+            bot.keyPress( KeyEvent.VK_UP ); bot.keyRelease( KeyEvent.VK_UP ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "test item 2" );
+            // 金額: 100 (測試undo功能)
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "100123" );
+            Thread.sleep( 500 );
+            bot.keyPress( KeyEvent.VK_CONTROL );
+            bot.keyPress( KeyEvent.VK_Z ); bot.keyRelease( KeyEvent.VK_Z ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_Z ); bot.keyRelease( KeyEvent.VK_Z ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_Z ); bot.keyRelease( KeyEvent.VK_Z ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_CONTROL );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            bot.keyPress( KeyEvent.VK_ESCAPE ); bot.keyRelease( KeyEvent.VK_ESCAPE ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            
+            // 檢查是否有新增成功
+            IncomeRecord expect2 = getTestData3();
+            expect2.setId( 2 );
+            expect2.setItem( "test item 2" );
+            expect2.setOrderNo( 1 );
+            IncomeRecord actual2 = incomeRecordService.findOne( 2, 2018, 1 );
+            assertTrue( IncomeRecordUtil.equals( expect2, actual2 ) );
+            
+            // 檢查畫面是否顯示正確 (2017.10)
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            inputString( bot, "2017" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "10" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 500 );
+            
+            String expectDateString1 = String.format( "%04d.%02d.%02d", 2017, 10, 1 );
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, 
+                "<html><head><style type=\"text/css\">" + 
+                    "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
+                "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
+                    "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
+                    "<tr><td>" + expectDateString1 + "</td><td>test item 1</td><td>支</td><td>100</td></tr>" + 
+                "</table></body></html>", 
+                "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            Thread.sleep( 500 );
+            
+            // 檢查畫面是否顯示正確 (2018.01)
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            inputString( bot, "2018" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "01" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 500 );
+            
+            String expectDateString2 = String.format( "%04d.%02d.%02d", 2018, 1, 31 );
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, 
+                "<html><head><style type=\"text/css\">" + 
+                    "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
+                "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
+                    "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
+                    "<tr><td>" + expectDateString2 + "</td><td>test item 2</td><td>支</td><td>100</td></tr>" + 
+                "</table></body></html>", 
+                "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            
+            Thread.sleep( 1000 );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
             restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
@@ -333,6 +502,23 @@ public class IncomeRecordCreateDialogTests extends TestCase {
         return testData;
     }
     
+    private IncomeRecord getTestData3() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        
+        IncomeRecord testData = new IncomeRecord();
+        testData.setId( 0 );
+        testData.setYear( 2018 );
+        testData.setMonth( 1 );
+        testData.setDay( 31 );
+        testData.setItem( "test item" );
+        testData.setClassNo( 0 );
+        testData.setAmount( -100 );
+        testData.setDescription( "" );
+        testData.setOrderNo( 0 );
+        return testData;
+    }
+    
     private String getIncomeRecordCsvFilePathOfCurrentDay() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( new Date() );
@@ -348,6 +534,14 @@ public class IncomeRecordCreateDialogTests extends TestCase {
         return String.format( "data\\IncomeRecord\\%04d.%02d_backup.csv", 
             calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
     }
+    
+    //private void waitingForComponentFocused( JFrame ownerFrame, Component targetComponent ) throws InterruptedException {
+    //    int time = 0;
+    //    while( ownerFrame.getFocusOwner() != targetComponent && time < 60000 ) {
+    //        Thread.sleep( 100 );
+    //        time += 100;
+    //    }
+    //}
     
     private void backupFile( String filePath, String backupFilePath )
             throws IOException {
