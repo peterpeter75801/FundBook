@@ -1,6 +1,5 @@
 package test.view.IncomeRecord;
 
-import java.awt.Component;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -12,7 +11,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import commonUtil.IncomeRecordUtil;
@@ -26,7 +24,7 @@ import view.MainFrame;
 
 public class IncomeRecordCreateDialogTests extends TestCase {
     
-    private final int TAB_DELAY = 300;
+    private final int TAB_DELAY = 100;
     private final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "data\\IncomeRecord\\IncomeRecordSeq_backup.txt";
     

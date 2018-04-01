@@ -3,6 +3,7 @@
 2. Add undo input feature into creating dialog and updating dialog.
 3. Add the feature of computing income status in current month.
 4. Add IncomeRecord property displaying dialog.
+5. Add mouse scrolling feature on date list.
 
 ---- version 0.0.10-pre ----
 1. Add IncomeRecord updating dialog.

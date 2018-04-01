@@ -180,13 +180,13 @@ public class IncomeRecordPanel extends JPanel {
         totalPropertyLabel = new JLabel( "總金額: " );
         totalPropertyLabel.setBounds( 16, 506, 64, 22 );
         totalPropertyLabel.setFont( generalFont );
-        add( totalPropertyLabel );
+        //add( totalPropertyLabel );
         
         totalPropertyTextField = new JTextField();
         totalPropertyTextField.setBounds( 80, 506, 216, 22 );
         totalPropertyTextField.setFont( generalFont );
         totalPropertyTextField.setEditable( false );
-        add( totalPropertyTextField );
+        //add( totalPropertyTextField );
         
         versionLabel = new JLabel( Contants.VERSION, SwingConstants.RIGHT );
         versionLabel.setBounds( 561, 506, 224, 22 );
@@ -220,7 +220,7 @@ public class IncomeRecordPanel extends JPanel {
         incomeRecordDatePanel.reselectDateList();
     }
     
-    private void deleteIncomeRecord() {
+    public void deleteIncomeRecord() {
         int selectedYear, selectedMonth;
         String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
         try {
@@ -267,7 +267,7 @@ public class IncomeRecordPanel extends JPanel {
         }
     }
     
-    private void openIncomeRecordCreateDialog() {
+    public void openIncomeRecordCreateDialog() {
         int selectedYear, selectedMonth;
         String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
         try {
@@ -281,7 +281,7 @@ public class IncomeRecordPanel extends JPanel {
         incomeRecordCreateDialog.openDialog( selectedYear, selectedMonth );
     }
     
-    private void openIncomeRecordUpdateDialog() {
+    public void openIncomeRecordUpdateDialog() {
         int selectedYear, selectedMonth;
         String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
         try {
@@ -299,7 +299,7 @@ public class IncomeRecordPanel extends JPanel {
         }
     }
     
-    private void openIncomeRecordPropertyDialog() {
+    public void openIncomeRecordPropertyDialog() {
         int selectedYear, selectedMonth;
         String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
         try {
@@ -317,7 +317,7 @@ public class IncomeRecordPanel extends JPanel {
         }
     }
     
-    private void moveUpIncomeRecordData() {
+    public void moveUpIncomeRecordData() {
         int selectedYear, selectedMonth;
         int selectedIndex = incomeRecordTablePanel.getDataTable().getSelectedRow();
         int status = Contants.SUCCESS;
@@ -348,7 +348,7 @@ public class IncomeRecordPanel extends JPanel {
         }
     }
     
-    private void moveDownIncomeRecordData() {
+    public void moveDownIncomeRecordData() {
         int selectedYear, selectedMonth;
         int selectedIndex = incomeRecordTablePanel.getDataTable().getSelectedRow();
         int status = Contants.SUCCESS;
@@ -379,7 +379,7 @@ public class IncomeRecordPanel extends JPanel {
         }
     }
     
-    private void sortIncomeRecordData() {
+    public void sortIncomeRecordData() {
         int selectedYear, selectedMonth;
         int selectedIndex = incomeRecordTablePanel.getDataTable().getSelectedRow();
         int status = Contants.SUCCESS;
@@ -411,7 +411,7 @@ public class IncomeRecordPanel extends JPanel {
         }
     }
     
-    public class MnemonicKeyHandler implements KeyListener {
+    private class MnemonicKeyHandler implements KeyListener {
         
         @Override
         public void keyPressed( KeyEvent event ) {

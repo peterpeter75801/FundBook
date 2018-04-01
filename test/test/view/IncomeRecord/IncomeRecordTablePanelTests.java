@@ -23,7 +23,7 @@ import main.FundBookServices;
 
 public class IncomeRecordTablePanelTests extends TestCase {
     
-    private final int TAB_DELAY = 300;
+    private final int TAB_DELAY = 100;
     private final String INCOME_RECORD_CSV_FILE_PATH = "data\\IncomeRecord\\2017.10.csv";
     private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "data\\IncomeRecord\\2017.10_backup.csv";
     private final String INCOME_RECORD_CSV_FILE_PATH_2 = "data\\IncomeRecord\\2018.01.csv";

@@ -24,7 +24,7 @@ import view.MainFrame;
 
 public class IncomeRecordUpdateDialogTests extends TestCase {
     
-    private final int TAB_DELAY = 300;
+    private final int TAB_DELAY = 100;
     private final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "data\\IncomeRecord\\IncomeRecordSeq_backup.txt";
     

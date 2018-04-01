@@ -37,7 +37,7 @@ public class IncomeRecordDatePanel extends JPanel {
     
     private UndoManager undoManager;
     private FocusHandler focusHandler;
-    //private MnemonicKeyHandler mnemonicKeyHandler;
+    private MnemonicKeyHandler mnemonicKeyHandler;
     private UndoEditHandler undoEditHandler;
     private UndoHotKeyHandler undoHotKeyHandler;
     private MonthListArrowKeyHandler monthListArrowKeyHandler;
@@ -61,6 +61,7 @@ public class IncomeRecordDatePanel extends JPanel {
         
         undoManager = new UndoManager();
         focusHandler = new FocusHandler();
+        mnemonicKeyHandler = new MnemonicKeyHandler();
         undoEditHandler = new UndoEditHandler();
         undoHotKeyHandler = new UndoHotKeyHandler();
         monthListArrowKeyHandler = new MonthListArrowKeyHandler();
@@ -82,7 +83,6 @@ public class IncomeRecordDatePanel extends JPanel {
         yearTextField.addFocusListener( focusHandler );
         yearTextField.addFocusListener( monthTextFieldCheckingHandler );
         yearTextField.addKeyListener( monthTextFieldArrowKeyHandler );
-        //yearTextField.addKeyListener( mnemonicKeyHandler );
         yearTextField.addKeyListener( undoHotKeyHandler );
         yearTextField.getDocument().addUndoableEditListener( undoEditHandler );
         yearTextField.setText( String.format( "%04d", year ) );
@@ -99,7 +99,6 @@ public class IncomeRecordDatePanel extends JPanel {
         monthTextField.addFocusListener( focusHandler );
         monthTextField.addFocusListener( monthTextFieldCheckingHandler );
         monthTextField.addKeyListener( monthTextFieldArrowKeyHandler );
-        //monthTextField.addKeyListener( mnemonicKeyHandler );
         monthTextField.addKeyListener( undoHotKeyHandler );
         monthTextField.getDocument().addUndoableEditListener( undoEditHandler );
         monthTextField.setText( String.format( "%02d", month ) );
@@ -124,9 +123,7 @@ public class IncomeRecordDatePanel extends JPanel {
         monthList.setFont( generalFont );
         monthList.setBorder( new JTextField().getBorder() );
         monthList.addKeyListener( monthListArrowKeyHandler );
-        //monthList.addKeyListener( mnemonicKeyHandler );
-        //monthList.setFocusTraversalKeysEnabled( false );
-        //monthList.addKeyListener( specialFocusTraversalPolicyHandler );
+        monthList.addKeyListener( mnemonicKeyHandler );
         monthList.addMouseWheelListener( mouseWheelHandler );
         add( monthList );
         
@@ -568,5 +565,43 @@ public class IncomeRecordDatePanel extends JPanel {
                 monthListScrollDown();
             }
         }
+    }
+    
+    private class MnemonicKeyHandler implements KeyListener {
+        
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            switch( event.getKeyCode() ) {
+            case KeyEvent.VK_C:
+                ownerPanel.openIncomeRecordCreateDialog();
+                break;
+            case KeyEvent.VK_U:
+                ownerPanel.openIncomeRecordUpdateDialog();
+                break;
+            case KeyEvent.VK_D:
+                ownerPanel.deleteIncomeRecord();
+                break;
+            case KeyEvent.VK_P:
+                ownerPanel.moveUpIncomeRecordData();
+                break;
+            case KeyEvent.VK_N:
+                ownerPanel.moveDownIncomeRecordData();
+                break;
+            case KeyEvent.VK_S:
+                ownerPanel.sortIncomeRecordData();
+                break;
+            case KeyEvent.VK_R:
+                ownerPanel.openIncomeRecordPropertyDialog();
+                break;
+            default:
+                break;
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
     }
 }

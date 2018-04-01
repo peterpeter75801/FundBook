@@ -1,5 +1,8 @@
 package view;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
@@ -12,7 +15,6 @@ public class MainFrame extends JFrame {
     
     private JTabbedPane tabbedPane;
     private IncomeRecordPanel incomeRecordPanel;
-    //private ScheduledItemPanel scheduledItemPanel;
     
     public MainFrame( FundBookServices fundBookServices ) {
         super( "Fund Book" );
@@ -21,6 +23,7 @@ public class MainFrame extends JFrame {
         
         incomeRecordPanel = new IncomeRecordPanel( fundBookServices, this );
         tabbedPane.addTab( "收支記錄", null, incomeRecordPanel, "記錄每個月的收支狀況" );
+        tabbedPane.addKeyListener( new MnemonicKeyHandler() );
         
         add( tabbedPane );
         
@@ -30,5 +33,45 @@ public class MainFrame extends JFrame {
     
     public IncomeRecordPanel getIncomeRecordPanel() {
         return incomeRecordPanel;
+    }
+    
+    private class MnemonicKeyHandler implements KeyListener {
+        
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            if( tabbedPane.getSelectedComponent() == incomeRecordPanel ) {
+                switch( event.getKeyCode() ) {
+                case KeyEvent.VK_C:
+                    incomeRecordPanel.openIncomeRecordCreateDialog();
+                    break;
+                case KeyEvent.VK_U:
+                    incomeRecordPanel.openIncomeRecordUpdateDialog();
+                    break;
+                case KeyEvent.VK_D:
+                    incomeRecordPanel.deleteIncomeRecord();
+                    break;
+                case KeyEvent.VK_P:
+                    incomeRecordPanel.moveUpIncomeRecordData();
+                    break;
+                case KeyEvent.VK_N:
+                    incomeRecordPanel.moveDownIncomeRecordData();
+                    break;
+                case KeyEvent.VK_S:
+                    incomeRecordPanel.sortIncomeRecordData();
+                    break;
+                case KeyEvent.VK_R:
+                    incomeRecordPanel.openIncomeRecordPropertyDialog();
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
     }
 }
