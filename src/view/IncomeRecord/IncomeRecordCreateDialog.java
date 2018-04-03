@@ -371,6 +371,8 @@ public class IncomeRecordCreateDialog extends JDialog {
             createdCountValueLabel.setText( 
                 String.format( "%d" ,Integer.parseInt( createdCountValueLabel.getText() ) + 1 ) );
             finishButton.setText( "結束" );
+            itemTextField.setText( "" );
+            amountTextField.setText( "" );
             itemTextField.requestFocus();
             break;
         case Contants.ERROR_EXCEED_UPPER_LIMIT:

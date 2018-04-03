@@ -43,6 +43,7 @@ public class IncomeRecordPanel extends JPanel {
     private JButton moveUpButton;
     private JButton moveDownButton;
     private JButton sortButton;
+    private JButton copyButton;
     private JButton detailButton;
     private JLabel incomeStateInCurrentMonthLabel;
     private JTextField incomeStateInCurrentMonthTextField;
@@ -153,8 +154,21 @@ public class IncomeRecordPanel extends JPanel {
         });
         add( sortButton );
         
+        copyButton = new JButton( "複製(Y)" );
+        copyButton.setBounds( 717, 296, 64, 22 );
+        copyButton.setFont( generalFont );
+        copyButton.addKeyListener( mnemonicKeyHandler );
+        copyButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        copyButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                copyIncomeRecordData();
+            }
+        });
+        add( copyButton );
+        
         detailButton = new JButton( "詳細(R)" );
-        detailButton.setBounds( 717, 296, 64, 22 );
+        detailButton.setBounds( 717, 340, 64, 22 );
         detailButton.setFont( generalFont );
         detailButton.addKeyListener( mnemonicKeyHandler );
         detailButton.setMargin( new Insets( 0, 0, 0, 0 ) );
@@ -218,6 +232,43 @@ public class IncomeRecordPanel extends JPanel {
     
     public void reselectDateList() {
         incomeRecordDatePanel.reselectDateList();
+    }
+    
+    public void copyIncomeRecordData() {
+        int selectedYear, selectedMonth;
+        String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
+        try {
+            selectedYear = Integer.parseInt( selectedMonthString.substring( 0, 4 ) );
+            selectedMonth = Integer.parseInt( selectedMonthString.substring( 5, 7 ) );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            selectedYear = 1900;
+            selectedMonth = 1;
+        }
+        
+        int selectedId = incomeRecordTablePanel.getItemTableSelectedId();
+        if( selectedId == -1 ) {
+            return;
+        }
+        
+        int returnCode = 0;
+        try {
+            IncomeRecord incomeRecordForCopy = incomeRecordService.findOne( selectedId, selectedYear, selectedMonth );
+            returnCode = incomeRecordService.insert( incomeRecordForCopy );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            returnCode = Contants.ERROR;
+        }
+        switch( returnCode ) {
+        case Contants.SUCCESS:
+            reselectDateList();
+            break;
+        case Contants.ERROR:
+            JOptionPane.showMessageDialog( null, "複製失敗", "Error", JOptionPane.ERROR_MESSAGE );
+            break;
+        default:
+            break;
+        }
     }
     
     public void deleteIncomeRecord() {
@@ -468,6 +519,12 @@ public class IncomeRecordPanel extends JPanel {
                     sortButton.requestFocus();
                 }
                 sortIncomeRecordData();
+                break;
+            case KeyEvent.VK_Y:
+                if( event.getSource() != incomeRecordTablePanel.getDataTable() ) {
+                    copyButton.requestFocus();
+                }
+                copyIncomeRecordData();
                 break;
             case KeyEvent.VK_R:
                 if( event.getSource() != incomeRecordTablePanel.getDataTable() ) {

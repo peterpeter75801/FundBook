@@ -590,6 +590,9 @@ public class IncomeRecordDatePanel extends JPanel {
             case KeyEvent.VK_S:
                 ownerPanel.sortIncomeRecordData();
                 break;
+            case KeyEvent.VK_Y:
+                ownerPanel.copyIncomeRecordData();
+                break;
             case KeyEvent.VK_R:
                 ownerPanel.openIncomeRecordPropertyDialog();
                 break;
