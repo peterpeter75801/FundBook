@@ -59,6 +59,9 @@ public class MainFrame extends JFrame {
                 case KeyEvent.VK_S:
                     incomeRecordPanel.sortIncomeRecordData();
                     break;
+                case KeyEvent.VK_Y:
+                    incomeRecordPanel.copyIncomeRecordData();
+                    break;
                 case KeyEvent.VK_R:
                     incomeRecordPanel.openIncomeRecordPropertyDialog();
                     break;
