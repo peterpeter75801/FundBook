@@ -376,7 +376,7 @@ public class IncomeRecordUpdateDialog extends JDialog {
             }
             incomeRecord.setOrderNo( 0 );
             
-            returnCode = incomeRecordService.update( incomeRecord );
+            returnCode = incomeRecordService.update( incomeRecord, originIncomeRecord.getYear(), originIncomeRecord.getMonth() );
         } catch ( Exception e ) {
             e.printStackTrace();
             returnCode = Contants.ERROR;

@@ -12,7 +12,7 @@ public interface IncomeRecordService {
     
     public List<IncomeRecord> findByMonth( int year, int month ) throws Exception;
     
-    public int update( IncomeRecord incomeRecord ) throws Exception;
+    public int update( IncomeRecord incomeRecord, int originalYear, int originalMonth ) throws Exception;
     
     public int delete( IncomeRecord incomeRecord ) throws Exception;
     

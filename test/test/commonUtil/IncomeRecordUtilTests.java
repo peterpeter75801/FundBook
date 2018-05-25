@@ -86,6 +86,15 @@ public class IncomeRecordUtilTests extends TestCase {
         }
     }
     
+    public void testCompareYearMonth() {
+        IncomeRecord incomeRecord1 = getTestData1();
+        IncomeRecord incomeRecord2 = getTestData2();
+        IncomeRecord incomeRecord3 = getTestData6();
+            
+        assertTrue( IncomeRecordUtil.compareYearMonth( incomeRecord1, incomeRecord2 ) == 0 );
+        assertFalse( IncomeRecordUtil.compareYearMonth( incomeRecord1, incomeRecord3 ) == 0 );
+    }
+    
     public void testCopy() {
         IncomeRecord expect = getTestData1();
         IncomeRecord clone = IncomeRecordUtil.copy( getTestData1() );
@@ -164,6 +173,20 @@ public class IncomeRecordUtilTests extends TestCase {
         testData.setId( 5 );
         testData.setYear( 2017 );
         testData.setMonth( 10 );
+        testData.setDay( 2 );
+        testData.setItem( "測試帳" );
+        testData.setClassNo( 0 );
+        testData.setAmount( 500 );
+        testData.setDescription( "" );
+        testData.setOrderNo( 0 );
+        return testData;
+    }
+    
+    private IncomeRecord getTestData6() {
+        IncomeRecord testData = new IncomeRecord();
+        testData.setId( 5 );
+        testData.setYear( 2017 );
+        testData.setMonth( 12 );
         testData.setDay( 2 );
         testData.setItem( "測試帳" );
         testData.setClassNo( 0 );

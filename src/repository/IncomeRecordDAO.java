@@ -14,6 +14,9 @@ public interface IncomeRecordDAO {
     
     public boolean update( IncomeRecord incomeRecord, int indexYear, int indexMonth ) throws Exception;
     
+    public boolean updateDifferentMonth( IncomeRecord incomeRecord, int indexYear, int indexMonth,
+            int newIndexYear, int newIndexMonth ) throws Exception;
+    
     public boolean delete( IncomeRecord incomeRecord, int indexYear, int indexMonth ) throws Exception;
     
     public int getCurrentSeqNumber() throws Exception;

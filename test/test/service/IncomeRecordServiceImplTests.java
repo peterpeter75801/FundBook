@@ -124,7 +124,7 @@ public class IncomeRecordServiceImplTests extends TestCase {
             modifiedData.setId( 3 );
             modifiedData.setItem( "test123" );
             modifiedData.setAmount( 300 );
-            incomeRecordService.update( modifiedData );
+            incomeRecordService.update( modifiedData, getTestData1().getYear(), getTestData1().getMonth() );
             
             List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData1().getYear(), getTestData1().getMonth() );
             assertEquals( expectDataList.size(), actualDataList.size() );

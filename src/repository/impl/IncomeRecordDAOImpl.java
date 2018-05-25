@@ -183,6 +183,75 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         
         return true;
     }
+    
+    @Override
+    public boolean updateDifferentMonth( IncomeRecord incomeRecord, int indexYear, int indexMonth,
+            int newIndexYear, int newIndexMonth ) throws Exception {
+        String csvFilePath = Contants.INCOME_RECORD_DATA_PATH + 
+                IncomeRecordUtil.getIncomeRecordCsvFileName( indexYear, indexMonth );
+        if( !checkIfFileExists( csvFilePath ) ) {
+            return false;
+        }
+        
+        String newCsvFilePath = Contants.INCOME_RECORD_DATA_PATH + 
+                IncomeRecordUtil.getIncomeRecordCsvFileName( newIndexYear, newIndexMonth );
+        if( !checkIfFileExists( newCsvFilePath ) ) {
+            createCsvFile( newCsvFilePath );
+        }
+        
+        ArrayList<String> fileContentBuffer = new ArrayList<String>();
+        ArrayList<String> newFileContentBuffer = new ArrayList<String>();
+        String currentTuple = "";
+        IncomeRecord currentIncomeRecord = new IncomeRecord();
+        
+        BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                new FileInputStream( new File( csvFilePath ) ),
+                Contants.FILE_CHARSET
+            )
+        );
+        // read attribute titles
+        fileContentBuffer.add( bufReader.readLine() );
+        // search data & modify data
+        while( (currentTuple = bufReader.readLine()) != null ) {
+            currentIncomeRecord = IncomeRecordUtil.getIncomeRecordFromCsvTupleString( currentTuple );
+            if( ComparingUtil.compare( currentIncomeRecord.getId(), incomeRecord.getId() ) == 0 ) {
+                // modify data
+                newFileContentBuffer.add( IncomeRecordUtil.getCsvTupleStringFromIncomeRecord( incomeRecord ) );
+            } else {
+                // not modify data
+                fileContentBuffer.add( currentTuple );
+            }
+        }
+        bufReader.close();
+        
+        // write file content buffer to original CSV data file
+        BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream( new File( csvFilePath ), false ),
+                    Contants.FILE_CHARSET
+                )
+            );
+        for( String content : fileContentBuffer ) {
+            writer.write( content );
+            writer.newLine();
+        }
+        writer.close();
+        
+        // write file content buffer to new CSV data file
+        writer = new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream( new File( newCsvFilePath ), true ),
+                    Contants.FILE_CHARSET
+                )
+            );
+        for( String content : newFileContentBuffer ) {
+            writer.write( content );
+            writer.newLine();
+        }
+        writer.close();
+        
+        return true;
+    }
 
     @Override
     public boolean delete( IncomeRecord incomeRecord, int indexYear, int indexMonth ) throws Exception {

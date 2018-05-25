@@ -3,6 +3,7 @@ package service.impl;
 import java.util.List;
 
 import common.Contants;
+import commonUtil.IncomeRecordUtil;
 import domain.IncomeRecord;
 import repository.IncomeRecordDAO;
 import service.IncomeRecordService;
@@ -50,7 +51,7 @@ public class IncomeRecordServiceImpl implements IncomeRecordService {
     }
 
     @Override
-    public int update( IncomeRecord incomeRecord ) throws Exception {
+    public int update( IncomeRecord incomeRecord, int originalYear, int originalMonth ) throws Exception {
         boolean returnCode;
         
         if( incomeRecord.getId() == null || incomeRecord.getYear() == null || 
@@ -62,6 +63,7 @@ public class IncomeRecordServiceImpl implements IncomeRecordService {
             return Contants.ERROR_NOT_EXIST;
         }
         
+        //if( IncomeRecordUtil.compareYearMonth(incomeRecord1, incomeRecord2) )
         returnCode = incomeRecordDAO.update( incomeRecord, incomeRecord.getYear(), incomeRecord.getMonth() );
         if( !returnCode ) {
             return Contants.ERROR;
@@ -70,6 +72,32 @@ public class IncomeRecordServiceImpl implements IncomeRecordService {
         if( !returnCode ) {
             return Contants.ERROR;
         }
+        
+        /*
+        public int update( Item originalItem, Item newItem ) throws Exception {
+            boolean returnCode = false;
+            
+            if( ItemUtil.comparePrimaryKey( originalItem, newItem ) == 0 ) {
+                returnCode = itemDAO.update( newItem );
+            } else {
+                int status = insert( newItem );
+                if( status != Contants.SUCCESS ) {
+                    return status;
+                }
+                status = delete( originalItem );
+                if( status != Contants.SUCCESS ) {
+                    return status;
+                }
+                returnCode = true;
+            }
+            
+            if( !returnCode ) {
+                return Contants.ERROR;
+            } else {
+                return Contants.SUCCESS;
+            }
+        }
+        */
         
         return Contants.SUCCESS;
     }

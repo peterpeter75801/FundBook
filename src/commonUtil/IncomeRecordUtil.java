@@ -77,6 +77,27 @@ public class IncomeRecordUtil {
         return incomeRecordList;
     }
     
+    public static int compareYearMonth( IncomeRecord incomeRecord1, IncomeRecord incomeRecord2 ) {
+        int compareValue = 0;
+         
+        if( incomeRecord1 == null && incomeRecord2 == null ) {
+            return 0;
+        } else if( incomeRecord1 != null && incomeRecord2 == null ) {
+            return 1;
+        } else if( incomeRecord1 == null && incomeRecord2 != null ) {
+            return -1;
+        }
+        
+        if( (compareValue = ComparingUtil.compare( incomeRecord1.getYear(), incomeRecord2.getYear() )) != 0 ) {
+            return compareValue;
+        }
+        if( (compareValue = ComparingUtil.compare( incomeRecord1.getMonth(), incomeRecord2.getMonth() )) != 0 ) {
+            return compareValue;
+        }
+        
+        return 0;
+    }
+    
     public static IncomeRecord copy( IncomeRecord incomeRecord ) {
         if( incomeRecord == null ) {
             return null;

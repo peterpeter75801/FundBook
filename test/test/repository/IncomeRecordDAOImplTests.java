@@ -189,6 +189,85 @@ public class IncomeRecordDAOImplTests extends TestCase {
         }
     }
     
+    public void testUpdateDifferentMonth() throws IOException {
+        final String INCOME_RECORD_CSV_FILE_PATH_2 = "data\\IncomeRecord\\2017.12.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "data\\IncomeRecord\\2017.12_backup.csv";
+        
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
+        
+        List<String> expectedDataList1 = new ArrayList<String>();
+        expectedDataList1.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",0" );
+        expectedDataList1.add( "2,2017,10,1,\"測試帳2\",0,200,\"\",0" );
+        List<String> expectedDataList2 = new ArrayList<String>();
+        expectedDataList2.add( "3,2017,12,1,\"測試帳3\",0,300,\"\",0" );
+        List<String> actualDataList1 = new ArrayList<String>();
+        List<String> actualDataList2 = new ArrayList<String>();
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            for( int i = 1; i <= 3; i++ ) {
+                IncomeRecord incomeRecord = getTestData1();
+                incomeRecord.setItem( "測試帳" + i );
+                incomeRecord.setAmount( 100 * i );
+                incomeRecordDAO.insert( incomeRecord );
+            }
+            
+            IncomeRecord modifiedData = getTestData1();
+            modifiedData.setId( 3 );
+            modifiedData.setMonth( 12 );
+            modifiedData.setItem( "測試帳3" );
+            modifiedData.setAmount( 300 );
+            
+            incomeRecordDAO.updateDifferentMonth( modifiedData, getTestData1().getYear(), getTestData1().getMonth(), 
+                    modifiedData.getYear(), 12 );
+            
+            BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                    new FileInputStream( new File( INCOME_RECORD_CSV_FILE_PATH ) ),
+                    FILE_CHARSET
+                )
+            );
+            bufReader.readLine();    // skip attribute titles
+            
+            String currentTuple = "";
+            while( (currentTuple = bufReader.readLine()) != null ){
+                actualDataList1.add( currentTuple );
+            }
+            bufReader.close();
+            
+            bufReader = new BufferedReader( new InputStreamReader(
+                    new FileInputStream( new File( INCOME_RECORD_CSV_FILE_PATH_2 ) ),
+                    FILE_CHARSET
+                )
+            );
+            bufReader.readLine();    // skip attribute titles
+            
+            currentTuple = "";
+            while( (currentTuple = bufReader.readLine()) != null ){
+                actualDataList2.add( currentTuple );
+            }
+            bufReader.close();
+            
+            assertEquals( expectedDataList1.size(), actualDataList1.size() );
+            for( int i = 0; i < expectedDataList1.size(); i++ ) {
+                assertEquals( "failed at i = " + i, expectedDataList1.get( i ), actualDataList1.get( i ) );
+            }
+            assertEquals( expectedDataList2.size(), actualDataList2.size() );
+            for( int i = 0; i < expectedDataList2.size(); i++ ) {
+                assertEquals( "failed at i = " + i, expectedDataList2.get( i ), actualDataList2.get( i ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
     public void testDelete() throws IOException {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         

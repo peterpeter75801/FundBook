@@ -164,6 +164,8 @@ public class IncomeRecordUpdateDialogTests extends TestCase {
     public void testUpdateIncomeRecord2() throws IOException {
         final String INCOME_RECORD_CSV_FILE_PATH = "data\\IncomeRecord\\2017.10.csv";
         final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "data\\IncomeRecord\\2017.10_backup.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_2 = "data\\IncomeRecord\\2017.12.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "data\\IncomeRecord\\2017.12_backup.csv";
         
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
@@ -172,6 +174,7 @@ public class IncomeRecordUpdateDialogTests extends TestCase {
         
         try {
             backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
             backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
             
             // 新增初始資料
@@ -247,13 +250,36 @@ public class IncomeRecordUpdateDialogTests extends TestCase {
             bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 500 );
             
-            // 檢查是否有修改成功
+            // 選擇第一筆資料，點選"修改"按鈕
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_UP ); bot.keyRelease( KeyEvent.VK_UP ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_UP ); bot.keyRelease( KeyEvent.VK_UP ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( TAB_DELAY );
+            
+            // 修改"日期"和"月份"
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            inputString( bot, "06" );
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            inputString( bot, "12" );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 500 );
+            
+            // 檢查是否有修改成功(10月份)
             List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
-            for( int i = 1; i <= 5; i++ ) {
+            for( int i = 2; i <= 5; i++ ) {
                 IncomeRecord incomeRecord = getTestData2();
                 incomeRecord.setId( i );
                 incomeRecord.setDay( i );
-                incomeRecord.setItem( getTestData1().getItem() + " " + i );
+                incomeRecord.setItem( getTestData2().getItem() + " " + i );
                 incomeRecord.setAmount( i * (-100) );
                 if( i == 2 ) {
                     incomeRecord.setItem( "modified item" );
@@ -271,9 +297,27 @@ public class IncomeRecordUpdateDialogTests extends TestCase {
                 assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
             }
             
-            // 檢查畫面是否顯示正確
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime( new Date() );
+            // 檢查是否有修改成功(12月份)
+            List<IncomeRecord> expectDataList2 = new ArrayList<IncomeRecord>();
+            for( int i = 1; i <= 1; i++ ) {
+                IncomeRecord incomeRecord = getTestData2();
+                incomeRecord.setId( i );
+                incomeRecord.setMonth( 12 );
+                incomeRecord.setDay( 6 );
+                incomeRecord.setItem( getTestData2().getItem() + " " + i );
+                incomeRecord.setAmount( i * (-100) );
+                incomeRecord.setOrderNo( i );
+                expectDataList2.add( incomeRecord );
+            }
+            List<IncomeRecord> actualDataList2 = incomeRecordService.findByMonth( getTestData2().getYear(), 12 );
+            assertEquals( expectDataList2.size(), actualDataList2.size() );
+            for( int i = 0; i < expectDataList2.size(); i++ ) {
+                assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList2.get( i ), actualDataList2.get( i ) ) );
+            }
+            
+            // 檢查畫面是否顯示正確(10月份)
+            //Calendar calendar = Calendar.getInstance();
+            //calendar.setTime( new Date() );
             String expectDateString = String.format( "%04d.%02d.", 
                     getTestData2().getYear(), getTestData2().getMonth() );
             testerSelection = JOptionPane.showConfirmDialog( 
@@ -282,11 +326,32 @@ public class IncomeRecordUpdateDialogTests extends TestCase {
                     "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
                 "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
                     "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
-                    "<tr><td>" + expectDateString + "01" + "</td><td>test item 1</td><td>支</td><td>100</td></tr>" + 
                     "<tr><td>" + expectDateString + "02" + "</td><td>modified item</td><td>支</td><td>600</td></tr>" + 
                     "<tr><td>" + expectDateString + "03" + "</td><td>modified item 2</td><td>收</td><td>300</td></tr>" + 
                     "<tr><td>" + expectDateString + "04" + "</td><td>test item 4</td><td>支</td><td>400</td></tr>" + 
                     "<tr><td>" + expectDateString + "05" + "</td><td>test item 5</td><td>支</td><td>500</td></tr>" + 
+                "</table></body></html>", 
+                "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            
+            // 檢查畫面是否顯示正確(12月份)
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
+            
+            String expectDateString2 = String.format( "%04d.%02d.", 
+                    getTestData2().getYear(), 12 );
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, 
+                "<html><head><style type=\"text/css\">" + 
+                    "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
+                "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
+                    "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
+                    "<tr><td>" + expectDateString2 + "01" + "</td><td>test item 1</td><td>支</td><td>100</td></tr>" + 
                 "</table></body></html>", 
                 "Check", JOptionPane.YES_NO_OPTION );
             assertEquals( JOptionPane.YES_OPTION, testerSelection );
@@ -297,6 +362,7 @@ public class IncomeRecordUpdateDialogTests extends TestCase {
             assertTrue( e.getMessage(), false );
         } finally {
             restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
             restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
