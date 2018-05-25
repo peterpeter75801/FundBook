@@ -1,6 +1,8 @@
 /common/
 /commonUtil/
 /domain/
-/service/
+/main/
 /repository/
+/service/
 /test/
+/view/

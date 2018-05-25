@@ -5,6 +5,8 @@
 
 ---- version 0.1.1-alpha ----
 1. Clean item name & amount text field in creating dialog after creating one item.
+2. Add IncomeRecord item copying feature.
+3. Refresh IncomeRecord table after creating one item.
 
 ---- version 0.1.0-alpha ----
 1. Add date time text field up & down arrow key feature into creating dialog and updating dialog.
