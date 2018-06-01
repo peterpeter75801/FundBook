@@ -349,6 +349,7 @@ public class IncomeRecordUpdateDialog extends JDialog {
         dayTextField.setText( String.format( "%02d", incomeRecord.getDay() ) );
         itemTextField.setText( incomeRecord.getItem() );
         amountTextField.setText( String.format( "%d", Math.abs( incomeRecord.getAmount() ) ) );
+        descriptionTextArea.setText( CsvFormatParser.restoreCharacterFromHtmlFormat( incomeRecord.getDescription() ) );
         
         itemTextField.requestFocus();
         setVisible( true );

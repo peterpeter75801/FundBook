@@ -288,7 +288,7 @@ public class IncomeRecordUpdateDialogTests extends TestCase {
                     incomeRecord.setItem( "modified item 2" );
                     incomeRecord.setAmount( 300 );
                 }
-                incomeRecord.setOrderNo( i );
+                incomeRecord.setOrderNo( i - 1 );
                 expectDataList.add( incomeRecord );
             }
             List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData2().getYear(), getTestData2().getMonth() );

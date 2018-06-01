@@ -3,7 +3,6 @@ package service.impl;
 import java.util.List;
 
 import common.Contants;
-import commonUtil.IncomeRecordUtil;
 import domain.IncomeRecord;
 import repository.IncomeRecordDAO;
 import service.IncomeRecordService;
@@ -59,45 +58,34 @@ public class IncomeRecordServiceImpl implements IncomeRecordService {
             return Contants.ERROR_EMPTY_NECESSARY_PARAMETER;
         }
         
-        if( incomeRecordDAO.findOne( incomeRecord.getId(), incomeRecord.getYear(), incomeRecord.getMonth() ) == null ) {
+        if( incomeRecordDAO.findOne( incomeRecord.getId(), originalYear, originalMonth ) == null ) {
             return Contants.ERROR_NOT_EXIST;
         }
         
-        //if( IncomeRecordUtil.compareYearMonth(incomeRecord1, incomeRecord2) )
-        returnCode = incomeRecordDAO.update( incomeRecord, incomeRecord.getYear(), incomeRecord.getMonth() );
-        if( !returnCode ) {
-            return Contants.ERROR;
-        }
-        returnCode = incomeRecordDAO.refreshOrderNo( incomeRecord.getYear(), incomeRecord.getMonth() );
-        if( !returnCode ) {
-            return Contants.ERROR;
-        }
-        
-        /*
-        public int update( Item originalItem, Item newItem ) throws Exception {
-            boolean returnCode = false;
-            
-            if( ItemUtil.comparePrimaryKey( originalItem, newItem ) == 0 ) {
-                returnCode = itemDAO.update( newItem );
-            } else {
-                int status = insert( newItem );
-                if( status != Contants.SUCCESS ) {
-                    return status;
-                }
-                status = delete( originalItem );
-                if( status != Contants.SUCCESS ) {
-                    return status;
-                }
-                returnCode = true;
-            }
-            
+        if( incomeRecord.getYear() == originalYear && incomeRecord.getMonth() == originalMonth ) {
+            returnCode = incomeRecordDAO.update( incomeRecord, incomeRecord.getYear(), incomeRecord.getMonth() );
             if( !returnCode ) {
                 return Contants.ERROR;
-            } else {
-                return Contants.SUCCESS;
+            }
+            returnCode = incomeRecordDAO.refreshOrderNo( incomeRecord.getYear(), incomeRecord.getMonth() );
+            if( !returnCode ) {
+                return Contants.ERROR;
+            }
+        } else {
+            returnCode = incomeRecordDAO.updateDifferentMonth( incomeRecord, originalYear, originalMonth, 
+                    incomeRecord.getYear(), incomeRecord.getMonth() );
+            if( !returnCode ) {
+                return Contants.ERROR;
+            }
+            returnCode = incomeRecordDAO.refreshOrderNo( incomeRecord.getYear(), incomeRecord.getMonth() );
+            if( !returnCode ) {
+                return Contants.ERROR;
+            }
+            returnCode = incomeRecordDAO.refreshOrderNo( originalYear, originalMonth );
+            if( !returnCode ) {
+                return Contants.ERROR;
             }
         }
-        */
         
         return Contants.SUCCESS;
     }

@@ -140,6 +140,73 @@ public class IncomeRecordServiceImplTests extends TestCase {
         }
     }
     
+    public void testUpdateDifferentMonth() throws IOException {
+        final String INCOME_RECORD_CSV_FILE_PATH_2 = "data\\IncomeRecord\\2017.12.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "data\\IncomeRecord\\2017.12_backup.csv";
+        
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
+        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( incomeRecordDAO );
+        
+        List<IncomeRecord> expectDataList1 = new ArrayList<IncomeRecord>();
+        for( int i = 1; i <= 2; i++ ) {
+            IncomeRecord incomeRecord = getTestData1();
+            incomeRecord.setId( i );
+            incomeRecord.setItem( getTestData1().getItem() + i );
+            incomeRecord.setAmount( i * 100 );
+            incomeRecord.setOrderNo( i );
+            expectDataList1.add( incomeRecord );
+        }
+        List<IncomeRecord> expectDataList2 = new ArrayList<IncomeRecord>();
+        for( int i = 3; i <= 3; i++ ) {
+            IncomeRecord incomeRecord = getTestData1();
+            incomeRecord.setId( i );
+            incomeRecord.setMonth( 12 );
+            incomeRecord.setItem( getTestData1().getItem() + i );
+            incomeRecord.setAmount( i * 100 );
+            incomeRecord.setItem( "test123" );
+            incomeRecord.setOrderNo( 1 );
+            expectDataList2.add( incomeRecord );
+        }
+        
+        try {
+            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+            backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
+            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+            
+            for( int i = 1; i <= 3; i++ ) {
+                IncomeRecord incomeRecord = getTestData1();
+                incomeRecord.setItem( getTestData1().getItem() + i );
+                incomeRecord.setAmount( i * 100 );
+                incomeRecordService.insert( incomeRecord );
+            }
+            
+            IncomeRecord modifiedData = getTestData1();
+            modifiedData.setId( 3 );
+            modifiedData.setMonth( 12 );
+            modifiedData.setItem( "test123" );
+            modifiedData.setAmount( 300 );
+            incomeRecordService.update( modifiedData, getTestData1().getYear(), getTestData1().getMonth() );
+            
+            List<IncomeRecord> actualDataList1 = incomeRecordService.findByMonth( getTestData1().getYear(), getTestData1().getMonth() );
+            assertEquals( expectDataList1.size(), actualDataList1.size() );
+            for( int i = 0; i < expectDataList1.size(); i++ ) {
+                assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList1.get( i ), actualDataList1.get( i ) ) );
+            }
+            List<IncomeRecord> actualDataList2 = incomeRecordService.findByMonth( getTestData1().getYear(), 12 );
+            assertEquals( expectDataList2.size(), actualDataList2.size() );
+            for( int i = 0; i < expectDataList2.size(); i++ ) {
+                assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList2.get( i ), actualDataList2.get( i ) ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        } finally {
+            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
+            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        }
+    }
+    
     public void testDelete() throws IOException {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( incomeRecordDAO );
