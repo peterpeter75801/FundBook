@@ -21,4 +21,12 @@
             </manifest>
         </jar>
     </target>
+    
+    <target name="clean" description="Clean output directories">
+        <delete>
+            <fileset dir="${build.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </delete>
+    </target>
 </project>
