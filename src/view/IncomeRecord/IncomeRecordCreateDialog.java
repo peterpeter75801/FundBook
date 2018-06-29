@@ -46,6 +46,8 @@ public class IncomeRecordCreateDialog extends JDialog {
     
     private IncomeRecordService incomeRecordService;
     
+    private IncomeRecord lastCreatedItemRecord;
+    
     private MainFrame ownerFrame;
     
     private UndoManager undoManager;
@@ -359,6 +361,8 @@ public class IncomeRecordCreateDialog extends JDialog {
             incomeRecord.setOrderNo( 0 );
             
             returnCode = incomeRecordService.insert( incomeRecord );
+            
+            lastCreatedItemRecord = incomeRecord;
         } catch ( Exception e ) {
             e.printStackTrace();
             returnCode = Contants.ERROR;
@@ -380,9 +384,11 @@ public class IncomeRecordCreateDialog extends JDialog {
             itemTextField.requestFocus();
             break;
         case Contants.ERROR_EXCEED_UPPER_LIMIT:
+            lastCreatedItemRecord = null;
             JOptionPane.showMessageDialog( null, "排程事項的序號已達上限", "Error", JOptionPane.ERROR_MESSAGE );
             break;
         case Contants.ERROR:
+            lastCreatedItemRecord = null;
             JOptionPane.showMessageDialog( null, "新增失敗", "Error", JOptionPane.ERROR_MESSAGE );
             break;
         default:
@@ -392,7 +398,13 @@ public class IncomeRecordCreateDialog extends JDialog {
     
     public void finishCreating() {
         setVisible( false );
-        ownerFrame.getIncomeRecordPanel().reselectDateList();
+        if( lastCreatedItemRecord != null ) {
+            //ownerFrame.getIncomeRecordPanel().refreshAndFind( lastCreatedItemRecord );
+            ownerFrame.getIncomeRecordPanel().reselectDateList();
+            ownerFrame.getIncomeRecordPanel().selectTableDataById( lastCreatedItemRecord.getId() );
+        } else {
+            ownerFrame.getIncomeRecordPanel().reselectDateList();
+        }
     }
     
     public void openDialog( int year, int month ) {
@@ -420,6 +432,8 @@ public class IncomeRecordCreateDialog extends JDialog {
         createdCountLabel.setVisible( false );
         createdCountValueLabel.setVisible( false );
         createdCountValueLabel.setText( "0" );
+        
+        lastCreatedItemRecord = null;
         
         itemTextField.requestFocus();
         setVisible( true );

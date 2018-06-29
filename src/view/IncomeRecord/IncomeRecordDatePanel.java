@@ -140,6 +140,14 @@ public class IncomeRecordDatePanel extends JPanel {
         return monthList.getSelectedValue();
     }
     
+    public void setYearTextFieldValue( int value ) {
+        yearTextField.setText( String.format( "%04d", value ) );
+    }
+    
+    public void setMonthTextFieldValue( int value ) {
+        monthTextField.setText( String.format( "%02d", value ) );
+    }
+    
     public void reselectDateList() {
         int currentSelectedIndex = monthList.getSelectedIndex();
         monthList.clearSelection();
@@ -276,7 +284,7 @@ public class IncomeRecordDatePanel extends JPanel {
         monthList.setSelectedIndex( 0 );
     }
     
-    private void selectMonthListData( int year, int month ) {
+    public void selectMonthListData( int year, int month ) {
         String dataForSearch = String.format( "%04d.%02d", year, month );
         int indexForSelecting = findDataIndexInMonthList( year, month );
         if( indexForSelecting < 0 && monthList.getModel().getSize() <= 0 ) {
@@ -434,10 +442,12 @@ public class IncomeRecordDatePanel extends JPanel {
         public void valueChanged( ListSelectionEvent event ) {
             if( monthListScrollFlag ) {
                 monthListScrollFlag = false;
+                ownerPanel.setRefreshingFlag( false );
                 return; 
             }
             
             if( monthList.getSelectedIndex() < 0 || incomeRecordTablePanel == null ) {
+                ownerPanel.setRefreshingFlag( false );
                 return;
             }
             
@@ -452,6 +462,8 @@ public class IncomeRecordDatePanel extends JPanel {
             
             // 計算選擇月份的收支小計
             ownerPanel.computeIncomeStateInCurrentMonth();
+            
+            ownerPanel.setRefreshingFlag( false );
         }
     }
     

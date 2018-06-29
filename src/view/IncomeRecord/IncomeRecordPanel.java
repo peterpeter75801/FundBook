@@ -51,6 +51,8 @@ public class IncomeRecordPanel extends JPanel {
     private JTextField totalPropertyTextField;
     private JLabel versionLabel;
     
+    private volatile boolean refreshingFlag = false;
+    
     public IncomeRecordPanel( FundBookServices fundBookServices, MainFrame ownerFrame ) {
         setLayout( null );
         
@@ -221,6 +223,10 @@ public class IncomeRecordPanel extends JPanel {
         return ownerFrame;
     }
     
+    public void setRefreshingFlag( boolean value ) {
+        refreshingFlag = value;
+    }
+    
     public void computeIncomeStateInCurrentMonth() {
         int totalAmount = 0;
         List<Integer> amountsOfSelectedMonth = incomeRecordTablePanel.getAllAmount();
@@ -231,8 +237,14 @@ public class IncomeRecordPanel extends JPanel {
     }
     
     public void reselectDateList() {
+        refreshingFlag = true;
         incomeRecordDatePanel.reselectDateList();
     }
+    
+    public void selectTableDataById( int id ) {
+        incomeRecordTablePanel.selectDataById( id );
+    }
+    // incomeRecordTablePanel.selectDataById( dataToFind.getId() );
     
     public void copyIncomeRecordData() {
         int selectedYear, selectedMonth;
@@ -459,6 +471,51 @@ public class IncomeRecordPanel extends JPanel {
         }
         if( selectedIndex >= 0 ) {
             incomeRecordTablePanel.getDataTable().setRowSelectionInterval( selectedIndex, selectedIndex );
+        }
+    }
+    
+    public void refreshAndFind( IncomeRecord dataToFind ) {
+        reselectDateList();
+        
+        // Waiting for table refreshing
+        waitingForTableRefreshing();
+        
+        // Find the IncomeRecord data
+        if( dataToFind == null || dataToFind.getId() == null || dataToFind.getYear() == null || dataToFind.getMonth() == null ) {
+            return;
+        }
+        
+        // Find the IncomeRecord data - select month list item
+        incomeRecordDatePanel.setYearTextFieldValue( dataToFind.getYear() );
+        incomeRecordDatePanel.setMonthTextFieldValue( dataToFind.getMonth() );
+        //incomeRecordDatePanel.repaint();
+        //incomeRecordDatePanel.validate();
+        refreshingFlag = true;
+        incomeRecordDatePanel.selectMonthListData( dataToFind.getYear(), dataToFind.getMonth() );
+        waitingForTableRefreshing();
+        revalidate();
+        repaint();
+        try {
+            Thread.sleep( 3000 );
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        // Find the IncomeRecord data - select the IncomeRecord data in table
+        incomeRecordTablePanel.selectDataById( dataToFind.getId() );
+    }
+    
+    private void waitingForTableRefreshing() {
+        final int MAX_WAITING_TIME = 10000;
+        int waitingTime = 0;
+        while( refreshingFlag && waitingTime <= MAX_WAITING_TIME ) {
+            try {
+                Thread.sleep( 100 );
+            } catch ( InterruptedException e ) {
+                e.printStackTrace();
+            }
+            waitingTime += 100;
         }
     }
     

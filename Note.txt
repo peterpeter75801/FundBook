@@ -1,3 +1,8 @@
+---- version 0.1.3-alpha----
+1. Select the last created item after creating some items.
+2. Select the last updated item after updating an item.
+3. Select the previous item of the last deleted item after deleting an item.
+
 ---- version 0.1.2-alpha ----
 1. Bug fix: Load item description while opening updating dialog.
 2. Bug fix: Can not change item's date to different month. 

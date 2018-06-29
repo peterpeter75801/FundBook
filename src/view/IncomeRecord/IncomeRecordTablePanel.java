@@ -28,6 +28,7 @@ import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import commonUtil.ComparingUtil;
 import domain.IncomeRecord;
 import main.FundBookServices;
 import service.IncomeRecordService;
@@ -223,6 +224,22 @@ public class IncomeRecordTablePanel extends JPanel {
         } catch( Exception e ) {
             e.printStackTrace();
             JOptionPane.showMessageDialog( null, "讀取資料發生錯誤", "Error", JOptionPane.ERROR_MESSAGE );
+        }
+    }
+    
+    public void selectDataById( int id ) {
+        DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+        int indexOfDataForSelecting = 0;
+        int test = dataTable.getRowCount(); // debug
+        for( indexOfDataForSelecting = 0; indexOfDataForSelecting < dataTable.getRowCount(); indexOfDataForSelecting++ ) {
+            String test1 = (String)model.getValueAt( indexOfDataForSelecting, ID_COLUMN );
+            if( ComparingUtil.compare( (String)model.getValueAt( indexOfDataForSelecting, ID_COLUMN ), String.format( "%d", id ) ) == 0 ) {
+                break;
+            }
+        }
+        if( indexOfDataForSelecting < dataTable.getRowCount() ) {
+            dataTable.setRowSelectionInterval( indexOfDataForSelecting, indexOfDataForSelecting );
+            dataTable.scrollRectToVisible( dataTable.getCellRect( indexOfDataForSelecting, 0, true ));
         }
     }
     

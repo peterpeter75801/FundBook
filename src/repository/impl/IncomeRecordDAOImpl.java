@@ -58,6 +58,9 @@ public class IncomeRecordDAOImpl implements IncomeRecordDAO {
         writer.newLine();
         writer.close();
         
+        // 將新增的Income Record流水號(ID)記錄並回傳
+        incomeRecord.setId( currentSeqNumber );
+        
         // 更新Income Record的流水號(ID)
         writer = new BufferedWriter(
                 new OutputStreamWriter(
