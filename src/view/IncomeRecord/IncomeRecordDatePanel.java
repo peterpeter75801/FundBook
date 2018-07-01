@@ -53,6 +53,7 @@ public class IncomeRecordDatePanel extends JPanel {
     private JList<String> monthList;
     
     private boolean monthListScrollFlag;
+    private int selectingIdWhileLoadingTable;
     
     public IncomeRecordDatePanel( FundBookServices fundBookServices, IncomeRecordPanel ownerPanel ) {
         setLayout( null );
@@ -130,6 +131,7 @@ public class IncomeRecordDatePanel extends JPanel {
         setPreferredSize( new Dimension( 120, 479 ) );
         
         monthListScrollFlag = false;
+        selectingIdWhileLoadingTable = -1;
     }
     
     public JList<String> getMonthList() {
@@ -146,6 +148,10 @@ public class IncomeRecordDatePanel extends JPanel {
     
     public void setMonthTextFieldValue( int value ) {
         monthTextField.setText( String.format( "%02d", value ) );
+    }
+    
+    public void setSelectingIdWhileLoadingTable( int value ) {
+        selectingIdWhileLoadingTable = value;
     }
     
     public void reselectDateList() {
@@ -458,7 +464,12 @@ public class IncomeRecordDatePanel extends JPanel {
             monthTextField.setText( String.format( "%02d", month ) );
             
             // 載入選擇月份的收支資料
-            incomeRecordTablePanel.loadIncomeRecordByMonth( year, month );
+            if( selectingIdWhileLoadingTable == -1 ) {
+                incomeRecordTablePanel.loadIncomeRecordByMonth( year, month );
+            } else {
+                incomeRecordTablePanel.loadIncomeRecordByMonthAndSelectId( year, month, selectingIdWhileLoadingTable );
+                selectingIdWhileLoadingTable = -1;
+            }
             
             // 計算選擇月份的收支小計
             ownerPanel.computeIncomeStateInCurrentMonth();

@@ -227,6 +227,11 @@ public class IncomeRecordTablePanel extends JPanel {
         }
     }
     
+    public void loadIncomeRecordByMonthAndSelectId( int year, int month, int idForSelecting ) {
+        loadIncomeRecordByMonth( year, month );
+        selectDataById( idForSelecting );
+    }
+    
     public void selectDataById( int id ) {
         DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
         int indexOfDataForSelecting = 0;

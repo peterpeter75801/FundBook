@@ -475,8 +475,14 @@ public class IncomeRecordPanel extends JPanel {
     }
     
     public void refreshAndFind( IncomeRecord dataToFind ) {
+        incomeRecordDatePanel.setYearTextFieldValue( dataToFind.getYear() );
+        incomeRecordDatePanel.setMonthTextFieldValue( dataToFind.getMonth() );
+        incomeRecordDatePanel.selectMonthListData( dataToFind.getYear(), dataToFind.getMonth() );
+        
+        incomeRecordDatePanel.setSelectingIdWhileLoadingTable( dataToFind.getId() );
         reselectDateList();
         
+        /*
         // Waiting for table refreshing
         waitingForTableRefreshing();
         
@@ -504,6 +510,7 @@ public class IncomeRecordPanel extends JPanel {
         
         // Find the IncomeRecord data - select the IncomeRecord data in table
         incomeRecordTablePanel.selectDataById( dataToFind.getId() );
+        */
     }
     
     private void waitingForTableRefreshing() {

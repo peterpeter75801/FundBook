@@ -399,9 +399,9 @@ public class IncomeRecordCreateDialog extends JDialog {
     public void finishCreating() {
         setVisible( false );
         if( lastCreatedItemRecord != null ) {
-            //ownerFrame.getIncomeRecordPanel().refreshAndFind( lastCreatedItemRecord );
-            ownerFrame.getIncomeRecordPanel().reselectDateList();
-            ownerFrame.getIncomeRecordPanel().selectTableDataById( lastCreatedItemRecord.getId() );
+            ownerFrame.getIncomeRecordPanel().refreshAndFind( lastCreatedItemRecord );
+            //ownerFrame.getIncomeRecordPanel().reselectDateList();
+            //ownerFrame.getIncomeRecordPanel().selectTableDataById( lastCreatedItemRecord.getId() );
         } else {
             ownerFrame.getIncomeRecordPanel().reselectDateList();
         }
