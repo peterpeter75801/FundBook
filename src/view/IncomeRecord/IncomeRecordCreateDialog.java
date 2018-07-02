@@ -400,8 +400,6 @@ public class IncomeRecordCreateDialog extends JDialog {
         setVisible( false );
         if( lastCreatedItemRecord != null ) {
             ownerFrame.getIncomeRecordPanel().refreshAndFind( lastCreatedItemRecord );
-            //ownerFrame.getIncomeRecordPanel().reselectDateList();
-            //ownerFrame.getIncomeRecordPanel().selectTableDataById( lastCreatedItemRecord.getId() );
         } else {
             ownerFrame.getIncomeRecordPanel().reselectDateList();
         }

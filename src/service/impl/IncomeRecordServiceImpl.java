@@ -116,9 +116,10 @@ public class IncomeRecordServiceImpl implements IncomeRecordService {
 
     @Override
     public int moveUp( int year, int month, int orderNo ) throws Exception {
+        int count = incomeRecordDAO.getCount( year, month );
         boolean returnCode;
         
-        if( orderNo <= 1 ) {
+        if( orderNo <= 1 || orderNo > count ) {
             return Contants.NO_DATA_MODIFIED;
         }
         

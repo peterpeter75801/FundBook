@@ -448,12 +448,10 @@ public class IncomeRecordDatePanel extends JPanel {
         public void valueChanged( ListSelectionEvent event ) {
             if( monthListScrollFlag ) {
                 monthListScrollFlag = false;
-                ownerPanel.setRefreshingFlag( false );
                 return; 
             }
             
             if( monthList.getSelectedIndex() < 0 || incomeRecordTablePanel == null ) {
-                ownerPanel.setRefreshingFlag( false );
                 return;
             }
             
@@ -473,8 +471,6 @@ public class IncomeRecordDatePanel extends JPanel {
             
             // 計算選擇月份的收支小計
             ownerPanel.computeIncomeStateInCurrentMonth();
-            
-            ownerPanel.setRefreshingFlag( false );
         }
     }
     

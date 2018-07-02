@@ -51,8 +51,6 @@ public class IncomeRecordPanel extends JPanel {
     private JTextField totalPropertyTextField;
     private JLabel versionLabel;
     
-    private volatile boolean refreshingFlag = false;
-    
     public IncomeRecordPanel( FundBookServices fundBookServices, MainFrame ownerFrame ) {
         setLayout( null );
         
@@ -223,10 +221,6 @@ public class IncomeRecordPanel extends JPanel {
         return ownerFrame;
     }
     
-    public void setRefreshingFlag( boolean value ) {
-        refreshingFlag = value;
-    }
-    
     public void computeIncomeStateInCurrentMonth() {
         int totalAmount = 0;
         List<Integer> amountsOfSelectedMonth = incomeRecordTablePanel.getAllAmount();
@@ -237,7 +231,6 @@ public class IncomeRecordPanel extends JPanel {
     }
     
     public void reselectDateList() {
-        refreshingFlag = true;
         incomeRecordDatePanel.reselectDateList();
     }
     
@@ -248,6 +241,7 @@ public class IncomeRecordPanel extends JPanel {
     
     public void copyIncomeRecordData() {
         int selectedYear, selectedMonth;
+        IncomeRecord incomeRecordForCopy = null;
         String selectedMonthString = incomeRecordDatePanel.getMonthListSelectedValue();
         try {
             selectedYear = Integer.parseInt( selectedMonthString.substring( 0, 4 ) );
@@ -265,7 +259,7 @@ public class IncomeRecordPanel extends JPanel {
         
         int returnCode = 0;
         try {
-            IncomeRecord incomeRecordForCopy = incomeRecordService.findOne( selectedId, selectedYear, selectedMonth );
+            incomeRecordForCopy = incomeRecordService.findOne( selectedId, selectedYear, selectedMonth );
             returnCode = incomeRecordService.insert( incomeRecordForCopy );
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -273,7 +267,11 @@ public class IncomeRecordPanel extends JPanel {
         }
         switch( returnCode ) {
         case Contants.SUCCESS:
-            reselectDateList();
+            if( incomeRecordForCopy != null ) {
+                refreshAndFind( incomeRecordForCopy );
+            } else {
+                reselectDateList();
+            }
             break;
         case Contants.ERROR:
             JOptionPane.showMessageDialog( null, "複製失敗", "Error", JOptionPane.ERROR_MESSAGE );
@@ -481,49 +479,6 @@ public class IncomeRecordPanel extends JPanel {
         
         incomeRecordDatePanel.setSelectingIdWhileLoadingTable( dataToFind.getId() );
         reselectDateList();
-        
-        /*
-        // Waiting for table refreshing
-        waitingForTableRefreshing();
-        
-        // Find the IncomeRecord data
-        if( dataToFind == null || dataToFind.getId() == null || dataToFind.getYear() == null || dataToFind.getMonth() == null ) {
-            return;
-        }
-        
-        // Find the IncomeRecord data - select month list item
-        incomeRecordDatePanel.setYearTextFieldValue( dataToFind.getYear() );
-        incomeRecordDatePanel.setMonthTextFieldValue( dataToFind.getMonth() );
-        //incomeRecordDatePanel.repaint();
-        //incomeRecordDatePanel.validate();
-        refreshingFlag = true;
-        incomeRecordDatePanel.selectMonthListData( dataToFind.getYear(), dataToFind.getMonth() );
-        waitingForTableRefreshing();
-        revalidate();
-        repaint();
-        try {
-            Thread.sleep( 3000 );
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        
-        // Find the IncomeRecord data - select the IncomeRecord data in table
-        incomeRecordTablePanel.selectDataById( dataToFind.getId() );
-        */
-    }
-    
-    private void waitingForTableRefreshing() {
-        final int MAX_WAITING_TIME = 10000;
-        int waitingTime = 0;
-        while( refreshingFlag && waitingTime <= MAX_WAITING_TIME ) {
-            try {
-                Thread.sleep( 100 );
-            } catch ( InterruptedException e ) {
-                e.printStackTrace();
-            }
-            waitingTime += 100;
-        }
     }
     
     private class MnemonicKeyHandler implements KeyListener {

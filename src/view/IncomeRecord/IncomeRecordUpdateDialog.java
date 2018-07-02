@@ -46,6 +46,7 @@ public class IncomeRecordUpdateDialog extends JDialog {
     private IncomeRecordService incomeRecordService;
     
     private IncomeRecord originIncomeRecord;
+    private IncomeRecord lastUpdatedItemRecord;
     
     private MainFrame ownerFrame;
     
@@ -351,6 +352,8 @@ public class IncomeRecordUpdateDialog extends JDialog {
         amountTextField.setText( String.format( "%d", Math.abs( incomeRecord.getAmount() ) ) );
         descriptionTextArea.setText( CsvFormatParser.restoreCharacterFromHtmlFormat( incomeRecord.getDescription() ) );
         
+        lastUpdatedItemRecord = null;
+        
         itemTextField.requestFocus();
         setVisible( true );
     }
@@ -377,6 +380,7 @@ public class IncomeRecordUpdateDialog extends JDialog {
             }
             incomeRecord.setOrderNo( 0 );
             
+            lastUpdatedItemRecord = incomeRecord;
             returnCode = incomeRecordService.update( incomeRecord, originIncomeRecord.getYear(), originIncomeRecord.getMonth() );
         } catch ( Exception e ) {
             e.printStackTrace();
@@ -386,7 +390,11 @@ public class IncomeRecordUpdateDialog extends JDialog {
         switch( returnCode ) {
         case Contants.SUCCESS:
             setVisible( false );
-            ownerFrame.getIncomeRecordPanel().reselectDateList();
+            if( lastUpdatedItemRecord != null ) {
+                ownerFrame.getIncomeRecordPanel().refreshAndFind( lastUpdatedItemRecord );
+            } else {
+                ownerFrame.getIncomeRecordPanel().reselectDateList();
+            }
             break;
         case Contants.ERROR:
             JOptionPane.showMessageDialog( null, "更新失敗", "Error", JOptionPane.ERROR_MESSAGE );

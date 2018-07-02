@@ -364,7 +364,7 @@ public class IncomeRecordCreateDialogTests extends TestCase {
             testerSelection = JOptionPane.showConfirmDialog( 
                 mainFrame, "已新增資料筆數是否有更新為'1'", "Check", JOptionPane.YES_NO_OPTION );
             assertEquals( JOptionPane.YES_OPTION, testerSelection );
-            Thread.sleep( 500 );
+            Thread.sleep( 1000 );
             
             // 新增資料 (日期: 2018.01.31  項目: test item 2  金額: 100(支出))
             bot.keyPress( KeyEvent.VK_SHIFT );

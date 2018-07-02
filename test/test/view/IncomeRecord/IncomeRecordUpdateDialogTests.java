@@ -315,9 +315,20 @@ public class IncomeRecordUpdateDialogTests extends TestCase {
                 assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList2.get( i ), actualDataList2.get( i ) ) );
             }
             
-            // 檢查畫面是否顯示正確(10月份)
-            //Calendar calendar = Calendar.getInstance();
-            //calendar.setTime( new Date() );
+            // 檢查畫面是否顯示正確 (2017.10)
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            inputString( bot, "2017" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "10" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 500 );
+            
             String expectDateString = String.format( "%04d.%02d.", 
                     getTestData2().getYear(), getTestData2().getMonth() );
             testerSelection = JOptionPane.showConfirmDialog( 
@@ -334,12 +345,7 @@ public class IncomeRecordUpdateDialogTests extends TestCase {
                 "Check", JOptionPane.YES_NO_OPTION );
             assertEquals( JOptionPane.YES_OPTION, testerSelection );
             
-            // 檢查畫面是否顯示正確(12月份)
-            bot.keyPress( KeyEvent.VK_SHIFT );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
-            bot.keyRelease( KeyEvent.VK_SHIFT );
+            // 檢查畫面是否顯示正確(2017.12)
             bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
             bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
             

@@ -91,7 +91,7 @@ public class IncomeRecordTablePanel extends JPanel {
         dataTable.getColumnModel().getColumn( 1 ).setPreferredWidth( TABLE_COLUMN_WIDTH[ 1 ] );
         dataTable.getColumnModel().getColumn( 2 ).setPreferredWidth( TABLE_COLUMN_WIDTH[ 2 ] );
         dataTable.getColumnModel().getColumn( 3 ).setPreferredWidth( TABLE_COLUMN_WIDTH[ 3 ] );
-        dataTable.removeColumn( dataTable.getColumnModel().getColumn( 4 ) );
+        dataTable.removeColumn( dataTable.getColumnModel().getColumn( 4 ) );        
         
         dataTable.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
         dataTable.setPreferredScrollableViewportSize( new Dimension( TABLE_WIDTH, TABLE_HEIGHT ) );
@@ -163,7 +163,7 @@ public class IncomeRecordTablePanel extends JPanel {
         }
         
         int id = -1;
-        String itemTableSelectedIdValue = (String) dataTable.getModel().getValueAt( itemTableSelectedIndex, 4 );
+        String itemTableSelectedIdValue = (String) dataTable.getModel().getValueAt( itemTableSelectedIndex, ID_COLUMN );
         try {
             id = Integer.parseInt( itemTableSelectedIdValue );
         } catch( NumberFormatException e ) {
@@ -194,11 +194,11 @@ public class IncomeRecordTablePanel extends JPanel {
             }
         }
         for( int i = 0; i < dataTable.getRowCount(); i++ ) {
-            model.setValueAt( "", i, 0 );
-            model.setValueAt( "", i, 1 );
-            model.setValueAt( "", i, 2 );
-            model.setValueAt( "", i, 3 );
-            model.setValueAt( "", i, 4 );
+            model.setValueAt( "", i, DATE_COLUMN );
+            model.setValueAt( "", i, ITEM_COLUMN );
+            model.setValueAt( "", i, TYPE_COLUMN );
+            model.setValueAt( "", i, AMOUNT_COLUMN );
+            model.setValueAt( "", i, ID_COLUMN );
         }
         
         try {
@@ -214,11 +214,11 @@ public class IncomeRecordTablePanel extends JPanel {
                         String.format( "%d", Math.abs( data.getAmount() ) ),
                         String.format( "%d", data.getId() ) });
                 } else {
-                    model.setValueAt( String.format( "%04d.%02d.%02d", data.getYear(), data.getMonth(), data.getDay() ), i, 0 );
-                    model.setValueAt( data.getItem(), i, 1 );
-                    model.setValueAt( ((data.getAmount() >= 0) ? "收" : "支"), i, 2 );
-                    model.setValueAt( String.format( "%d", Math.abs( data.getAmount() ) ), i, 3 );
-                    model.setValueAt( String.format( "%d", data.getId() ), i, 4 );
+                    model.setValueAt( String.format( "%04d.%02d.%02d", data.getYear(), data.getMonth(), data.getDay() ), i, DATE_COLUMN );
+                    model.setValueAt( data.getItem(), i, ITEM_COLUMN );
+                    model.setValueAt( ((data.getAmount() >= 0) ? "收" : "支"), i, TYPE_COLUMN );
+                    model.setValueAt( String.format( "%d", Math.abs( data.getAmount() ) ), i, AMOUNT_COLUMN );
+                    model.setValueAt( String.format( "%d", data.getId() ), i, ID_COLUMN );
                 }
             }
         } catch( Exception e ) {
@@ -235,9 +235,7 @@ public class IncomeRecordTablePanel extends JPanel {
     public void selectDataById( int id ) {
         DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
         int indexOfDataForSelecting = 0;
-        int test = dataTable.getRowCount(); // debug
         for( indexOfDataForSelecting = 0; indexOfDataForSelecting < dataTable.getRowCount(); indexOfDataForSelecting++ ) {
-            String test1 = (String)model.getValueAt( indexOfDataForSelecting, ID_COLUMN );
             if( ComparingUtil.compare( (String)model.getValueAt( indexOfDataForSelecting, ID_COLUMN ), String.format( "%d", id ) ) == 0 ) {
                 break;
             }
