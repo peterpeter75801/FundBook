@@ -19,8 +19,8 @@ public class TotalPropertyServiceImplTests extends TestCase {
     
     private final String TOTAL_PROPERTY_CSV_FILE_PATH = 
         Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
-    private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "data\\TotalProperty\\TotalProperty_backup.csv";
-    private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "data\\TotalProperty\\TotalPropertySeq_backup.txt";
+    private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
+    private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
     
     public void testInsert() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();

@@ -20,8 +20,8 @@ public class CheckRecordDAOImplTests extends TestCase {
     
     private final String CHECK_RECORD_CSV_FILE_PATH = 
         Contants.CHECK_RECORD_DATA_PATH + Contants.CHECK_RECORD_FILENAME;
-    private final String CHECK_RECORD_CSV_FILE_PATH_BACKUP = "data\\CheckRecord\\CheckRecord_backup.csv";
-    private final String CHECK_RECORD_SEQ_FILE_PATH_BACKUP = "data\\CheckRecord\\CheckRecordSeq_backup.txt";
+    private final String CHECK_RECORD_CSV_FILE_PATH_BACKUP = "./data/CheckRecord/CheckRecord_backup.csv";
+    private final String CHECK_RECORD_SEQ_FILE_PATH_BACKUP = "./data/CheckRecord/CheckRecordSeq_backup.txt";
     
     public void testInsert() throws IOException {
         CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();

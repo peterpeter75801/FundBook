@@ -89,7 +89,7 @@ public class IncomeRecordCreateDialog extends JDialog {
     private JButton finishButton;
     
     public IncomeRecordCreateDialog( IncomeRecordService incomeRecordService, MainFrame ownerFrame ) {
-        super( ownerFrame, "Create Income Record", false );
+        super( ownerFrame, "Create Income Record", true );
         
         this.incomeRecordService = incomeRecordService;
         

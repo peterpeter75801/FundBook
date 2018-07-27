@@ -23,8 +23,8 @@ import view.MainFrame;
 public class IncomeRecordCopyTests extends TestCase {
 
     private final int TAB_DELAY = 100;
-    private final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
-    private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "data\\IncomeRecord\\IncomeRecordSeq_backup.txt";
+    private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
+    private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
     
     public void testCopyIncomeRecord() throws IOException {
         int testerSelection = 0;
@@ -106,8 +106,8 @@ public class IncomeRecordCopyTests extends TestCase {
                 "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
                     "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
                     "<tr><td>" + expectDateString + "01" + "</td><td>test item 1</td><td>支</td><td>100</td></tr>" + 
-                    "<tr><td>" + expectDateString + "02" + "</td><td>modified item</td><td>支</td><td>600</td></tr>" + 
-                    "<tr><td>" + expectDateString + "03" + "</td><td>modified item 2</td><td>收</td><td>300</td></tr>" + 
+                    "<tr><td>" + expectDateString + "02" + "</td><td>test item 2</td><td>支</td><td>600</td></tr>" + 
+                    "<tr><td>" + expectDateString + "03" + "</td><td>test item 3</td><td>支</td><td>300</td></tr>" + 
                     "<tr><td>" + expectDateString + "04" + "</td><td>test item 4</td><td>支</td><td>400</td></tr>" + 
                     "<tr><td>" + expectDateString + "05" + "</td><td>test item 5</td><td>支</td><td>500</td></tr>" + 
                     "<tr><td>" + expectDateString + "03" + "</td><td>test item 3</td><td>支</td><td>300</td></tr>" + 
@@ -146,7 +146,7 @@ public class IncomeRecordCopyTests extends TestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( new Date() );
         
-        return String.format( "data\\IncomeRecord\\%04d.%02d.csv", 
+        return String.format( "./data/IncomeRecord/%04d.%02d.csv", 
             calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
     }
     
@@ -154,7 +154,7 @@ public class IncomeRecordCopyTests extends TestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( new Date() );
         
-        return String.format( "data\\IncomeRecord\\%04d.%02d_backup.csv", 
+        return String.format( "./data/IncomeRecord/%04d.%02d_backup.csv", 
             calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
     }
     

@@ -86,7 +86,7 @@ public class IncomeRecordUpdateDialog extends JDialog {
     private JButton finishButton;
     
     public IncomeRecordUpdateDialog( IncomeRecordService incomeRecordService, MainFrame ownerFrame ) {
-        super( ownerFrame, "Update Income Record", false );
+        super( ownerFrame, "Update Income Record", true );
         
         this.incomeRecordService = incomeRecordService;
         

@@ -17,10 +17,10 @@ import repository.impl.IncomeRecordDAOImpl;
 public class IncomeRecordDAOImplTests extends TestCase {
     
     private final int INITIAL_SEQ_NUMBER = 1;
-    private final String INCOME_RECORD_CSV_FILE_PATH = "data\\IncomeRecord\\2017.10.csv";
-    private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "data\\IncomeRecord\\2017.10_backup.csv";
-    private final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
-    private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "data\\IncomeRecord\\IncomeRecordSeq_backup.txt";
+    private final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
+    private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
+    private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
+    private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
     private final String FILE_CHARSET = "big5";
     
     public void testInsert() throws IOException {
@@ -190,8 +190,8 @@ public class IncomeRecordDAOImplTests extends TestCase {
     }
     
     public void testUpdateDifferentMonth() throws IOException {
-        final String INCOME_RECORD_CSV_FILE_PATH_2 = "data\\IncomeRecord\\2017.12.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "data\\IncomeRecord\\2017.12_backup.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_2 = "./data/IncomeRecord/2017.12.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "./data/IncomeRecord/2017.12_backup.csv";
         
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         

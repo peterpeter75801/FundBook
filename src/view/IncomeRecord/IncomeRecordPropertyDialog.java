@@ -62,7 +62,7 @@ public class IncomeRecordPropertyDialog extends JDialog {
     private JButton confirmButton;
     
     public IncomeRecordPropertyDialog( IncomeRecordService incomeRecordService, MainFrame ownerFrame ) {
-        super( ownerFrame, "Income Record Properties", false );
+        super( ownerFrame, "Income Record Properties", true );
         
         this.incomeRecordService = incomeRecordService;
         

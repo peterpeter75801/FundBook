@@ -25,8 +25,8 @@ import view.MainFrame;
 public class IncomeRecordCreateDialogTests extends TestCase {
     
     private final int TAB_DELAY = 100;
-    private final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
-    private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "data\\IncomeRecord\\IncomeRecordSeq_backup.txt";
+    private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
+    private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
     
     public void testCreateIncomeRecord() throws IOException {
         int testerSelection = 0;
@@ -152,8 +152,8 @@ public class IncomeRecordCreateDialogTests extends TestCase {
     }
     
     public void testCreateIncomeRecord2() throws IOException {
-        final String INCOME_RECORD_CSV_FILE_PATH = "data\\IncomeRecord\\2017.10.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "data\\IncomeRecord\\2017.10_backup.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
         
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
@@ -301,10 +301,10 @@ public class IncomeRecordCreateDialogTests extends TestCase {
     }
     
     public void testCreateIncomeRecord3() throws IOException {
-        final String INCOME_RECORD_CSV_FILE_PATH = "data\\IncomeRecord\\2017.10.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "data\\IncomeRecord\\2017.10_backup.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_2 = "data\\IncomeRecord\\2018.01.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "data\\IncomeRecord\\2018.01_backup.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_2 = "./data/IncomeRecord/2018.01.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "./data/IncomeRecord/2018.01_backup.csv";
         
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
@@ -521,7 +521,7 @@ public class IncomeRecordCreateDialogTests extends TestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( new Date() );
         
-        return String.format( "data\\IncomeRecord\\%04d.%02d.csv", 
+        return String.format( "./data/IncomeRecord/%04d.%02d.csv", 
             calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
     }
     
@@ -529,7 +529,7 @@ public class IncomeRecordCreateDialogTests extends TestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( new Date() );
         
-        return String.format( "data\\IncomeRecord\\%04d.%02d_backup.csv", 
+        return String.format( "./data/IncomeRecord/%04d.%02d_backup.csv", 
             calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
     }
     

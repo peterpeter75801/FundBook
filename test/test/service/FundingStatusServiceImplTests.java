@@ -19,8 +19,8 @@ public class FundingStatusServiceImplTests extends TestCase {
     
     private final String FUNDING_STATUS_CSV_FILE_PATH = 
             Contants.FUNDING_STATUS_DATA_PATH + Contants.FUNDING_STATUS_FILENAME;
-    private final String FUNDING_STATUS_CSV_FILE_PATH_BACKUP = "data\\FundingStatus\\FundingStatus_backup.csv";
-    private final String FUNDING_STATUS_SEQ_FILE_PATH_BACKUP = "data\\FundingStatus\\FundingStatusSeq_backup.txt";
+    private final String FUNDING_STATUS_CSV_FILE_PATH_BACKUP = "./data/FundingStatus/FundingStatus_backup.csv";
+    private final String FUNDING_STATUS_SEQ_FILE_PATH_BACKUP = "./data/FundingStatus/FundingStatusSeq_backup.txt";
     
     public void testInsert() throws IOException {
         FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();

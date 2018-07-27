@@ -22,8 +22,8 @@ import view.MainFrame;
 
 public class IncomeRecordPropertyDialogTests extends TestCase {
     
-    private final String INCOME_RECORD_SEQ_FILE_PATH = "data\\IncomeRecord\\IncomeRecordSeq.txt";
-    private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "data\\IncomeRecord\\IncomeRecordSeq_backup.txt";
+    private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
+    private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
     
     public void testDisplayIncomeRecordProperty() throws IOException {
         int testerSelection = 0;
@@ -96,8 +96,8 @@ public class IncomeRecordPropertyDialogTests extends TestCase {
     }
     
     public void testDisplayIncomeRecordProperty2() throws IOException {
-        final String INCOME_RECORD_CSV_FILE_PATH = "data\\IncomeRecord\\2017.10.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "data\\IncomeRecord\\2017.10_backup.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
+        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
         
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
@@ -206,7 +206,7 @@ public class IncomeRecordPropertyDialogTests extends TestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( new Date() );
         
-        return String.format( "data\\IncomeRecord\\%04d.%02d.csv", 
+        return String.format( "./data/IncomeRecord/%04d.%02d.csv", 
             calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
     }
     
@@ -214,7 +214,7 @@ public class IncomeRecordPropertyDialogTests extends TestCase {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime( new Date() );
         
-        return String.format( "data\\IncomeRecord\\%04d.%02d_backup.csv", 
+        return String.format( "./data/IncomeRecord/%04d.%02d_backup.csv", 
             calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
     }
     
