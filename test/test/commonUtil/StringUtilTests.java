@@ -2,10 +2,16 @@ package test.commonUtil;
 
 import commonUtil.StringUtil;
 
-import junit.framework.TestCase;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.junit.Test;
 
-public class StringUtilTests extends TestCase {
+import static org.junit.Assert.*;
+
+@RunWith(value=JUnit4.class)
+public class StringUtilTests {
     
+    @Test
     public void testIsNumber() {
         String[] inputs = { "123", "test", "123test", "+123", "-123", "123-" };
         boolean[] expects = { true, false, false, false, true, false };
@@ -14,6 +20,7 @@ public class StringUtilTests extends TestCase {
         }
     }
     
+    @Test
     public void testDecreaseDateTimeTextFieldValue() {
         // Year test
         String[] inputs1 = { "2017", "2018", "1900" };
@@ -49,6 +56,7 @@ public class StringUtilTests extends TestCase {
         }
     }
     
+    @Test
     public void testIncreaseDateTimeTextFieldValue() {
         // Year test
         String[] inputs1 = { "2017", "2018", "1900" };

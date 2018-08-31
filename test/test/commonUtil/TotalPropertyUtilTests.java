@@ -2,13 +2,20 @@ package test.commonUtil;
 
 import commonUtil.TotalPropertyUtil;
 import domain.TotalProperty;
-import junit.framework.TestCase;
 
-public class TotalPropertyUtilTests extends TestCase {
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+@RunWith(value=JUnit4.class)
+public class TotalPropertyUtilTests {
     
+    @Test
     public void testGetTotalPropertyFromCsvTupleString() {
         String input = "1,2017,10,1,12,0,0,1000";
-        TotalProperty expect = getTestData1();
+        TotalProperty expect = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 );
         TotalProperty actual = null;
         try {
             actual = TotalPropertyUtil.getTotalPropertyFromCsvTupleString( input );
@@ -18,8 +25,9 @@ public class TotalPropertyUtilTests extends TestCase {
         }
     }
     
+    @Test
     public void testGetCsvTupleStringFromTotalProperty() {
-        TotalProperty input = getTestData1();
+        TotalProperty input = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 );
         String expect = "1,2017,10,1,12,0,0,1000";
         String actual = "";
         try {
@@ -30,33 +38,22 @@ public class TotalPropertyUtilTests extends TestCase {
         }
     }
     
+    @Test
     public void testCopy() {
-        TotalProperty expect = getTestData1();
-        TotalProperty clone = TotalPropertyUtil.copy( getTestData1() );
+        TotalProperty input = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 );
+        TotalProperty expect = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 );
+        TotalProperty clone = TotalPropertyUtil.copy( input );
         
         assertTrue( TotalPropertyUtil.equals( expect, clone ) );
     }
     
+    @Test
     public void testEquals() {
-        TotalProperty data1 = getTestData1();
-        TotalProperty data2 = getTestData1();
-        data2.setTotalAmount( 2000 );
-        TotalProperty data3 = getTestData1();
+        TotalProperty data1 = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 );
+        TotalProperty data2 = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 2000 );
+        TotalProperty data3 = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 );
         
         assertTrue( TotalPropertyUtil.equals( data1, data3 ) );
         assertFalse( TotalPropertyUtil.equals( data1, data2 ) );
-    }
-    
-    private TotalProperty getTestData1() {
-        TotalProperty testData = new TotalProperty();
-        testData.setId( 1 );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 1 );
-        testData.setHour( 12 );
-        testData.setMinute( 0 );
-        testData.setSecond( 0 );
-        testData.setTotalAmount( 1000 );
-        return testData;
     }
 }

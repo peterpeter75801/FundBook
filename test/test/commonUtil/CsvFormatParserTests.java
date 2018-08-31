@@ -2,10 +2,16 @@ package test.commonUtil;
 
 import commonUtil.CsvFormatParser;
 
-import junit.framework.TestCase;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.junit.Test;
 
-public class CsvFormatParserTests extends TestCase {
+import static org.junit.Assert.*;
 
+@RunWith(value=JUnit4.class)
+public class CsvFormatParserTests {
+    
+    @Test
     public void testParseFromTuple() {
         String input = "123,test,\"hello world\",\"double-quote\"\"\",,\",comma\"";
         String[] output = CsvFormatParser.parseFromTuple( input );
@@ -21,7 +27,8 @@ public class CsvFormatParserTests extends TestCase {
             assertTrue( e.getMessage(), false );
         }
     }
-
+    
+    @Test
     public void testToCsvDataString() {
         String input1 = "test";
         String input2 = "test, test";
@@ -34,6 +41,7 @@ public class CsvFormatParserTests extends TestCase {
         assertEquals( "\"test\"\"123\"\"\"", output3 );
     }
     
+    @Test
     public void testMergeCsvDataToATuple() {
         String[] input = { "\"test\"", "123", "C", "", "\"test\"\"123\"\"\"" };
         String output = CsvFormatParser.mergeCsvDataToATuple( input );

@@ -1,3 +1,7 @@
+---- version 0.1.5-alpha----
+1. Add cut, copy, and paste mouse right clicking pop up menu in text component.
+2. Upgrade JUnit 3.8.2 to 4.12.
+
 ---- version 0.1.4-alpha----
 1. Support Ubuntu OS.
 

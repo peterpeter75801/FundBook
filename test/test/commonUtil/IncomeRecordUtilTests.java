@@ -5,13 +5,20 @@ import java.util.List;
 
 import commonUtil.IncomeRecordUtil;
 import domain.IncomeRecord;
-import junit.framework.TestCase;
 
-public class IncomeRecordUtilTests extends TestCase {
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+@RunWith(value=JUnit4.class)
+public class IncomeRecordUtilTests {
     
+    @Test
     public void testGetIncomeRecordFromCsvTupleString() {
         String input = "1,2017,10,1,\"測試帳\",0,100,\"\",0";
-        IncomeRecord expect = getTestData1();
+        IncomeRecord expect = new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 );
         IncomeRecord actual = null;
         try {
             actual = IncomeRecordUtil.getIncomeRecordFromCsvTupleString( input );
@@ -21,8 +28,9 @@ public class IncomeRecordUtilTests extends TestCase {
         }
     }
     
+    @Test
     public void testGetCsvTupleStringFromIncomeRecord() {
-        IncomeRecord input = getTestData1();
+        IncomeRecord input = new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 );
         String expect = "1,2017,10,1,\"測試帳\",0,100,\"\",0";
         String actual = "";
         try {
@@ -33,8 +41,9 @@ public class IncomeRecordUtilTests extends TestCase {
         }
     }
     
+    @Test
     public void testGetIncomeRecordCsvFileName() {
-        IncomeRecord incomeRecord = getTestData1();
+        IncomeRecord incomeRecord = new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 );
         String expect = "2017.10.csv";
         String actual1 = IncomeRecordUtil.getIncomeRecordCsvFileName( incomeRecord );
         String actual2 = IncomeRecordUtil.getIncomeRecordCsvFileName( 2017, 10 );
@@ -42,19 +51,20 @@ public class IncomeRecordUtilTests extends TestCase {
         assertEquals( expect, actual2 );
     }
     
+    @Test
     public void testSortById() {
         List<IncomeRecord> input = new ArrayList<IncomeRecord>();
-        input.add( getTestData1() );
-        input.add( getTestData3() );
-        input.add( getTestData4() );
-        input.add( getTestData2() );
-        input.add( getTestData5() );
+        input.add( new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 ) );
+        input.add( new IncomeRecord( 3, 2017, 10, 1, "測試帳", 0, 300, "", 0 ) );
+        input.add( new IncomeRecord( 4, 2017, 10, 1, "測試帳", 0, 400, "", 0 ) );
+        input.add( new IncomeRecord( 2, 2017, 10, 2, "測試帳", 0, 200, "", 0 ) );
+        input.add( new IncomeRecord( 5, 2017, 10, 2, "測試帳", 0, 500, "", 0 ) );
         List<IncomeRecord> expect = new ArrayList<IncomeRecord>();
-        expect.add( getTestData1() );
-        expect.add( getTestData2() );
-        expect.add( getTestData3() );
-        expect.add( getTestData4() );
-        expect.add( getTestData5() );
+        expect.add( new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 ) );
+        expect.add( new IncomeRecord( 2, 2017, 10, 2, "測試帳", 0, 200, "", 0 ) );
+        expect.add( new IncomeRecord( 3, 2017, 10, 1, "測試帳", 0, 300, "", 0 ) );
+        expect.add( new IncomeRecord( 4, 2017, 10, 1, "測試帳", 0, 400, "", 0 ) );
+        expect.add( new IncomeRecord( 5, 2017, 10, 2, "測試帳", 0, 500, "", 0 ) );
         
         input = IncomeRecordUtil.sortById( input );
         
@@ -64,19 +74,20 @@ public class IncomeRecordUtilTests extends TestCase {
         }
     }
     
+    @Test
     public void testSortByDay() {
         List<IncomeRecord> input = new ArrayList<IncomeRecord>();
-        input.add( getTestData1() );
-        input.add( getTestData2() );
-        input.add( getTestData3() );
-        input.add( getTestData4() );
-        input.add( getTestData5() );
+        input.add( new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 ) );
+        input.add( new IncomeRecord( 2, 2017, 10, 2, "測試帳", 0, 200, "", 0 ) );
+        input.add( new IncomeRecord( 3, 2017, 10, 1, "測試帳", 0, 300, "", 0 ) );
+        input.add( new IncomeRecord( 4, 2017, 10, 1, "測試帳", 0, 400, "", 0 ) );
+        input.add( new IncomeRecord( 5, 2017, 10, 2, "測試帳", 0, 500, "", 0 ) );
         List<IncomeRecord> expect = new ArrayList<IncomeRecord>();
-        expect.add( getTestData1() );
-        expect.add( getTestData3() );
-        expect.add( getTestData4() );
-        expect.add( getTestData2() );
-        expect.add( getTestData5() );
+        expect.add( new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 ) );
+        expect.add( new IncomeRecord( 3, 2017, 10, 1, "測試帳", 0, 300, "", 0 ) );
+        expect.add( new IncomeRecord( 4, 2017, 10, 1, "測試帳", 0, 400, "", 0 ) );
+        expect.add( new IncomeRecord( 2, 2017, 10, 2, "測試帳", 0, 200, "", 0 ) );
+        expect.add( new IncomeRecord( 5, 2017, 10, 2, "測試帳", 0, 500, "", 0 ) );
         
         input = IncomeRecordUtil.sortByDay( input );
         
@@ -86,113 +97,32 @@ public class IncomeRecordUtilTests extends TestCase {
         }
     }
     
+    @Test
     public void testCompareYearMonth() {
-        IncomeRecord incomeRecord1 = getTestData1();
-        IncomeRecord incomeRecord2 = getTestData2();
-        IncomeRecord incomeRecord3 = getTestData6();
+        IncomeRecord incomeRecord1 = new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 );
+        IncomeRecord incomeRecord2 = new IncomeRecord( 2, 2017, 10, 2, "測試帳", 0, 200, "", 0 );
+        IncomeRecord incomeRecord3 = new IncomeRecord( 5, 2017, 12, 2, "測試帳", 0, 500, "", 0 );
             
         assertTrue( IncomeRecordUtil.compareYearMonth( incomeRecord1, incomeRecord2 ) == 0 );
         assertFalse( IncomeRecordUtil.compareYearMonth( incomeRecord1, incomeRecord3 ) == 0 );
     }
     
+    @Test
     public void testCopy() {
-        IncomeRecord expect = getTestData1();
-        IncomeRecord clone = IncomeRecordUtil.copy( getTestData1() );
+        IncomeRecord input = new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 );
+        IncomeRecord expect = new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 );
+        IncomeRecord clone = IncomeRecordUtil.copy( input );
         
         assertTrue( IncomeRecordUtil.equals( expect, clone ) );
     }
     
+    @Test
     public void testEquals() {
-        IncomeRecord data1 = getTestData1();
-        IncomeRecord data2 = getTestData1();
-        data2.setAmount( 200 );
-        IncomeRecord data3 = getTestData1();
+        IncomeRecord data1 = new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 );
+        IncomeRecord data2 = new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 200, "", 0 );
+        IncomeRecord data3 = new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 );
         
         assertTrue( IncomeRecordUtil.equals( data1, data3 ) );
         assertFalse( IncomeRecordUtil.equals( data1, data2 ) );
-    }
-    
-    private IncomeRecord getTestData1() {
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 1 );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 1 );
-        testData.setItem( "測試帳" );
-        testData.setClassNo( 0 );
-        testData.setAmount( 100 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
-    }
-    
-    private IncomeRecord getTestData2() {
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 2 );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 2 );
-        testData.setItem( "測試帳" );
-        testData.setClassNo( 0 );
-        testData.setAmount( 200 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
-    }
-    
-    private IncomeRecord getTestData3() {
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 3 );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 1 );
-        testData.setItem( "測試帳" );
-        testData.setClassNo( 0 );
-        testData.setAmount( 300 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
-    }
-    
-    private IncomeRecord getTestData4() {
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 4 );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 1 );
-        testData.setItem( "測試帳" );
-        testData.setClassNo( 0 );
-        testData.setAmount( 400 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
-    }
-    
-    private IncomeRecord getTestData5() {
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 5 );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 2 );
-        testData.setItem( "測試帳" );
-        testData.setClassNo( 0 );
-        testData.setAmount( 500 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
-    }
-    
-    private IncomeRecord getTestData6() {
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 5 );
-        testData.setYear( 2017 );
-        testData.setMonth( 12 );
-        testData.setDay( 2 );
-        testData.setItem( "測試帳" );
-        testData.setClassNo( 0 );
-        testData.setAmount( 500 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
     }
 }

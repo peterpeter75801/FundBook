@@ -10,6 +10,20 @@ public class TotalProperty {
     private Integer minute;         // 分
     private Integer second;         // 秒
     private Integer totalAmount;    // 總金額
+    
+    public TotalProperty() {}
+    
+    public TotalProperty( int id, int year, int month, int day, 
+            int hour, int minute, int second, int totalAmount ) {
+        this.id = id;
+        this.year = year;
+        this.month = month;
+        this.day = day;
+        this.hour = hour;
+        this.minute = minute;
+        this.second = second;
+        this.totalAmount = totalAmount;
+    }
 
     public void setId( Integer id ) {
         this.id = id;

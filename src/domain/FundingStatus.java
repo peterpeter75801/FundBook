@@ -12,7 +12,23 @@ public class FundingStatus {
     private String account;         // 帳號
     private String interestAccount; // 利息轉入帳號
     private Integer balance;        // 結餘
-
+    
+    public FundingStatus() {}
+    
+    public FundingStatus( int id, char type, int year, int month, int day, 
+            String bankCode, String bankName, String account, String interestAccount, int balance ) {
+        this.id = id;
+        this.type = type;
+        this.year = year;
+        this.month = month;
+        this.day = day;
+        this.bankCode = bankCode;
+        this.bankName = bankName;
+        this.account = account;
+        this.interestAccount = interestAccount;
+        this.balance = balance;
+    }
+    
     public void setId( Integer id ) {
         this.id = id;
     }

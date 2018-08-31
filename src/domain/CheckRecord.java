@@ -12,6 +12,22 @@ public class CheckRecord {
     private Integer difference;     // 對帳差額, 實際-帳面
     private Integer bookAmount;     // 帳面金額
     private Integer actualAmount;   // 實際金額
+    
+    public CheckRecord() {}
+    
+    public CheckRecord( int id, int year, int month, int day, int hour, 
+            int minute, int second, int difference, int bookAmount, int actualAmount ) {
+        this.id = id;
+        this.year = year;
+        this.month = month;
+        this.day = day;
+        this.hour = hour;
+        this.minute = minute;
+        this.second = second;
+        this.difference = difference;
+        this.bookAmount = bookAmount;
+        this.actualAmount = actualAmount;
+    }
 
     public void setId( Integer id ) {
         this.id = id;

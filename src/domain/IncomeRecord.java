@@ -11,6 +11,21 @@ public class IncomeRecord {
     private Integer amount;         // 金額
     private String description;     // 收支描述
     private Integer orderNo;        // 排序編號
+    
+    public IncomeRecord() {}
+    
+    public IncomeRecord( int id, int year, int month, int day, String item, 
+            int classNo, int amount, String description, int orderNo ) {
+        this.id = id;
+        this.year = year;
+        this.month = month;
+        this.day = day;
+        this.item = item;
+        this.classNo = classNo;
+        this.amount = amount;
+        this.description = description;
+        this.orderNo = orderNo;
+    }
 
     public void setId( Integer id ) {
         this.id = id;

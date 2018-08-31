@@ -8,21 +8,46 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+import common.Contants;
 import commonUtil.IncomeRecordUtil;
 import domain.IncomeRecord;
 import junit.framework.TestCase;
 import repository.IncomeRecordDAO;
 import repository.impl.IncomeRecordDAOImpl;
 
+@RunWith(value=JUnit4.class)
 public class IncomeRecordDAOImplTests extends TestCase {
     
     private final int INITIAL_SEQ_NUMBER = 1;
     private final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
     private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
+    private final String INCOME_RECORD_CSV_FILE_PATH_2 = "./data/IncomeRecord/2017.12.csv";
+    private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "./data/IncomeRecord/2017.12_backup.csv";
     private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
     private final String FILE_CHARSET = "big5";
     
+    @Before
+    public void setUp() throws IOException {
+        backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+        backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
+        backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+        restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+        restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
+        restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+    }
+    
+    @Test
     public void testInsert() throws IOException {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         String[] expectedData = {
@@ -31,13 +56,8 @@ public class IncomeRecordDAOImplTests extends TestCase {
                 "3,2017,10,1,\"測試帳3\",0,300,\"\",0" };
         String[] actualData = new String[ 3 ];
         try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             for( int i = 1; i <= 3; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setItem( "測試帳" + i );
-                incomeRecord.setAmount( 100 * i );
+                IncomeRecord incomeRecord = new IncomeRecord( 0, 2017, 10, 1, ("測試帳" + i), 0, (100 * i), "", 0 );
                 incomeRecordDAO.insert( incomeRecord );
             }
             
@@ -62,27 +82,17 @@ public class IncomeRecordDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testFindOne() throws IOException {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
-        IncomeRecord expect = getTestData1();
-        expect.setId( 2 );
-        expect.setItem( "測試帳2" );
-        expect.setAmount( 200 );
+        IncomeRecord expect = new IncomeRecord( 2, 2017, 10, 1, "測試帳2", 0, 200, "", 0 );
         IncomeRecord actual = null;
         try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             for( int i = 1; i <= 3; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setItem( "測試帳" + i );
-                incomeRecord.setAmount( 100 * i );
+                IncomeRecord incomeRecord = new IncomeRecord( 0, 2017, 10, 1, ("測試帳" + i), 0, (100 * i), "", 0 );
                 incomeRecordDAO.insert( incomeRecord );
             }
             
@@ -93,32 +103,22 @@ public class IncomeRecordDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testFindByMonth() throws IOException {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         List<IncomeRecord> expectedDataList = new ArrayList<IncomeRecord>();
         for( int i = 1; i <= 3; i++ ) {
-            IncomeRecord incomeRecord = getTestData1();
-            incomeRecord.setId( i );
-            incomeRecord.setItem( "測試帳" + i );
-            incomeRecord.setAmount( 100 * i );
+            IncomeRecord incomeRecord = new IncomeRecord( i, 2017, 10, 1, ("測試帳" + i), 0, (100 * i), "", 0 );
             expectedDataList.add( incomeRecord );
         }
         List<IncomeRecord> actualDataList = null;
         
         try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             for( int i = 1; i <= 3; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setItem( "測試帳" + i );
-                incomeRecord.setAmount( 100 * i );
+                IncomeRecord incomeRecord = new IncomeRecord( 0, 2017, 10, 1, ("測試帳" + i), 0, (100 * i), "", 0 );
                 incomeRecordDAO.insert( incomeRecord );
             }
             
@@ -130,12 +130,10 @@ public class IncomeRecordDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testUpdate() throws IOException {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         
@@ -146,21 +144,12 @@ public class IncomeRecordDAOImplTests extends TestCase {
         List<String> actualDataList = new ArrayList<String>();
         
         try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             for( int i = 1; i <= 3; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setItem( "測試帳" + i );
-                incomeRecord.setAmount( 100 * i );
+                IncomeRecord incomeRecord = new IncomeRecord( 0, 2017, 10, 1, ("測試帳" + i), 0, (100 * i), "", 0 );
                 incomeRecordDAO.insert( incomeRecord );
             }
             
-            IncomeRecord modifiedData = getTestData1();
-            modifiedData.setId( 2 );
-            modifiedData.setItem( "測試帳2" );
-            modifiedData.setAmount( 250 );
-            
+            IncomeRecord modifiedData = new IncomeRecord( 2, 2017, 10, 1, "測試帳2", 0, 250, "", 0 );
             incomeRecordDAO.update( modifiedData, modifiedData.getYear(), modifiedData.getMonth() );
             
             BufferedReader bufReader = new BufferedReader( new InputStreamReader(
@@ -183,16 +172,11 @@ public class IncomeRecordDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testUpdateDifferentMonth() throws IOException {
-        final String INCOME_RECORD_CSV_FILE_PATH_2 = "./data/IncomeRecord/2017.12.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "./data/IncomeRecord/2017.12_backup.csv";
-        
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         
         List<String> expectedDataList1 = new ArrayList<String>();
@@ -204,25 +188,13 @@ public class IncomeRecordDAOImplTests extends TestCase {
         List<String> actualDataList2 = new ArrayList<String>();
         
         try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             for( int i = 1; i <= 3; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setItem( "測試帳" + i );
-                incomeRecord.setAmount( 100 * i );
+                IncomeRecord incomeRecord = new IncomeRecord( 0, 2017, 10, 1, ("測試帳" + i), 0, (100 * i), "", 0 );
                 incomeRecordDAO.insert( incomeRecord );
             }
             
-            IncomeRecord modifiedData = getTestData1();
-            modifiedData.setId( 3 );
-            modifiedData.setMonth( 12 );
-            modifiedData.setItem( "測試帳3" );
-            modifiedData.setAmount( 300 );
-            
-            incomeRecordDAO.updateDifferentMonth( modifiedData, getTestData1().getYear(), getTestData1().getMonth(), 
-                    modifiedData.getYear(), 12 );
+            IncomeRecord modifiedData = new IncomeRecord( 3, 2017, 12, 1, "測試帳3", 0, 300, "", 0 );
+            incomeRecordDAO.updateDifferentMonth( modifiedData, 2017, 10, 2017, 12 );
             
             BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                     new FileInputStream( new File( INCOME_RECORD_CSV_FILE_PATH ) ),
@@ -261,13 +233,10 @@ public class IncomeRecordDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testDelete() throws IOException {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         
@@ -281,16 +250,12 @@ public class IncomeRecordDAOImplTests extends TestCase {
             backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
             
             for( int i = 1; i <= 3; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setItem( "測試帳" + i );
-                incomeRecord.setAmount( 100 * i );
+                IncomeRecord incomeRecord = new IncomeRecord( 0, 2017, 10, 1, ("測試帳" + i), 0, (100 * i), "", 0 );
                 incomeRecordDAO.insert( incomeRecord );
             }
             
-            IncomeRecord deletedData = getTestData1();
-            deletedData.setId( 1 );
-            
-            incomeRecordDAO.delete( deletedData, deletedData.getYear(), deletedData.getMonth() );
+            IncomeRecord deletedData = new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 );
+            incomeRecordDAO.delete( deletedData, 2017, 10 );
             
             BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                     new FileInputStream( new File( INCOME_RECORD_CSV_FILE_PATH ) ),
@@ -312,19 +277,14 @@ public class IncomeRecordDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testGetCurrentSeqNumber() throws IOException {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         
         try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             // 測試初始情況
             int expect1 = INITIAL_SEQ_NUMBER - 1;
             int actual1 = incomeRecordDAO.getCurrentSeqNumber();
@@ -334,7 +294,7 @@ public class IncomeRecordDAOImplTests extends TestCase {
             int expect2 = INITIAL_SEQ_NUMBER + 5;
             
             for( int i = 1; i <= 5; i++ ) {
-                incomeRecordDAO.insert( getTestData1() );
+                incomeRecordDAO.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳", 0, 100, "", 0 ) );
             }
             
             int actual2 = incomeRecordDAO.getCurrentSeqNumber();
@@ -342,12 +302,10 @@ public class IncomeRecordDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testRefreshOrderNo() throws IOException {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         List<String> expectedDataList = new ArrayList<String>();
@@ -361,9 +319,7 @@ public class IncomeRecordDAOImplTests extends TestCase {
             backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
             
             for( int i = 1; i <= 3; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setItem( "測試帳" + i );
-                incomeRecord.setAmount( 100 * i );
+                IncomeRecord incomeRecord = new IncomeRecord( 0, 2017, 10, 1, ("測試帳" + i), 0, (100 * i), "", 0 );
                 incomeRecordDAO.insert( incomeRecord );
             }
             
@@ -389,12 +345,10 @@ public class IncomeRecordDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testGetCount() throws IOException {
         IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         int expect = 3;

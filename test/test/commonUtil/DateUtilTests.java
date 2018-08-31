@@ -1,10 +1,17 @@
 package test.commonUtil;
 
 import commonUtil.DateUtil;
-import junit.framework.TestCase;
 
-public class DateUtilTests extends TestCase {
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+@RunWith(value=JUnit4.class)
+public class DateUtilTests{
     
+    @Test
     public void testGetMaxDayValue() {
         final int YEAR = 0;
         final int MONTH = 1;
