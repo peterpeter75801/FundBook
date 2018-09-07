@@ -35,7 +35,7 @@ public class IncomeRecordServiceImpl implements IncomeRecordService {
         if( !returnCode ) {
             return Contants.ERROR;
         }
-                
+        
         return Contants.SUCCESS;
     }
 

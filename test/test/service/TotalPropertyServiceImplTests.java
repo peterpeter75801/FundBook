@@ -8,33 +8,48 @@ import java.util.List;
 import common.Contants;
 import commonUtil.TotalPropertyUtil;
 import domain.TotalProperty;
-
-import junit.framework.TestCase;
 import repository.TotalPropertyDAO;
 import repository.impl.TotalPropertyDAOImpl;
 import service.TotalPropertyService;
 import service.impl.TotalPropertyServiceImpl;
 
-public class TotalPropertyServiceImplTests extends TestCase {
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+import static org.junit.Assert.*;
+
+@RunWith(value=JUnit4.class)
+public class TotalPropertyServiceImplTests {
     
     private final String TOTAL_PROPERTY_CSV_FILE_PATH = 
         Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
     private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
     private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
     
+    @Before
+    public void setUp() throws IOException {
+    	backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
+        backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+        restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
+        restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
+    }
+    
+    @Test
     public void testInsert() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
         
         List<TotalProperty> expectDataList = new ArrayList<TotalProperty>();
-        expectDataList.add( getTestData1() );
-        expectDataList.get( expectDataList.size() - 1 ).setId( 1 );
-        
+        expectDataList.add( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 ) );
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
-            
-            totalPropertyService.insert( getTestData1() );
+            totalPropertyService.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
             
             List<TotalProperty> actualDataList = totalPropertyService.findAll();
             assertEquals( expectDataList.size(), actualDataList.size() );
@@ -44,24 +59,18 @@ public class TotalPropertyServiceImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testFindOne() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
         
-        TotalProperty expect = getTestData1();
-        expect.setId( 1 );
+        TotalProperty expect = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 );
         
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
-            
-            totalPropertyService.insert( getTestData1() );
+            totalPropertyService.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
             
             TotalProperty actual = totalPropertyService.findOne( 1 );
             assertTrue( TotalPropertyUtil.equals( expect, actual ) );
@@ -70,12 +79,10 @@ public class TotalPropertyServiceImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
     }
-    
+
+    @Test
     public void testGetMainTotalAmount() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
@@ -84,25 +91,20 @@ public class TotalPropertyServiceImplTests extends TestCase {
         int expect2 = 1000;
         
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
-            
             int actual1 = totalPropertyService.getMainTotalAmount();
             assertEquals( expect1, actual1 );
             
-            totalPropertyService.insert( getTestData1() );
+            totalPropertyService.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
             
             int actual2 = totalPropertyService.getMainTotalAmount();
             assertEquals( expect2, actual2 );
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
     }
-    
+
+    @Test
     public void testSetMainTotalAmount() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
@@ -111,10 +113,7 @@ public class TotalPropertyServiceImplTests extends TestCase {
         int expect2 = 2000;
         
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
-            
-            totalPropertyService.insert( getTestData1() );
+            totalPropertyService.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
             
             int actual1 = totalPropertyService.getMainTotalAmount();
             assertEquals( expect1, actual1 );
@@ -126,31 +125,21 @@ public class TotalPropertyServiceImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
     }
-    
+
+    @Test
     public void testUpdate() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
         
         List<TotalProperty> expectDataList = new ArrayList<TotalProperty>();
-        expectDataList.add( getTestData1() );
-        expectDataList.get( expectDataList.size() - 1 ).setId( 1 );
-        expectDataList.get( expectDataList.size() - 1 ).setTotalAmount( 2000 );
+        expectDataList.add( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 2000 ) );
         
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
+            totalPropertyService.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
             
-            
-            totalPropertyService.insert( getTestData1() );
-            
-            TotalProperty modifiedData = getTestData1();
-            modifiedData.setId( 1 );
-            modifiedData.setTotalAmount( 2000 );
+            TotalProperty modifiedData = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 2000 );
             totalPropertyService.update( modifiedData );
             
             List<TotalProperty> actualDataList = totalPropertyService.findAll();
@@ -161,33 +150,22 @@ public class TotalPropertyServiceImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
     }
-    
+
+    @Test
     public void testDelete() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
         
         List<TotalProperty> expectDataList = new ArrayList<TotalProperty>();
-        expectDataList.add( getTestData1() );
-        expectDataList.get( expectDataList.size() - 1 ).setId( 1 );
+        expectDataList.add( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 ) );
         
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
+        	totalPropertyService.insert( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 ) );
+        	totalPropertyService.insert( new TotalProperty( 2, 2017, 10, 1, 12, 0, 0, 2000 ) );
             
-            for( int i = 1; i <= 2; i++ ) {
-                TotalProperty totalProperty = getTestData1();
-                totalProperty.setId( i );
-                totalProperty.setTotalAmount( i * 1000 );
-                totalPropertyService.insert( totalProperty );
-            }
-            
-            TotalProperty deletedData = getTestData1();
-            deletedData.setId( 2 );
+            TotalProperty deletedData = new TotalProperty( 2, 2017, 10, 1, 12, 0, 0, 1000 );
             totalPropertyService.delete( deletedData );
             
             List<TotalProperty> actualDataList = totalPropertyService.findAll();
@@ -198,23 +176,7 @@ public class TotalPropertyServiceImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
-    }
-    
-    private TotalProperty getTestData1() {
-        TotalProperty testData = new TotalProperty();
-        testData.setId( 0 );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 1 );
-        testData.setHour( 12 );
-        testData.setMinute( 0 );
-        testData.setSecond( 0 );
-        testData.setTotalAmount( 1000 );
-        return testData;
     }
     
     private void backupFile( String filePath, String backupFilePath )

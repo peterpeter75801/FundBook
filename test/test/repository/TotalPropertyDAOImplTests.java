@@ -8,31 +8,48 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
 import common.Contants;
 import commonUtil.TotalPropertyUtil;
 import domain.TotalProperty;
 import repository.TotalPropertyDAO;
 import repository.impl.TotalPropertyDAOImpl;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.*;
 
-public class TotalPropertyDAOImplTests extends TestCase {
+@RunWith(value=JUnit4.class)
+public class TotalPropertyDAOImplTests {
 
     private final String TOTAL_PROPERTY_CSV_FILE_PATH = 
         Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
     private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
     private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
     
+    @Before
+    public void setUp() throws IOException {
+    	backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
+        backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+    	restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
+        restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
+    }
+    
+    @Test
     public void testCreate() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         String[] expectedData = { "1,2017,10,1,12,0,0,1000" };
         String[] actualData = new String[ 1 ];
         
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            
-            TotalProperty input = getTestData1();
-            input.setId( 1 );
+            TotalProperty input = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 );
             totalPropertyDAO.create( input );
             totalPropertyDAO.create( input );   // test create again
             
@@ -57,20 +74,16 @@ public class TotalPropertyDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testInsert() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         String[] expectedData = { "1,2017,10,1,12,0,0,1000" };
         String[] actualData = new String[ 1 ];
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
-            
-            totalPropertyDAO.insert( getTestData1() );
+            totalPropertyDAO.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
             
             BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                     new FileInputStream( new File( TOTAL_PROPERTY_CSV_FILE_PATH ) ),
@@ -93,22 +106,16 @@ public class TotalPropertyDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testFindOne() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
-        TotalProperty expect = getTestData1();
-        expect.setId( 1 );
+        TotalProperty expect = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 );
         TotalProperty actual = null;
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
-            
-            totalPropertyDAO.insert( getTestData1() );
+            totalPropertyDAO.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
             
             actual = totalPropertyDAO.findOne( 1 );
             assertTrue( TotalPropertyUtil.equals( expect, actual ) );
@@ -117,24 +124,18 @@ public class TotalPropertyDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
     }
-    
+
+    @Test
     public void testFindAll() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         List<TotalProperty> expectedDataList = new ArrayList<TotalProperty>();
-        expectedDataList.add( getTestData1() );
-        expectedDataList.get( expectedDataList.size() - 1 ).setId( 1 );
+        expectedDataList.add( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 ) );
         List<TotalProperty> actualDataList = null;
         
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
-            
-            totalPropertyDAO.insert( getTestData1() );
+            totalPropertyDAO.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
             
             actualDataList = totalPropertyDAO.findAll();
             assertEquals( 1, actualDataList.size() );
@@ -144,12 +145,10 @@ public class TotalPropertyDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
     }
-    
+
+    @Test
     public void testUpdate() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         
@@ -158,15 +157,9 @@ public class TotalPropertyDAOImplTests extends TestCase {
         List<String> actualDataList = new ArrayList<String>();
         
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
+            totalPropertyDAO.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
             
-            totalPropertyDAO.insert( getTestData1() );
-            
-            TotalProperty modifiedData = getTestData1();
-            modifiedData.setId( 1 );
-            modifiedData.setTotalAmount( 2000 );
-            
+            TotalProperty modifiedData = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 2000 );
             totalPropertyDAO.update( modifiedData );
             
             BufferedReader bufReader = new BufferedReader( new InputStreamReader(
@@ -189,12 +182,10 @@ public class TotalPropertyDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
     }
-    
+
+    @Test
     public void testDelete() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         
@@ -203,19 +194,10 @@ public class TotalPropertyDAOImplTests extends TestCase {
         List<String> actualDataList = new ArrayList<String>();
         
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
+            totalPropertyDAO.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
+            totalPropertyDAO.insert( new TotalProperty( 0, 2017, 10, 2, 12, 0, 0, 2000 ) );
             
-            for( int i = 1; i <= 2; i++ ) {
-                TotalProperty totalProperty = getTestData1();
-                totalProperty.setDay( i );
-                totalProperty.setTotalAmount( 1000 * i );
-                totalPropertyDAO.insert( totalProperty );
-            }
-            
-            TotalProperty deletedData = getTestData1();
-            deletedData.setId( 2 );
-            
+            TotalProperty deletedData = new TotalProperty( 2, 2017, 10, 1, 12, 0, 0, 1000 );
             totalPropertyDAO.delete( deletedData );
             
             BufferedReader bufReader = new BufferedReader( new InputStreamReader(
@@ -238,19 +220,14 @@ public class TotalPropertyDAOImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         }
     }
-    
+
+    @Test
     public void testGetCurrentSeqNumber() throws IOException {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         
         try {
-            backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
-            
             // 測試初始情況
             int expect1 = Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) - 1;
             int actual1 = totalPropertyDAO.getCurrentSeqNumber();
@@ -258,30 +235,14 @@ public class TotalPropertyDAOImplTests extends TestCase {
             
             // 測試新增資料後的情況
             int expect2 = Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) + 1;
-            totalPropertyDAO.insert( getTestData1() );
+            totalPropertyDAO.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
             
             int actual2 = totalPropertyDAO.getCurrentSeqNumber();
             assertEquals( expect2, actual2 );
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
-            restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
-        }
-    }
-    
-    private TotalProperty getTestData1() {
-        TotalProperty testData = new TotalProperty();
-        testData.setId( 0 );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 1 );
-        testData.setHour( 12 );
-        testData.setMinute( 0 );
-        testData.setSecond( 0 );
-        testData.setTotalAmount( 1000 );
-        return testData;
+        } 
     }
     
     private void backupFile( String filePath, String backupFilePath )

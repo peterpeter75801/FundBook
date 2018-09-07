@@ -8,24 +8,53 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
 import javax.swing.JOptionPane;
 
 import commonUtil.IncomeRecordUtil;
 import domain.IncomeRecord;
-import junit.framework.TestCase;
 import main.FundBookServices;
 import repository.impl.IncomeRecordDAOImpl;
 import service.IncomeRecordService;
 import service.impl.IncomeRecordServiceImpl;
 import view.MainFrame;
 
-public class IncomeRecordCopyTests extends TestCase {
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+import static org.junit.Assert.*;
+
+@RunWith(value=JUnit4.class)
+public class IncomeRecordCopyTests {
 
     private final int TAB_DELAY = 100;
     private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
     
+    private Calendar calendar;
+    private int currentYear;
+    private int currentMonth;
+    
+    @Before
+    public void setUp() throws IOException {
+        backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
+        backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+        
+        calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        currentYear = calendar.get( Calendar.YEAR );
+        currentMonth = calendar.get( Calendar.MONTH ) + 1;
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+    	restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+        restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
+    }
+    
+    @Test
     public void testCopyIncomeRecord() throws IOException {
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
@@ -33,17 +62,12 @@ public class IncomeRecordCopyTests extends TestCase {
         fundBookServices.setIncomeRecordService( incomeRecordService );
         
         try {
-            backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             // 新增初始資料
-            for( int i = 1; i <= 5; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setItem( getTestData1().getItem() + " " + i );
-                incomeRecord.setAmount( i * (-100) );
-                incomeRecord.setDay( i );
-                incomeRecordService.insert( incomeRecord );
-            }
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 1, "test item 1", 0, -100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 2, "test item 2", 0, -200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 3, "test item 3", 0, -300, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 4, "test item 4", 0, -400, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 5, "test item 5", 0, -500, "", 0 ) );
             
             // 執行視窗程式
             MainFrame mainFrame = new MainFrame( fundBookServices );
@@ -74,31 +98,21 @@ public class IncomeRecordCopyTests extends TestCase {
             
             // 檢查是否有複製成功
             List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
-            for( int i = 1; i <= 6; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setId( i );
-                incomeRecord.setDay( i );
-                incomeRecord.setItem( getTestData1().getItem() + " " + i );
-                incomeRecord.setAmount( i * (-100) );
-                incomeRecord.setOrderNo( i );
-                if( i == 6 ) {
-                    incomeRecord.setDay( 3 );
-                    incomeRecord.setItem( getTestData1().getItem() + " 3" );
-                    incomeRecord.setAmount( -300 );
-                }
-                expectDataList.add( incomeRecord );
-            }
-            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData1().getYear(), getTestData1().getMonth() );
+            expectDataList.add( new IncomeRecord( 1, currentYear, currentMonth, 1, "test item 1", 0, -100, "", 1 ) );
+            expectDataList.add( new IncomeRecord( 2, currentYear, currentMonth, 2, "test item 2", 0, -200, "", 2 ) );
+            expectDataList.add( new IncomeRecord( 3, currentYear, currentMonth, 3, "test item 3", 0, -300, "", 3 ) );
+            expectDataList.add( new IncomeRecord( 4, currentYear, currentMonth, 4, "test item 4", 0, -400, "", 4 ) );
+            expectDataList.add( new IncomeRecord( 5, currentYear, currentMonth, 5, "test item 5", 0, -500, "", 5 ) );
+            expectDataList.add( new IncomeRecord( 6, currentYear, currentMonth, 3, "test item 3", 0, -300, "", 6 ) );
+            
+            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( currentYear, currentMonth );
             assertEquals( expectDataList.size(), actualDataList.size() );
             for( int i = 0; i < expectDataList.size(); i++ ) {
                 assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
             }
             
             // 檢查畫面是否顯示正確
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime( new Date() );
-            String expectDateString = String.format( "%04d.%02d.", 
-                calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
+            String expectDateString = String.format( "%04d.%02d.", currentYear, currentMonth );
             testerSelection = JOptionPane.showConfirmDialog( 
                 mainFrame, 
                 "<html><head><style type=\"text/css\">" + 
@@ -119,28 +133,8 @@ public class IncomeRecordCopyTests extends TestCase {
         } catch ( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
         }
     } 
-    
-    private IncomeRecord getTestData1() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime( new Date() );
-        
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 0 );
-        testData.setYear( calendar.get( Calendar.YEAR ) );
-        testData.setMonth( calendar.get( Calendar.MONTH ) + 1 );
-        testData.setDay( calendar.get( Calendar.DAY_OF_MONTH ) );
-        testData.setItem( "test item" );
-        testData.setClassNo( 0 );
-        testData.setAmount( -100 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
-    }
     
     private String getIncomeRecordCsvFilePathOfCurrentDay() {
         Calendar calendar = Calendar.getInstance();

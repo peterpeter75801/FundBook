@@ -13,38 +13,52 @@ import repository.impl.FundingStatusDAOImpl;
 import service.FundingStatusService;
 import service.impl.FundingStatusServiceImpl;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-public class FundingStatusServiceImplTests extends TestCase {
+import static org.junit.Assert.*;
+
+@RunWith(value=JUnit4.class)
+public class FundingStatusServiceImplTests {
     
     private final String FUNDING_STATUS_CSV_FILE_PATH = 
             Contants.FUNDING_STATUS_DATA_PATH + Contants.FUNDING_STATUS_FILENAME;
     private final String FUNDING_STATUS_CSV_FILE_PATH_BACKUP = "./data/FundingStatus/FundingStatus_backup.csv";
     private final String FUNDING_STATUS_SEQ_FILE_PATH_BACKUP = "./data/FundingStatus/FundingStatusSeq_backup.txt";
     
+    @Before
+    public void setUp() throws IOException {
+    	backupFile( FUNDING_STATUS_CSV_FILE_PATH, FUNDING_STATUS_CSV_FILE_PATH_BACKUP );
+        backupFile( Contants.FUNDING_STATUS_SEQ_FILE_PATH, FUNDING_STATUS_SEQ_FILE_PATH_BACKUP );
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+    	restoreFile( FUNDING_STATUS_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_SEQ_FILE_PATH );
+        restoreFile( FUNDING_STATUS_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_CSV_FILE_PATH );
+    }
+    
+    @Test
     public void testInsert() throws IOException {
         FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
         FundingStatusService fundingStatusService = new FundingStatusServiceImpl( fundingStatusDAO );
         
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
-        expectDataList.add( getTestData1() );
-        expectDataList.add( getTestData2() );
-        expectDataList.add( getTestData3() );
-        expectDataList.add( getTestData4() );
-        expectDataList.add( getTestData5() );
-        for( int i = 1; i <= 5; i++ ) {
-            expectDataList.get( i - 1 ).setId( i );
-        }
+        expectDataList.add( new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
+        expectDataList.add( new FundingStatus( 2, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
+        expectDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
+        expectDataList.add( new FundingStatus( 4, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
+        expectDataList.add( new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
         
         try {
-            backupFile( FUNDING_STATUS_CSV_FILE_PATH, FUNDING_STATUS_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.FUNDING_STATUS_SEQ_FILE_PATH, FUNDING_STATUS_SEQ_FILE_PATH_BACKUP );
-            
-            fundingStatusService.insert( getTestData1() );
-            fundingStatusService.insert( getTestData2() );
-            fundingStatusService.insert( getTestData3() );
-            fundingStatusService.insert( getTestData4() );
-            fundingStatusService.insert( getTestData5() );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
             
             List<FundingStatus> actualDataList = fundingStatusService.findAll();
             assertEquals( expectDataList.size(), actualDataList.size() );
@@ -54,28 +68,22 @@ public class FundingStatusServiceImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( FUNDING_STATUS_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_SEQ_FILE_PATH );
-            restoreFile( FUNDING_STATUS_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testFindOne() throws IOException {
         FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
         FundingStatusService fundingStatusService = new FundingStatusServiceImpl( fundingStatusDAO );
         
-        FundingStatus expect = getTestData5();
-        expect.setId( 5 );
+        FundingStatus expect = new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 );
         
         try {
-            backupFile( FUNDING_STATUS_CSV_FILE_PATH, FUNDING_STATUS_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.FUNDING_STATUS_SEQ_FILE_PATH, FUNDING_STATUS_SEQ_FILE_PATH_BACKUP );
-            
-            fundingStatusService.insert( getTestData1() );
-            fundingStatusService.insert( getTestData2() );
-            fundingStatusService.insert( getTestData3() );
-            fundingStatusService.insert( getTestData4() );
-            fundingStatusService.insert( getTestData5() );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
             
             FundingStatus actual = fundingStatusService.findOne( 5 );
             assertTrue( FundingStatusUtil.equals( expect, actual ) );
@@ -84,40 +92,29 @@ public class FundingStatusServiceImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( FUNDING_STATUS_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_SEQ_FILE_PATH );
-            restoreFile( FUNDING_STATUS_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testUpdate() throws IOException {
         FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
         FundingStatusService fundingStatusService = new FundingStatusServiceImpl( fundingStatusDAO );
         
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
-        expectDataList.add( getTestData1() );
-        expectDataList.get( 0 ).setBalance( 12000 );
-        expectDataList.add( getTestData2() );
-        expectDataList.add( getTestData3() );
-        expectDataList.add( getTestData4() );
-        expectDataList.add( getTestData5() );
-        for( int i = 1; i <= 5; i++ ) {
-            expectDataList.get( i - 1 ).setId( i );
-        }
+        expectDataList.add( new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 12000 ) );
+        expectDataList.add( new FundingStatus( 2, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
+        expectDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
+        expectDataList.add( new FundingStatus( 4, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
+        expectDataList.add( new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
         
         try {
-            backupFile( FUNDING_STATUS_CSV_FILE_PATH, FUNDING_STATUS_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.FUNDING_STATUS_SEQ_FILE_PATH, FUNDING_STATUS_SEQ_FILE_PATH_BACKUP );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
             
-            fundingStatusService.insert( getTestData1() );
-            fundingStatusService.insert( getTestData2() );
-            fundingStatusService.insert( getTestData3() );
-            fundingStatusService.insert( getTestData4() );
-            fundingStatusService.insert( getTestData5() );
-            
-            FundingStatus modifiedData = getTestData1();
-            modifiedData.setId( 1 );
-            modifiedData.setBalance( 12000 );
+            FundingStatus modifiedData = new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 12000 );
             fundingStatusService.update( modifiedData );
             
             List<FundingStatus> actualDataList = fundingStatusService.findAll();
@@ -128,37 +125,28 @@ public class FundingStatusServiceImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( FUNDING_STATUS_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_SEQ_FILE_PATH );
-            restoreFile( FUNDING_STATUS_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testDelete() throws IOException {
         FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
         FundingStatusService fundingStatusService = new FundingStatusServiceImpl( fundingStatusDAO );
         
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
-        expectDataList.add( getTestData1() );
-        expectDataList.add( getTestData2() );
-        expectDataList.add( getTestData3() );
-        expectDataList.add( getTestData4() );
-        for( int i = 1; i <= 4; i++ ) {
-            expectDataList.get( i - 1 ).setId( i );
-        }
+        expectDataList.add( new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
+        expectDataList.add( new FundingStatus( 2, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
+        expectDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
+        expectDataList.add( new FundingStatus( 4, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
         
         try {
-            backupFile( FUNDING_STATUS_CSV_FILE_PATH, FUNDING_STATUS_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.FUNDING_STATUS_SEQ_FILE_PATH, FUNDING_STATUS_SEQ_FILE_PATH_BACKUP );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
             
-            fundingStatusService.insert( getTestData1() );
-            fundingStatusService.insert( getTestData2() );
-            fundingStatusService.insert( getTestData3() );
-            fundingStatusService.insert( getTestData4() );
-            fundingStatusService.insert( getTestData5() );
-            
-            FundingStatus deletedData = getTestData5();
-            deletedData.setId( 5 );
+            FundingStatus deletedData = new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 );
             fundingStatusService.delete( deletedData );
             
             List<FundingStatus> actualDataList = fundingStatusService.findAll();
@@ -169,85 +157,7 @@ public class FundingStatusServiceImplTests extends TestCase {
         } catch( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( FUNDING_STATUS_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_SEQ_FILE_PATH );
-            restoreFile( FUNDING_STATUS_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_CSV_FILE_PATH );
         }
-    }
-    
-    private FundingStatus getTestData1() {
-        FundingStatus testData = new FundingStatus();
-        testData.setId( 0 );
-        testData.setType( 'D' );
-        testData.setYear( 0 );
-        testData.setMonth( 0 );
-        testData.setDay( 0 );
-        testData.setBankCode( "700" );
-        testData.setBankName( "中華郵政" );
-        testData.setAccount( "12345671234567" );
-        testData.setInterestAccount( "12345671234567" );
-        testData.setBalance( 10000 );
-        return testData;
-    }
-    
-    private FundingStatus getTestData2() {
-        FundingStatus testData = new FundingStatus();
-        testData.setId( 0 );
-        testData.setType( 'C' );
-        testData.setYear( 0 );
-        testData.setMonth( 0 );
-        testData.setDay( 0 );
-        testData.setBankCode( "" );
-        testData.setBankName( "" );
-        testData.setAccount( "" );
-        testData.setInterestAccount( "" );
-        testData.setBalance( 5000 );
-        return testData;
-    }
-    
-    private FundingStatus getTestData3() {
-        FundingStatus testData = new FundingStatus();
-        testData.setId( 0 );
-        testData.setType( 'T' );
-        testData.setYear( 2017 );
-        testData.setMonth( 11 );
-        testData.setDay( 28 );
-        testData.setBankCode( "005" );
-        testData.setBankName( "土地銀行" );
-        testData.setAccount( "01234560123456" );
-        testData.setInterestAccount( "01234567890123" );
-        testData.setBalance( 100000 );
-        return testData;
-    }
-    
-    private FundingStatus getTestData4() {
-        FundingStatus testData = new FundingStatus();
-        testData.setId( 0 );
-        testData.setType( 'D' );
-        testData.setYear( 0 );
-        testData.setMonth( 0 );
-        testData.setDay( 0 );
-        testData.setBankCode( "005" );
-        testData.setBankName( "土地銀行" );
-        testData.setAccount( "01234567890123" );
-        testData.setInterestAccount( "01234567890123" );
-        testData.setBalance( 50000 );
-        return testData;
-    }
-    
-    private FundingStatus getTestData5() {
-        FundingStatus testData = new FundingStatus();
-        testData.setId( 0 );
-        testData.setType( 'T' );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 28 );
-        testData.setBankCode( "005" );
-        testData.setBankName( "土地銀行" );
-        testData.setAccount( "11223344556677" );
-        testData.setInterestAccount( "01234567890123" );
-        testData.setBalance( 200000 );
-        return testData;
     }
     
     private void backupFile( String filePath, String backupFilePath )

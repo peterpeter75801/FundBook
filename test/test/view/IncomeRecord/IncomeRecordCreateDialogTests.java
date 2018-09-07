@@ -10,19 +10,23 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.swing.JOptionPane;
 
 import commonUtil.IncomeRecordUtil;
 import domain.IncomeRecord;
-import junit.framework.TestCase;
 import main.FundBookServices;
 import repository.impl.IncomeRecordDAOImpl;
 import service.IncomeRecordService;
 import service.impl.IncomeRecordServiceImpl;
 import view.MainFrame;
 
-public class IncomeRecordCreateDialogTests extends TestCase {
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+import static org.junit.Assert.*;
+
+@RunWith(value=JUnit4.class)
+public class IncomeRecordCreateDialogTests {
     
     private final int TAB_DELAY = 100;
     private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
