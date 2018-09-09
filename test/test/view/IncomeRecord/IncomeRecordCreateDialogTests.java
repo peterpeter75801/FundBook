@@ -20,6 +20,9 @@ import service.IncomeRecordService;
 import service.impl.IncomeRecordServiceImpl;
 import view.MainFrame;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -31,7 +34,39 @@ public class IncomeRecordCreateDialogTests {
     private final int TAB_DELAY = 100;
     private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
+    private final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
+    private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
+    private final String INCOME_RECORD_CSV_FILE_PATH_2 = "./data/IncomeRecord/2018.01.csv";
+    private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "./data/IncomeRecord/2018.01_backup.csv";
     
+    private Calendar calendar;
+    private int currentYear;
+    private int currentMonth;
+    private int currentDay;
+    
+    @Before
+    public void setUp() throws IOException {
+        backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
+        backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+        backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
+        backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+
+        calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        currentYear = calendar.get( Calendar.YEAR );
+        currentMonth = calendar.get( Calendar.MONTH ) + 1;
+        currentDay = calendar.get( Calendar.DAY_OF_MONTH );
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+        restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+        restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
+        restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
+    }
+    
+    @Test
     public void testCreateIncomeRecord() throws IOException {
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
@@ -39,9 +74,6 @@ public class IncomeRecordCreateDialogTests {
         fundBookServices.setIncomeRecordService( incomeRecordService );
         
         try {
-            backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             // 執行視窗程式
             MainFrame mainFrame = new MainFrame( fundBookServices );
             mainFrame.setVisible( true );
@@ -68,15 +100,7 @@ public class IncomeRecordCreateDialogTests {
             Thread.sleep( 1000 );
             
             // 檢查是否有新增成功
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime( new Date() );
-            int currentYear = calendar.get( Calendar.YEAR );
-            int currentMonth = calendar.get( Calendar.MONTH ) + 1;
-            
-            IncomeRecord expect = getTestData1();
-            expect.setId( 1 );
-            expect.setItem( "test item 1" );
-            expect.setOrderNo( 1 );
+            IncomeRecord expect = new IncomeRecord( 1, currentYear, currentMonth, currentDay, "test item 1", 0, -100, "", 1 );
             IncomeRecord actual = incomeRecordService.findOne( 1, currentYear, currentMonth );
             assertTrue( IncomeRecordUtil.equals( expect, actual ) );
             
@@ -111,27 +135,17 @@ public class IncomeRecordCreateDialogTests {
             
             // 檢查是否有新增成功
             List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
-            for( int i = 1; i <= 3; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setId( i );
-                incomeRecord.setItem( getTestData1().getItem() + " " + i );
-                incomeRecord.setOrderNo( i );
-                if( i == 3 ) {
-                    incomeRecord.setAmount( i * 100 );
-                } else {
-                    incomeRecord.setAmount( i * (-100) );
-                }
-                expectDataList.add( incomeRecord );
-            }
-            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData1().getYear(), getTestData1().getMonth() );
+            expectDataList.add( new IncomeRecord( 1, currentYear, currentMonth, currentDay, "test item 1", 0, -100, "", 1 ) );
+            expectDataList.add( new IncomeRecord( 2, currentYear, currentMonth, currentDay, "test item 2", 0, -200, "", 2 ) );
+            expectDataList.add( new IncomeRecord( 3, currentYear, currentMonth, currentDay, "test item 3", 0, 300, "", 3 ) );
+            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( currentYear, currentMonth );
             assertEquals( expectDataList.size(), actualDataList.size() );
             for( int i = 0; i < expectDataList.size(); i++ ) {
                 assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
             }
             
             // 檢查畫面是否顯示正確
-            String expectDateString = String.format( "%04d.%02d.%02d", 
-                calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1, calendar.get( Calendar.DAY_OF_MONTH ) );
+            String expectDateString = String.format( "%04d.%02d.%02d", currentYear, currentMonth, currentDay );
             testerSelection = JOptionPane.showConfirmDialog( 
                 mainFrame, 
                 "<html><head><style type=\"text/css\">" + 
@@ -149,25 +163,18 @@ public class IncomeRecordCreateDialogTests {
         } catch ( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
         }
     }
     
+
+    @Test
     public void testCreateIncomeRecord2() throws IOException {
-        final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
-        
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
         FundBookServices fundBookServices = new FundBookServices();
         fundBookServices.setIncomeRecordService( incomeRecordService );
         
         try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             // 執行視窗程式
             MainFrame mainFrame = new MainFrame( fundBookServices );
             mainFrame.setVisible( true );
@@ -205,10 +212,7 @@ public class IncomeRecordCreateDialogTests {
             Thread.sleep( 1000 );
             
             // 檢查是否有新增成功
-            IncomeRecord expect = getTestData2();
-            expect.setId( 1 );
-            expect.setItem( "test item 1" );
-            expect.setOrderNo( 1 );
+            IncomeRecord expect = new IncomeRecord( 1, 2017, 10, 1, "test item 1", 0, -100, "", 1 );
             IncomeRecord actual = incomeRecordService.findOne( 1, 2017, 10 );
             assertTrue( IncomeRecordUtil.equals( expect, actual ) );
             
@@ -248,20 +252,10 @@ public class IncomeRecordCreateDialogTests {
             
             // 檢查是否有新增成功
             List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
-            for( int i = 1; i <= 3; i++ ) {
-                IncomeRecord incomeRecord = getTestData2();
-                incomeRecord.setId( i );
-                incomeRecord.setItem( getTestData2().getItem() + " " + i );
-                incomeRecord.setOrderNo( i );
-                if( i == 3 ) {
-                    incomeRecord.setAmount( i * 100 );
-                    incomeRecord.setDescription( "test comment<br />123" );
-                } else {
-                    incomeRecord.setAmount( i * (-100) );
-                }
-                expectDataList.add( incomeRecord );
-            }
-            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData2().getYear(), getTestData2().getMonth() );
+            expectDataList.add( new IncomeRecord( 1, 2017, 10, 1, "test item 1", 0, -100, "", 1 ) );
+            expectDataList.add( new IncomeRecord( 2, 2017, 10, 1, "test item 2", 0, -200, "", 2 ) );
+            expectDataList.add( new IncomeRecord( 3, 2017, 10, 1, "test item 3", 0, 300, "test comment<br />123", 3 ) );
+            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( 2017, 10 );
             assertEquals( expectDataList.size(), actualDataList.size() );
             for( int i = 0; i < expectDataList.size(); i++ ) {
                 assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
@@ -298,28 +292,18 @@ public class IncomeRecordCreateDialogTests {
         } catch ( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
     
+
+    @Test
     public void testCreateIncomeRecord3() throws IOException {
-        final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_2 = "./data/IncomeRecord/2018.01.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "./data/IncomeRecord/2018.01_backup.csv";
-        
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
         FundBookServices fundBookServices = new FundBookServices();
         fundBookServices.setIncomeRecordService( incomeRecordService );
         
         try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             // 執行視窗程式
             MainFrame mainFrame = new MainFrame( fundBookServices );
             mainFrame.setVisible( true );
@@ -357,10 +341,7 @@ public class IncomeRecordCreateDialogTests {
             Thread.sleep( 1000 );
             
             // 檢查是否有新增成功
-            IncomeRecord expect1 = getTestData2();
-            expect1.setId( 1 );
-            expect1.setItem( "test item 1" );
-            expect1.setOrderNo( 1 );
+            IncomeRecord expect1 = new IncomeRecord( 1, 2017, 10, 1, "test item 1", 0, -100, "", 1 );
             IncomeRecord actual1 = incomeRecordService.findOne( 1, 2017, 10 );
             assertTrue( IncomeRecordUtil.equals( expect1, actual1 ) );
             
@@ -403,10 +384,7 @@ public class IncomeRecordCreateDialogTests {
             Thread.sleep( 1000 );
             
             // 檢查是否有新增成功
-            IncomeRecord expect2 = getTestData3();
-            expect2.setId( 2 );
-            expect2.setItem( "test item 2" );
-            expect2.setOrderNo( 1 );
+            IncomeRecord expect2 = new IncomeRecord( 2, 2018, 1, 31, "test item 2", 0, -100, "", 1 );
             IncomeRecord actual2 = incomeRecordService.findOne( 2, 2018, 1 );
             assertTrue( IncomeRecordUtil.equals( expect2, actual2 ) );
             
@@ -463,62 +441,7 @@ public class IncomeRecordCreateDialogTests {
         } catch ( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
-    }
-    
-    private IncomeRecord getTestData1() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime( new Date() );
-        
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 0 );
-        testData.setYear( calendar.get( Calendar.YEAR ) );
-        testData.setMonth( calendar.get( Calendar.MONTH ) + 1 );
-        testData.setDay( calendar.get( Calendar.DAY_OF_MONTH ) );
-        testData.setItem( "test item" );
-        testData.setClassNo( 0 );
-        testData.setAmount( -100 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
-    }
-    
-    private IncomeRecord getTestData2() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime( new Date() );
-        
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 0 );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 1 );
-        testData.setItem( "test item" );
-        testData.setClassNo( 0 );
-        testData.setAmount( -100 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
-    }
-    
-    private IncomeRecord getTestData3() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime( new Date() );
-        
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 0 );
-        testData.setYear( 2018 );
-        testData.setMonth( 1 );
-        testData.setDay( 31 );
-        testData.setItem( "test item" );
-        testData.setClassNo( 0 );
-        testData.setAmount( -100 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
     }
     
     private String getIncomeRecordCsvFilePathOfCurrentDay() {
@@ -536,14 +459,6 @@ public class IncomeRecordCreateDialogTests {
         return String.format( "./data/IncomeRecord/%04d.%02d_backup.csv", 
             calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
     }
-    
-    //private void waitingForComponentFocused( JFrame ownerFrame, Component targetComponent ) throws InterruptedException {
-    //    int time = 0;
-    //    while( ownerFrame.getFocusOwner() != targetComponent && time < 60000 ) {
-    //        Thread.sleep( 100 );
-    //        time += 100;
-    //    }
-    //}
     
     private void backupFile( String filePath, String backupFilePath )
             throws IOException {
