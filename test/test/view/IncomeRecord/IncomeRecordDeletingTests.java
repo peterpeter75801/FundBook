@@ -10,7 +10,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
 import javax.swing.JOptionPane;
 
 import commonUtil.IncomeRecordUtil;
@@ -20,13 +19,47 @@ import repository.impl.IncomeRecordDAOImpl;
 import service.IncomeRecordService;
 import service.impl.IncomeRecordServiceImpl;
 import view.MainFrame;
-import junit.framework.TestCase;
 
-public class IncomeRecordDeletingTests extends TestCase {
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+import static org.junit.Assert.*;
+
+@RunWith(value=JUnit4.class)
+public class IncomeRecordDeletingTests {
     
     private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
+    private final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
+    private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
     
+    private Calendar calendar;
+    private int currentYear;
+    private int currentMonth;
+    
+    @Before
+    public void setUp() throws IOException {
+        backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
+        backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+        backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+        
+        calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        currentYear = calendar.get( Calendar.YEAR );
+        currentMonth = calendar.get( Calendar.MONTH ) + 1;
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+        restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+        restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
+    }
+    
+    @Test
     public void testDeleteIncomeRecord() throws IOException {
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
@@ -34,17 +67,12 @@ public class IncomeRecordDeletingTests extends TestCase {
         fundBookServices.setIncomeRecordService( incomeRecordService );
         
         try {
-            backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             // 新增初始資料
-            for( int i = 1; i <= 5; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setItem( getTestData1().getItem() + " " + i );
-                incomeRecord.setAmount( i * (-100) );
-                incomeRecord.setDay( i );
-                incomeRecordService.insert( incomeRecord );
-            }
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 1, "test item 1", 0, -100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 2, "test item 2", 0, -200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 3, "test item 3", 0, -300, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 4, "test item 4", 0, -400, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 5, "test item 5", 0, -500, "", 0 ) );
             
             // 執行視窗程式
             MainFrame mainFrame = new MainFrame( fundBookServices );
@@ -74,32 +102,18 @@ public class IncomeRecordDeletingTests extends TestCase {
             
             // 檢查是否刪除成功
             List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
-            for( int i = 1; i <= 4; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setId( i );
-                incomeRecord.setDay( i );
-                incomeRecord.setItem( getTestData1().getItem() + " " + i );
-                incomeRecord.setAmount( i * (-100) );
-                if( i == 4 ) {
-                    incomeRecord.setId( 5 );
-                    incomeRecord.setDay( 5 );
-                    incomeRecord.setItem( getTestData1().getItem() + " " + 5 );
-                    incomeRecord.setAmount( 5 * (-100) );
-                } 
-                incomeRecord.setOrderNo( i );
-                expectDataList.add( incomeRecord );
-            }
-            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData1().getYear(), getTestData1().getMonth() );
+            expectDataList.add( new IncomeRecord( 1, currentYear, currentMonth, 1, "test item 1", 0, -100, "", 1 ) );
+            expectDataList.add( new IncomeRecord( 2, currentYear, currentMonth, 2, "test item 2", 0, -200, "", 2 ) );
+            expectDataList.add( new IncomeRecord( 3, currentYear, currentMonth, 3, "test item 3", 0, -300, "", 3 ) );
+            expectDataList.add( new IncomeRecord( 5, currentYear, currentMonth, 5, "test item 5", 0, -500, "", 4 ) );
+            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( currentYear, currentMonth );
             assertEquals( expectDataList.size(), actualDataList.size() );
             for( int i = 0; i < expectDataList.size(); i++ ) {
                 assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
             }
             
             // 檢查畫面是否顯示正確
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime( new Date() );
-            String expectDateString = String.format( "%04d.%02d.", 
-                calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
+            String expectDateString = String.format( "%04d.%02d.", currentYear, currentMonth );
             testerSelection = JOptionPane.showConfirmDialog( 
                 mainFrame, 
                 "<html><head><style type=\"text/css\">" + 
@@ -118,33 +132,23 @@ public class IncomeRecordDeletingTests extends TestCase {
         } catch ( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
         }
     }
     
+    @Test
     public void testDeleteIncomeRecord2() throws IOException {
-        final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
-        final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
-        
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
         FundBookServices fundBookServices = new FundBookServices();
         fundBookServices.setIncomeRecordService( incomeRecordService );
         
         try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             // 新增初始資料
-            for( int i = 1; i <= 5; i++ ) {
-                IncomeRecord incomeRecord = getTestData2();
-                incomeRecord.setItem( getTestData2().getItem() + " " + i );
-                incomeRecord.setAmount( i * (-100) );
-                incomeRecord.setDay( i );
-                incomeRecordService.insert( incomeRecord );
-            }
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "test item 1", 0, -100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 2, "test item 2", 0, -200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 3, "test item 3", 0, -300, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 4, "test item 4", 0, -400, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 5, "test item 5", 0, -500, "", 0 ) );
             
             // 執行視窗程式
             MainFrame mainFrame = new MainFrame( fundBookServices );
@@ -178,32 +182,18 @@ public class IncomeRecordDeletingTests extends TestCase {
             
             // 檢查是否刪除成功
             List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
-            for( int i = 1; i <= 4; i++ ) {
-                IncomeRecord incomeRecord = getTestData2();
-                incomeRecord.setId( i );
-                incomeRecord.setDay( i );
-                incomeRecord.setItem( getTestData2().getItem() + " " + i );
-                incomeRecord.setAmount( i * (-100) );
-                if( i == 4 ) {
-                    incomeRecord.setId( 5 );
-                    incomeRecord.setDay( 5 );
-                    incomeRecord.setItem( getTestData2().getItem() + " " + 5 );
-                    incomeRecord.setAmount( 5 * (-100) );
-                } 
-                incomeRecord.setOrderNo( i );
-                expectDataList.add( incomeRecord );
-            }
-            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( getTestData2().getYear(), getTestData2().getMonth() );
+            expectDataList.add( new IncomeRecord( 1, 2017, 10, 1, "test item 1", 0, -100, "", 1 ) );
+            expectDataList.add( new IncomeRecord( 2, 2017, 10, 2, "test item 2", 0, -200, "", 2 ) );
+            expectDataList.add( new IncomeRecord( 3, 2017, 10, 3, "test item 3", 0, -300, "", 3 ) );
+            expectDataList.add( new IncomeRecord( 5, 2017, 10, 5, "test item 5", 0, -500, "", 4 ) );
+            List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( 2017, 10 );
             assertEquals( expectDataList.size(), actualDataList.size() );
             for( int i = 0; i < expectDataList.size(); i++ ) {
                 assertTrue( "failed at i = " + i, IncomeRecordUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
             }
             
             // 檢查畫面是否顯示正確
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime( new Date() );
-            String expectDateString = String.format( "%04d.%02d.", 
-                    getTestData2().getYear(), getTestData2().getMonth() );
+            String expectDateString = String.format( "%04d.%02d.", 2017, 10 );
             testerSelection = JOptionPane.showConfirmDialog( 
                 mainFrame, 
                 "<html><head><style type=\"text/css\">" + 
@@ -222,44 +212,7 @@ public class IncomeRecordDeletingTests extends TestCase {
         } catch ( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
-    }
-    
-    private IncomeRecord getTestData1() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime( new Date() );
-        
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 0 );
-        testData.setYear( calendar.get( Calendar.YEAR ) );
-        testData.setMonth( calendar.get( Calendar.MONTH ) + 1 );
-        testData.setDay( calendar.get( Calendar.DAY_OF_MONTH ) );
-        testData.setItem( "test item" );
-        testData.setClassNo( 0 );
-        testData.setAmount( -100 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
-    }
-    
-    private IncomeRecord getTestData2() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime( new Date() );
-        
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 0 );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 1 );
-        testData.setItem( "test item" );
-        testData.setClassNo( 0 );
-        testData.setAmount( -100 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
     }
     
     private String getIncomeRecordCsvFilePathOfCurrentDay() {

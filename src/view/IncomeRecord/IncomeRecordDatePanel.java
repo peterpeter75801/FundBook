@@ -123,6 +123,7 @@ public class IncomeRecordDatePanel extends JPanel {
         monthList.setSelectedIndex( 0 );
         monthList.setFont( generalFont );
         monthList.setBorder( new JTextField().getBorder() );
+        monthList.setFixedCellHeight( 22 );
         monthList.addKeyListener( monthListArrowKeyHandler );
         monthList.addKeyListener( mnemonicKeyHandler );
         monthList.addMouseWheelListener( mouseWheelHandler );

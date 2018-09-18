@@ -9,19 +9,25 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-
 import javax.swing.JOptionPane;
 
 import domain.IncomeRecord;
+import main.FundBookServices;
 import service.IncomeRecordService;
 import service.impl.IncomeRecordServiceImpl;
 import view.MainFrame;
 import repository.impl.IncomeRecordDAOImpl;
 
-import junit.framework.TestCase;
-import main.FundBookServices;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-public class IncomeRecordTablePanelTests extends TestCase {
+import static org.junit.Assert.*;
+
+@RunWith(value=JUnit4.class)
+public class IncomeRecordTablePanelTests {
     
     private final int TAB_DELAY = 100;
     private final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
@@ -31,26 +37,43 @@ public class IncomeRecordTablePanelTests extends TestCase {
     private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
     
+    private Calendar calendar;
+    private int currentYear;
+    private int currentMonth;
+    
+    @Before
+    public void setUp() throws IOException {
+        backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
+        backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+        backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
+        backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+        
+        calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        currentYear = calendar.get( Calendar.YEAR );
+        currentMonth = calendar.get( Calendar.MONTH ) + 1;
+    }
+    
+    @After
+    public void tearDown() throws IOException {
+        restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+        restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
+        restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
+    }
+    
+    @Test
     public void testIncomeRecordTablePanelDisplay1() throws IOException {
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
         FundBookServices fundBookServices = new FundBookServices();
         fundBookServices.setIncomeRecordService( incomeRecordService );
-        
         try {
-            backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             // 新增初始資料
-            for( int i = 1; i <= 4; i++ ) {
-                IncomeRecord incomeRecord = getTestData1();
-                incomeRecord.setItem( getTestData1().getItem() + i );
-                incomeRecord.setAmount( i * 100 );
-                if( i == 4 ) {
-                    incomeRecord.setAmount( incomeRecord.getAmount() * (-1) );
-                }
-                incomeRecordService.insert( incomeRecord );
-            }
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 1, "測試帳1", 0, 100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 1, "測試帳2", 0, 200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 1, "測試帳3", 0, 300, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 1, "測試帳4", 0, -400, "", 0 ) );
             
             // 執行視窗程式
             MainFrame mainFrame = new MainFrame( fundBookServices );
@@ -82,12 +105,10 @@ public class IncomeRecordTablePanelTests extends TestCase {
         } catch ( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
         }
     }
     
+    @Test
     public void testIncomeRecordTablePanelDisplay2() throws IOException {
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
@@ -95,15 +116,9 @@ public class IncomeRecordTablePanelTests extends TestCase {
         fundBookServices.setIncomeRecordService( incomeRecordService );
         
         try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             // 新增初始資料
             for( int i = 1; i <= 30; i++ ) {
-                IncomeRecord incomeRecord = getTestData2();
-                incomeRecord.setDay( i );
-                incomeRecord.setItem( getTestData2().getItem() + i );
-                incomeRecord.setAmount( i * 100 );
+                IncomeRecord incomeRecord = new IncomeRecord( 0, 2017, 10, i, "測試帳" + i, 0, 100 * i, "", 0 );
                 incomeRecordService.insert( incomeRecord );
             }
             
@@ -145,12 +160,10 @@ public class IncomeRecordTablePanelTests extends TestCase {
         } catch ( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
     }
     
+    @Test
     public void testIncomeRecordTablePanelDisplay3() throws IOException {
         int testerSelection = 0;
         IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
@@ -158,23 +171,13 @@ public class IncomeRecordTablePanelTests extends TestCase {
         fundBookServices.setIncomeRecordService( incomeRecordService );
         
         try {
-            backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
-            backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
-            
             // 新增初始資料
             for( int i = 1; i <= 30; i++ ) {
-                IncomeRecord incomeRecord = getTestData2();
-                incomeRecord.setDay( i );
-                incomeRecord.setItem( getTestData2().getItem() + i );
-                incomeRecord.setAmount( i * 100 );
+                IncomeRecord incomeRecord = new IncomeRecord( 0, 2017, 10, i, "測試帳" + i, 0, 100 * i, "", 0 );
                 incomeRecordService.insert( incomeRecord );
             }
             for( int i = 1; i <= 5; i++ ) {
-                IncomeRecord incomeRecord = getTestData3();
-                incomeRecord.setDay( i );
-                incomeRecord.setItem( getTestData3().getItem() + i );
-                incomeRecord.setAmount( i * 100 );
+                IncomeRecord incomeRecord = new IncomeRecord( 0, 2018, 1, i, "測試帳" + i, 0, 100 * i, "", 0 );
                 incomeRecordService.insert( incomeRecord );
             }
             
@@ -246,56 +249,7 @@ public class IncomeRecordTablePanelTests extends TestCase {
         } catch ( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
-        } finally {
-            restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
-            restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         }
-    }
-    
-    private IncomeRecord getTestData1() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime( new Date() );
-        
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 0 );
-        testData.setYear( calendar.get( Calendar.YEAR ) );
-        testData.setMonth( calendar.get( Calendar.MONTH ) + 1 );
-        testData.setDay( 1 );
-        testData.setItem( "測試帳" );
-        testData.setClassNo( 0 );
-        testData.setAmount( 100 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
-    }
-    
-    private IncomeRecord getTestData2() {
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 0 );
-        testData.setYear( 2017 );
-        testData.setMonth( 10 );
-        testData.setDay( 1 );
-        testData.setItem( "測試帳" );
-        testData.setClassNo( 0 );
-        testData.setAmount( 100 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
-    }
-    
-    private IncomeRecord getTestData3() {
-        IncomeRecord testData = new IncomeRecord();
-        testData.setId( 0 );
-        testData.setYear( 2018 );
-        testData.setMonth( 1 );
-        testData.setDay( 1 );
-        testData.setItem( "測試帳" );
-        testData.setClassNo( 0 );
-        testData.setAmount( 100 );
-        testData.setDescription( "" );
-        testData.setOrderNo( 0 );
-        return testData;
     }
     
     private String getIncomeRecordCsvFilePathOfCurrentDay() {

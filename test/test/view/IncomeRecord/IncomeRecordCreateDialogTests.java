@@ -166,7 +166,6 @@ public class IncomeRecordCreateDialogTests {
         }
     }
     
-
     @Test
     public void testCreateIncomeRecord2() throws IOException {
         int testerSelection = 0;
@@ -295,7 +294,6 @@ public class IncomeRecordCreateDialogTests {
         }
     }
     
-
     @Test
     public void testCreateIncomeRecord3() throws IOException {
         int testerSelection = 0;
@@ -369,9 +367,24 @@ public class IncomeRecordCreateDialogTests {
             bot.keyPress( KeyEvent.VK_UP ); bot.keyRelease( KeyEvent.VK_UP ); Thread.sleep( TAB_DELAY );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "test item 2" );
-            // 金額: 100 (測試undo功能)
+            // 測試剪下功能
+            inputString( bot, "100" );
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_LEFT ); bot.keyRelease( KeyEvent.VK_LEFT ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_LEFT ); bot.keyRelease( KeyEvent.VK_LEFT ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_LEFT ); bot.keyRelease( KeyEvent.VK_LEFT ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_CONTEXT_MENU ); bot.keyRelease( KeyEvent.VK_CONTEXT_MENU ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 500 );
+            bot.keyPress( KeyEvent.VK_T ); bot.keyRelease( KeyEvent.VK_T ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 500 );
+            // 金額: 100 (測試貼上 & undo功能)
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
-            inputString( bot, "100123" );
+            bot.keyPress( KeyEvent.VK_CONTEXT_MENU ); bot.keyRelease( KeyEvent.VK_CONTEXT_MENU ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 500 );
+            bot.keyPress( KeyEvent.VK_P ); bot.keyRelease( KeyEvent.VK_P ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 500 );
+            inputString( bot, "123" );
             Thread.sleep( 500 );
             bot.keyPress( KeyEvent.VK_CONTROL );
             bot.keyPress( KeyEvent.VK_Z ); bot.keyRelease( KeyEvent.VK_Z ); Thread.sleep( TAB_DELAY );
