@@ -1,6 +1,7 @@
 package test.view.IncomeRecord;
 
 import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +44,8 @@ public class IncomeRecordUpdateDialogTests{
     private int currentYear;
     private int currentMonth;
     
+    private boolean numLockKeyStateBackup;
+    
     @Before
     public void setUp() throws IOException {
         backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
@@ -54,6 +57,13 @@ public class IncomeRecordUpdateDialogTests{
         calendar.setTime( new Date() );
         currentYear = calendar.get( Calendar.YEAR );
         currentMonth = calendar.get( Calendar.MONTH ) + 1;
+        
+        try {
+            numLockKeyStateBackup = Toolkit.getDefaultToolkit().getLockingKeyState( KeyEvent.VK_NUM_LOCK );
+            Toolkit.getDefaultToolkit().setLockingKeyState( KeyEvent.VK_NUM_LOCK, false );
+        } catch( UnsupportedOperationException e ) {
+            System.out.println( "Host system doesn't allow accessing the state of this key programmatically." );
+        }
     }
     
     @After
@@ -62,6 +72,12 @@ public class IncomeRecordUpdateDialogTests{
         restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
         restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
+        
+        try {
+            Toolkit.getDefaultToolkit().setLockingKeyState( KeyEvent.VK_NUM_LOCK, numLockKeyStateBackup );
+        } catch( UnsupportedOperationException e ) {
+            System.out.println( "Host system doesn't allow accessing the state of this key programmatically." );
+        }
     }
     
     @Test
@@ -342,7 +358,7 @@ public class IncomeRecordUpdateDialogTests{
                     "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
                 "<body><p>是否有顯示測試的收支記錄資料:</p><table>" + 
                     "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
-                    "<tr><td>" + expectDateString2 + "01" + "</td><td>test item 1</td><td>支</td><td>100</td></tr>" + 
+                    "<tr><td>" + expectDateString2 + "06" + "</td><td>test item 1</td><td>支</td><td>100</td></tr>" + 
                 "</table></body></html>", 
                 "Check", JOptionPane.YES_NO_OPTION );
             assertEquals( JOptionPane.YES_OPTION, testerSelection );
@@ -374,6 +390,11 @@ public class IncomeRecordUpdateDialogTests{
             mainFrame.setVisible( true );
             
             JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
+            
+            // 確認是否為linux based OS
+            int isLinuxBasedOSSelection = 0;
+            isLinuxBasedOSSelection = JOptionPane.showConfirmDialog( 
+                    mainFrame, "Is the OS linux based?", "Check", JOptionPane.YES_NO_OPTION );
             
             Robot bot =  new Robot();
             Thread.sleep( 3000 );
@@ -435,7 +456,13 @@ public class IncomeRecordUpdateDialogTests{
             bot.keyPress( KeyEvent.VK_SHIFT );
             bot.keyPress( KeyEvent.VK_HOME ); bot.keyRelease( KeyEvent.VK_HOME ); Thread.sleep( TAB_DELAY );
             bot.keyRelease( KeyEvent.VK_SHIFT );
-            bot.keyPress( KeyEvent.VK_CONTEXT_MENU ); bot.keyRelease( KeyEvent.VK_CONTEXT_MENU ); Thread.sleep( TAB_DELAY );
+            if( isLinuxBasedOSSelection == JOptionPane.YES_OPTION ) {
+                JOptionPane.showMessageDialog( mainFrame, "Please press context menu key in 3 seconds after closing this dialog.", 
+                        "Message", JOptionPane.INFORMATION_MESSAGE );
+                Thread.sleep( 3000 );
+            } else {
+                bot.keyPress( KeyEvent.VK_CONTEXT_MENU ); bot.keyRelease( KeyEvent.VK_CONTEXT_MENU ); Thread.sleep( TAB_DELAY );
+            }
             Thread.sleep( 500 );
             bot.keyPress( KeyEvent.VK_C ); bot.keyRelease( KeyEvent.VK_C ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 500 );
@@ -503,7 +530,13 @@ public class IncomeRecordUpdateDialogTests{
             bot.keyPress( KeyEvent.VK_Z ); bot.keyRelease( KeyEvent.VK_Z ); Thread.sleep( TAB_DELAY );
             bot.keyRelease( KeyEvent.VK_CONTROL );
             bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
-            bot.keyPress( KeyEvent.VK_CONTEXT_MENU ); bot.keyRelease( KeyEvent.VK_CONTEXT_MENU ); Thread.sleep( TAB_DELAY );
+            if( isLinuxBasedOSSelection == JOptionPane.YES_OPTION ) {
+                JOptionPane.showMessageDialog( mainFrame, "Please press context menu key in 3 seconds after closing this dialog.", 
+                        "Message", JOptionPane.INFORMATION_MESSAGE );
+                Thread.sleep( 3000 );
+            } else {
+                bot.keyPress( KeyEvent.VK_CONTEXT_MENU ); bot.keyRelease( KeyEvent.VK_CONTEXT_MENU ); Thread.sleep( TAB_DELAY );
+            }
             Thread.sleep( 500 );
             bot.keyPress( KeyEvent.VK_P ); bot.keyRelease( KeyEvent.VK_P ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 500 );

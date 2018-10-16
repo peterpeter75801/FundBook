@@ -11,6 +11,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,13 +23,17 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 
 import common.Contants;
@@ -38,6 +44,7 @@ import commonUtil.StringUtil;
 import domain.IncomeRecord;
 import service.IncomeRecordService;
 import view.MainFrame;
+import view.common.CopyAndPastePopUpMenu;
 
 public class IncomeRecordUpdateDialog extends JDialog {
     
@@ -47,12 +54,16 @@ public class IncomeRecordUpdateDialog extends JDialog {
     
     private IncomeRecord originIncomeRecord;
     private IncomeRecord lastUpdatedItemRecord;
+    private boolean popupMenuClosedFlag;
     
     private MainFrame ownerFrame;
     
+    private CopyAndPastePopUpMenu copyAndPastePopUpMenu;
     private UndoManager undoManager;
     private FocusHandler focusHandler;
     private MnemonicKeyHandler mnemonicKeyHandler;
+    private CopyPasteMenuKeyHandler copyPasteMenuKeyHandler;
+    private CopyPasteMouseMenuHandler copyPasteMouseMenuHandler; 
     private RadioButtonKeyHandler radioButtonKeyHandler;
     private UndoEditHandler undoEditHandler;
     private UndoHotKeyHandler undoHotKeyHandler;
@@ -92,9 +103,14 @@ public class IncomeRecordUpdateDialog extends JDialog {
         
         this.ownerFrame = ownerFrame;
         
+        copyAndPastePopUpMenu = new CopyAndPastePopUpMenu();
+        copyAndPastePopUpMenu.addPopupMenuListener( new PopupMenuClosingHandler() );
+        
         undoManager = new UndoManager();
         focusHandler = new FocusHandler();
         mnemonicKeyHandler = new MnemonicKeyHandler();
+        copyPasteMenuKeyHandler = new CopyPasteMenuKeyHandler( copyAndPastePopUpMenu );
+        copyPasteMouseMenuHandler = new CopyPasteMouseMenuHandler( copyAndPastePopUpMenu );
         radioButtonKeyHandler = new RadioButtonKeyHandler();
         undoEditHandler = new UndoEditHandler();
         undoHotKeyHandler = new UndoHotKeyHandler();
@@ -115,12 +131,16 @@ public class IncomeRecordUpdateDialog extends JDialog {
         classTextField.setFont( generalFont );
         classTextField.addFocusListener( focusHandler );
         classTextField.addKeyListener( mnemonicKeyHandler );
+        classTextField.addKeyListener( copyPasteMenuKeyHandler );
+        classTextField.addMouseListener( copyPasteMouseMenuHandler );
         //dialogPanel.add( classTextField );
         
         classNameTextField = new JTextField();
         classNameTextField.setBounds( 128, 10, 168, 22 );
         classNameTextField.setFont( generalFont );
         classNameTextField.addFocusListener( focusHandler );
+        classNameTextField.addKeyListener( copyPasteMenuKeyHandler );
+        classNameTextField.addMouseListener( copyPasteMouseMenuHandler );
         classNameTextField.setEditable( false );
         //dialogPanel.add( classNameTextField );
         
@@ -170,6 +190,8 @@ public class IncomeRecordUpdateDialog extends JDialog {
         yearTextField.setFont( generalFont );
         yearTextField.addFocusListener( focusHandler );
         yearTextField.addKeyListener( mnemonicKeyHandler );
+        yearTextField.addKeyListener( copyPasteMenuKeyHandler );
+        yearTextField.addMouseListener( copyPasteMouseMenuHandler );
         yearTextField.addKeyListener( undoHotKeyHandler );
         yearTextField.getDocument().addUndoableEditListener( undoEditHandler );
         yearTextField.addKeyListener( dateTimeTextFieldHotKeyHandler );
@@ -187,6 +209,8 @@ public class IncomeRecordUpdateDialog extends JDialog {
         monthTextField.setFont( generalFont );
         monthTextField.addFocusListener( focusHandler );
         monthTextField.addKeyListener( mnemonicKeyHandler );
+        monthTextField.addKeyListener( copyPasteMenuKeyHandler );
+        monthTextField.addMouseListener( copyPasteMouseMenuHandler );
         monthTextField.addKeyListener( undoHotKeyHandler );
         monthTextField.getDocument().addUndoableEditListener( undoEditHandler );
         monthTextField.addKeyListener( dateTimeTextFieldHotKeyHandler );
@@ -204,6 +228,8 @@ public class IncomeRecordUpdateDialog extends JDialog {
         dayTextField.setFont( generalFont );
         dayTextField.addFocusListener( focusHandler );
         dayTextField.addKeyListener( mnemonicKeyHandler );
+        dayTextField.addKeyListener( copyPasteMenuKeyHandler );
+        dayTextField.addMouseListener( copyPasteMouseMenuHandler );
         dayTextField.addKeyListener( undoHotKeyHandler );
         dayTextField.getDocument().addUndoableEditListener( undoEditHandler );
         dayTextField.addKeyListener( dateTimeTextFieldHotKeyHandler );
@@ -227,6 +253,8 @@ public class IncomeRecordUpdateDialog extends JDialog {
         itemTextField.setFont( generalFont );
         itemTextField.addFocusListener( focusHandler );
         itemTextField.addKeyListener( mnemonicKeyHandler );
+        itemTextField.addKeyListener( copyPasteMenuKeyHandler );
+        itemTextField.addMouseListener( copyPasteMouseMenuHandler );
         itemTextField.addKeyListener( undoHotKeyHandler );
         itemTextField.getDocument().addUndoableEditListener( undoEditHandler );
         dialogPanel.add( itemTextField );
@@ -243,6 +271,8 @@ public class IncomeRecordUpdateDialog extends JDialog {
         amountTextField.setFont( generalFont );
         amountTextField.addFocusListener( focusHandler );
         amountTextField.addKeyListener( mnemonicKeyHandler );
+        amountTextField.addKeyListener( copyPasteMenuKeyHandler );
+        amountTextField.addMouseListener( copyPasteMouseMenuHandler );
         amountTextField.addKeyListener( undoHotKeyHandler );
         amountTextField.getDocument().addUndoableEditListener( undoEditHandler );
         dialogPanel.add( amountTextField );
@@ -264,6 +294,8 @@ public class IncomeRecordUpdateDialog extends JDialog {
         descriptionTextArea.setFont( generalFont );
         descriptionTextArea.setLineWrap( true );
         descriptionTextArea.setWrapStyleWord( true );
+        descriptionTextArea.addKeyListener( copyPasteMenuKeyHandler );
+        descriptionTextArea.addMouseListener( copyPasteMouseMenuHandler );
         descriptionTextArea.addKeyListener( undoHotKeyHandler );
         descriptionTextArea.getDocument().addUndoableEditListener( undoEditHandler );
         descriptionScrollPane = new JScrollPane( descriptionTextArea );
@@ -353,6 +385,7 @@ public class IncomeRecordUpdateDialog extends JDialog {
         descriptionTextArea.setText( CsvFormatParser.restoreCharacterFromHtmlFormat( incomeRecord.getDescription() ) );
         
         lastUpdatedItemRecord = null;
+        popupMenuClosedFlag = false;
         
         itemTextField.requestFocus();
         setVisible( true );
@@ -405,10 +438,15 @@ public class IncomeRecordUpdateDialog extends JDialog {
     }
     
     private class FocusHandler extends FocusAdapter {
+        
         @Override
         public void focusGained( FocusEvent event ) {
-            JTextField sourceComponent = (JTextField) event.getSource();
-            sourceComponent.selectAll();
+            if( popupMenuClosedFlag ) {
+                popupMenuClosedFlag = false;
+            } else {
+                JTextField sourceComponent = (JTextField) event.getSource();
+                sourceComponent.selectAll();
+            }
         }
     }
     
@@ -435,6 +473,72 @@ public class IncomeRecordUpdateDialog extends JDialog {
 
         @Override
         public void keyTyped( KeyEvent event ) {}
+    }
+    
+    private class CopyPasteMenuKeyHandler implements KeyListener {
+        
+        private CopyAndPastePopUpMenu copyAndPastePopUpMenu;
+        
+        public CopyPasteMenuKeyHandler( CopyAndPastePopUpMenu copyAndPastePopUpMenu ) {
+            this.copyAndPastePopUpMenu = copyAndPastePopUpMenu;
+        }
+        
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            if( event.getKeyCode() == KeyEvent.VK_CONTEXT_MENU ) {
+                JTextComponent eventComponent = (JTextComponent)event.getComponent();
+                int showPosX = (eventComponent.getCaret().getMagicCaretPosition() != null) ? 
+                        (int)eventComponent.getCaret().getMagicCaretPosition().getX() : 0;
+                int showPosY = (eventComponent.getCaret().getMagicCaretPosition() != null) ? 
+                        (int)eventComponent.getCaret().getMagicCaretPosition().getY() : 0;
+                copyAndPastePopUpMenu.show( eventComponent, showPosX, showPosY );
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
+    }
+    
+    private class CopyPasteMouseMenuHandler extends MouseAdapter {
+        
+        private CopyAndPastePopUpMenu copyAndPastePopUpMenu;
+        
+        public CopyPasteMouseMenuHandler( CopyAndPastePopUpMenu copyAndPastePopUpMenu ) {
+            this.copyAndPastePopUpMenu = copyAndPastePopUpMenu;
+        }
+        
+        public void mousePressed( MouseEvent event ) {
+            if( event.isPopupTrigger() ) {
+                copyAndPastePopUpMenu.show( event.getComponent(), event.getX(), event.getY() );
+            }
+        }
+        
+        public void mouseReleased( MouseEvent event ) {
+            if( event.isPopupTrigger() ) {
+                copyAndPastePopUpMenu.show( event.getComponent(), event.getX(), event.getY() );
+            }
+        }
+    }
+    
+    private class PopupMenuClosingHandler implements PopupMenuListener {
+        
+        @Override
+        public void popupMenuCanceled( PopupMenuEvent event ) {
+            popupMenuClosedFlag = true;
+            ((JPopupMenu)event.getSource()).getInvoker().requestFocus();
+        }
+
+        @Override
+        public void popupMenuWillBecomeInvisible( PopupMenuEvent event ) {
+            popupMenuClosedFlag = true;
+            ((JPopupMenu)event.getSource()).getInvoker().requestFocus();
+        }
+
+        @Override
+        public void popupMenuWillBecomeVisible( PopupMenuEvent event ) {}
     }
     
     private class RadioButtonKeyHandler implements KeyListener {

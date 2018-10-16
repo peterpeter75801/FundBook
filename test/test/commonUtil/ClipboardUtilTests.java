@@ -9,7 +9,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 
-import javax.swing.text.JTextComponent;
+import javax.swing.JTextField;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,7 +39,7 @@ public class ClipboardUtilTests {
     @Test
     public void testCut() throws Exception {
         TestTextComponent input = new TestTextComponent( "Test component text.", 0, 15 );
-        String expectComponentText = "text";
+        String expectComponentText = "text.";
         String expectClipboardContent = "Test component ";
         
         ClipboardUtil.cut( input );
@@ -79,7 +79,7 @@ public class ClipboardUtilTests {
         assertEquals( expectComponentText, actualComponentText );
     }
     
-    private class TestTextComponent extends JTextComponent {
+    private class TestTextComponent extends JTextField {
         
         private static final long serialVersionUID = 1L;
         

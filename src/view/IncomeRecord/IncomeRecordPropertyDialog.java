@@ -11,6 +11,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,15 +21,20 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
+import javax.swing.text.JTextComponent;
 
 import commonUtil.CsvFormatParser;
 import domain.IncomeRecord;
 import service.IncomeRecordService;
 import view.MainFrame;
+import view.common.CopyAndPastePopUpMenu;
 
 public class IncomeRecordPropertyDialog extends JDialog {
     
@@ -35,8 +42,13 @@ public class IncomeRecordPropertyDialog extends JDialog {
     
     private IncomeRecordService incomeRecordService;
     
+    private boolean popupMenuClosedFlag;
+    
+    private CopyAndPastePopUpMenu copyAndPastePopUpMenu;
     private FocusHandler focusHandler;
     private MnemonicKeyHandler mnemonicKeyHandler;
+    private CopyPasteMenuKeyHandler copyPasteMenuKeyHandler;        
+    private CopyPasteMouseMenuHandler copyPasteMouseMenuHandler;
     private Font generalFont;
     private JPanel dialogPanel;
     private JLabel classLabel;
@@ -66,8 +78,13 @@ public class IncomeRecordPropertyDialog extends JDialog {
         
         this.incomeRecordService = incomeRecordService;
         
+        copyAndPastePopUpMenu = new CopyAndPastePopUpMenu();        
+        copyAndPastePopUpMenu.addPopupMenuListener( new PopupMenuClosingHandler() );
+        
         focusHandler = new FocusHandler();
         mnemonicKeyHandler = new MnemonicKeyHandler();
+        copyPasteMenuKeyHandler = new CopyPasteMenuKeyHandler( copyAndPastePopUpMenu );     
+        copyPasteMouseMenuHandler = new CopyPasteMouseMenuHandler( copyAndPastePopUpMenu );
         
         generalFont = new Font( "細明體", Font.PLAIN, 16 );
         
@@ -84,6 +101,8 @@ public class IncomeRecordPropertyDialog extends JDialog {
         classTextField.setFont( generalFont );
         classTextField.addFocusListener( focusHandler );
         classTextField.addKeyListener( mnemonicKeyHandler );
+        classTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        classTextField.addMouseListener( copyPasteMouseMenuHandler );
         classTextField.setEditable( false );
         //dialogPanel.add( classTextField );
         
@@ -91,6 +110,8 @@ public class IncomeRecordPropertyDialog extends JDialog {
         classNameTextField.setBounds( 128, 10, 168, 22 );
         classNameTextField.setFont( generalFont );
         classNameTextField.addFocusListener( focusHandler );
+        classNameTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        classNameTextField.addMouseListener( copyPasteMouseMenuHandler );
         classNameTextField.setEditable( false );
         //dialogPanel.add( classNameTextField );
         
@@ -104,6 +125,8 @@ public class IncomeRecordPropertyDialog extends JDialog {
         //incomeTypeTextField.setBounds( 64, 42, 24, 22 );
         incomeTypeTextField.setBounds( 64, 42-32, 24, 22 );
         incomeTypeTextField.setFont( generalFont );
+        incomeTypeTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        incomeTypeTextField.addMouseListener( copyPasteMouseMenuHandler );
         incomeTypeTextField.setEditable( false );
         dialogPanel.add( incomeTypeTextField );
         
@@ -120,6 +143,8 @@ public class IncomeRecordPropertyDialog extends JDialog {
         yearTextField.setEditable( false );
         yearTextField.addFocusListener( focusHandler );
         yearTextField.addKeyListener( mnemonicKeyHandler );
+        yearTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        yearTextField.addMouseListener( copyPasteMouseMenuHandler );
         dialogPanel.add( yearTextField );
         
         yearLabel = new JLabel( "年" );
@@ -135,6 +160,8 @@ public class IncomeRecordPropertyDialog extends JDialog {
         monthTextField.setEditable( false );
         monthTextField.addFocusListener( focusHandler );
         monthTextField.addKeyListener( mnemonicKeyHandler );
+        monthTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        monthTextField.addMouseListener( copyPasteMouseMenuHandler );
         dialogPanel.add( monthTextField );
         
         monthLabel = new JLabel( "月" );
@@ -150,6 +177,8 @@ public class IncomeRecordPropertyDialog extends JDialog {
         dayTextField.setEditable( false );
         dayTextField.addFocusListener( focusHandler );
         dayTextField.addKeyListener( mnemonicKeyHandler );
+        dayTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        dayTextField.addMouseListener( copyPasteMouseMenuHandler );
         dialogPanel.add( dayTextField );
         
         dayLabel = new JLabel( "日" );
@@ -171,6 +200,8 @@ public class IncomeRecordPropertyDialog extends JDialog {
         itemTextField.setEditable( false );
         itemTextField.addFocusListener( focusHandler );
         itemTextField.addKeyListener( mnemonicKeyHandler );
+        itemTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        itemTextField.addMouseListener( copyPasteMouseMenuHandler );
         dialogPanel.add( itemTextField );
         
         amountLabel = new JLabel( "金額: " );
@@ -186,6 +217,8 @@ public class IncomeRecordPropertyDialog extends JDialog {
         amountTextField.setEditable( false );
         amountTextField.addFocusListener( focusHandler );
         amountTextField.addKeyListener( mnemonicKeyHandler );
+        amountTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        amountTextField.addMouseListener( copyPasteMouseMenuHandler );
         dialogPanel.add( amountTextField );
         
         dollarLabel = new JLabel( "元" );
@@ -206,6 +239,8 @@ public class IncomeRecordPropertyDialog extends JDialog {
         descriptionTextArea.setEditable( false );
         descriptionTextArea.setLineWrap( true );
         descriptionTextArea.setWrapStyleWord( true );
+        descriptionTextArea.addKeyListener( copyPasteMenuKeyHandler );       
+        descriptionTextArea.addMouseListener( copyPasteMouseMenuHandler );
         descriptionScrollPane = new JScrollPane( descriptionTextArea );
         //descriptionScrollPane.setBounds( 16, 128, 449, 137 );
         descriptionScrollPane.setBounds( 16, 128-32, 449, 137 );
@@ -281,8 +316,12 @@ public class IncomeRecordPropertyDialog extends JDialog {
     private class FocusHandler extends FocusAdapter {
         @Override
         public void focusGained( FocusEvent event ) {
-            JTextField sourceComponent = (JTextField) event.getSource();
-            sourceComponent.selectAll();
+            if( popupMenuClosedFlag ) {
+                popupMenuClosedFlag = false;
+            } else {
+                JTextField sourceComponent = (JTextField) event.getSource();
+                sourceComponent.selectAll();
+            }
         }
     }
     
@@ -303,5 +342,71 @@ public class IncomeRecordPropertyDialog extends JDialog {
 
         @Override
         public void keyTyped( KeyEvent event ) {}
+    }
+    
+    private class CopyPasteMenuKeyHandler implements KeyListener {
+        
+        private CopyAndPastePopUpMenu copyAndPastePopUpMenu;
+        
+        public CopyPasteMenuKeyHandler( CopyAndPastePopUpMenu copyAndPastePopUpMenu ) {
+            this.copyAndPastePopUpMenu = copyAndPastePopUpMenu;
+        }
+        
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            if( event.getKeyCode() == KeyEvent.VK_CONTEXT_MENU ) {
+                JTextComponent eventComponent = (JTextComponent)event.getComponent();
+                int showPosX = (eventComponent.getCaret().getMagicCaretPosition() != null) ? 
+                        (int)eventComponent.getCaret().getMagicCaretPosition().getX() : 0;
+                int showPosY = (eventComponent.getCaret().getMagicCaretPosition() != null) ? 
+                        (int)eventComponent.getCaret().getMagicCaretPosition().getY() : 0;
+                copyAndPastePopUpMenu.show( eventComponent, showPosX, showPosY );
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
+    }
+    
+    private class CopyPasteMouseMenuHandler extends MouseAdapter {
+        
+        private CopyAndPastePopUpMenu copyAndPastePopUpMenu;
+        
+        public CopyPasteMouseMenuHandler( CopyAndPastePopUpMenu copyAndPastePopUpMenu ) {
+            this.copyAndPastePopUpMenu = copyAndPastePopUpMenu;
+        }
+        
+        public void mousePressed( MouseEvent event ) {
+            if( event.isPopupTrigger() ) {
+                copyAndPastePopUpMenu.show( event.getComponent(), event.getX(), event.getY() );
+            }
+        }
+        
+        public void mouseReleased( MouseEvent event ) {
+            if( event.isPopupTrigger() ) {
+                copyAndPastePopUpMenu.show( event.getComponent(), event.getX(), event.getY() );
+            }
+        }
+    }
+    
+    private class PopupMenuClosingHandler implements PopupMenuListener {
+        
+        @Override
+        public void popupMenuCanceled( PopupMenuEvent event ) {
+            popupMenuClosedFlag = true;
+            ((JPopupMenu)event.getSource()).getInvoker().requestFocus();
+        }
+
+        @Override
+        public void popupMenuWillBecomeInvisible( PopupMenuEvent event ) {
+            popupMenuClosedFlag = true;
+            ((JPopupMenu)event.getSource()).getInvoker().requestFocus();
+        }
+
+        @Override
+        public void popupMenuWillBecomeVisible( PopupMenuEvent event ) {}
     }
 }

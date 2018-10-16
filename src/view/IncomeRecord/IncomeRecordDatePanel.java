@@ -6,6 +6,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Calendar;
@@ -14,17 +16,22 @@ import java.util.Date;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 
 import commonUtil.ComparingUtil;
 import commonUtil.StringUtil;
 import main.FundBookServices;
+import view.common.CopyAndPastePopUpMenu;
 
 public class IncomeRecordDatePanel extends JPanel {
     
@@ -35,9 +42,12 @@ public class IncomeRecordDatePanel extends JPanel {
     private IncomeRecordPanel ownerPanel;
     private IncomeRecordTablePanel incomeRecordTablePanel;
     
+    private CopyAndPastePopUpMenu copyAndPastePopUpMenu;
     private UndoManager undoManager;
     private FocusHandler focusHandler;
     private MnemonicKeyHandler mnemonicKeyHandler;
+    private CopyPasteMenuKeyHandler copyPasteMenuKeyHandler;
+    private CopyPasteMouseMenuHandler copyPasteMouseMenuHandler;
     private UndoEditHandler undoEditHandler;
     private UndoHotKeyHandler undoHotKeyHandler;
     private MonthListArrowKeyHandler monthListArrowKeyHandler;
@@ -54,15 +64,21 @@ public class IncomeRecordDatePanel extends JPanel {
     
     private boolean monthListScrollFlag;
     private int selectingIdWhileLoadingTable;
+    private boolean popupMenuClosedFlag;
     
     public IncomeRecordDatePanel( FundBookServices fundBookServices, IncomeRecordPanel ownerPanel ) {
         setLayout( null );
         
         this.ownerPanel = ownerPanel;
         
+        copyAndPastePopUpMenu = new CopyAndPastePopUpMenu();
+        copyAndPastePopUpMenu.addPopupMenuListener( new PopupMenuClosingHandler() );
+        
         undoManager = new UndoManager();
         focusHandler = new FocusHandler();
         mnemonicKeyHandler = new MnemonicKeyHandler();
+        copyPasteMenuKeyHandler = new CopyPasteMenuKeyHandler( copyAndPastePopUpMenu );
+        copyPasteMouseMenuHandler = new CopyPasteMouseMenuHandler( copyAndPastePopUpMenu );
         undoEditHandler = new UndoEditHandler();
         undoHotKeyHandler = new UndoHotKeyHandler();
         monthListArrowKeyHandler = new MonthListArrowKeyHandler();
@@ -84,6 +100,8 @@ public class IncomeRecordDatePanel extends JPanel {
         yearTextField.addFocusListener( focusHandler );
         yearTextField.addFocusListener( monthTextFieldCheckingHandler );
         yearTextField.addKeyListener( monthTextFieldArrowKeyHandler );
+        yearTextField.addKeyListener( copyPasteMenuKeyHandler );      
+        yearTextField.addMouseListener( copyPasteMouseMenuHandler );
         yearTextField.addKeyListener( undoHotKeyHandler );
         yearTextField.getDocument().addUndoableEditListener( undoEditHandler );
         yearTextField.setText( String.format( "%04d", year ) );
@@ -100,6 +118,8 @@ public class IncomeRecordDatePanel extends JPanel {
         monthTextField.addFocusListener( focusHandler );
         monthTextField.addFocusListener( monthTextFieldCheckingHandler );
         monthTextField.addKeyListener( monthTextFieldArrowKeyHandler );
+        monthTextField.addKeyListener( copyPasteMenuKeyHandler );      
+        monthTextField.addMouseListener( copyPasteMouseMenuHandler );
         monthTextField.addKeyListener( undoHotKeyHandler );
         monthTextField.getDocument().addUndoableEditListener( undoEditHandler );
         monthTextField.setText( String.format( "%02d", month ) );
@@ -133,6 +153,7 @@ public class IncomeRecordDatePanel extends JPanel {
         
         monthListScrollFlag = false;
         selectingIdWhileLoadingTable = -1;
+        popupMenuClosedFlag = false;
     }
     
     public JList<String> getMonthList() {
@@ -383,8 +404,12 @@ public class IncomeRecordDatePanel extends JPanel {
         
         @Override
         public void focusGained( FocusEvent event ) {
-            JTextField sourceComponent = (JTextField) event.getSource();
-            sourceComponent.selectAll();
+            if( popupMenuClosedFlag ) {
+                popupMenuClosedFlag = false;
+            } else {
+                JTextField sourceComponent = (JTextField) event.getSource();
+                sourceComponent.selectAll();
+            }
         }
     }
     
@@ -626,5 +651,71 @@ public class IncomeRecordDatePanel extends JPanel {
 
         @Override
         public void keyTyped( KeyEvent event ) {}
+    }
+    
+    private class CopyPasteMenuKeyHandler implements KeyListener {
+        
+        private CopyAndPastePopUpMenu copyAndPastePopUpMenu;
+        
+        public CopyPasteMenuKeyHandler( CopyAndPastePopUpMenu copyAndPastePopUpMenu ) {
+            this.copyAndPastePopUpMenu = copyAndPastePopUpMenu;
+        }
+        
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            if( event.getKeyCode() == KeyEvent.VK_CONTEXT_MENU ) {
+                JTextComponent eventComponent = (JTextComponent)event.getComponent();
+                int showPosX = (eventComponent.getCaret().getMagicCaretPosition() != null) ? 
+                        (int)eventComponent.getCaret().getMagicCaretPosition().getX() : 0;
+                int showPosY = (eventComponent.getCaret().getMagicCaretPosition() != null) ? 
+                        (int)eventComponent.getCaret().getMagicCaretPosition().getY() : 0;
+                copyAndPastePopUpMenu.show( eventComponent, showPosX, showPosY );
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
+    }
+    
+    private class CopyPasteMouseMenuHandler extends MouseAdapter {
+        
+        private CopyAndPastePopUpMenu copyAndPastePopUpMenu;
+        
+        public CopyPasteMouseMenuHandler( CopyAndPastePopUpMenu copyAndPastePopUpMenu ) {
+            this.copyAndPastePopUpMenu = copyAndPastePopUpMenu;
+        }
+        
+        public void mousePressed( MouseEvent event ) {
+            if( event.isPopupTrigger() ) {
+                copyAndPastePopUpMenu.show( event.getComponent(), event.getX(), event.getY() );
+            }
+        }
+        
+        public void mouseReleased( MouseEvent event ) {
+            if( event.isPopupTrigger() ) {
+                copyAndPastePopUpMenu.show( event.getComponent(), event.getX(), event.getY() );
+            }
+        }
+    }
+    
+    private class PopupMenuClosingHandler implements PopupMenuListener {
+        
+        @Override
+        public void popupMenuCanceled( PopupMenuEvent event ) {
+            popupMenuClosedFlag = true;
+            ((JPopupMenu)event.getSource()).getInvoker().requestFocus();
+        }
+
+        @Override
+        public void popupMenuWillBecomeInvisible( PopupMenuEvent event ) {
+            popupMenuClosedFlag = true;
+            ((JPopupMenu)event.getSource()).getInvoker().requestFocus();
+        }
+
+        @Override
+        public void popupMenuWillBecomeVisible( PopupMenuEvent event ) {}
     }
 }
