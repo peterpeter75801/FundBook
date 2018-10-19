@@ -1,10 +1,12 @@
 package view.common;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.text.JTextComponent;
 
 import commonUtil.ClipboardUtil;
 
@@ -35,6 +37,18 @@ public class CopyAndPastePopUpMenu extends JPopupMenu {
         pasteItem.setMnemonic( 'P' );
         pasteItem.addActionListener( menuItemHandler );
         add( pasteItem );
+    }
+    
+    @Override
+    public void show( Component invoker, int x, int y ) {
+        if( invoker instanceof JTextComponent && ((JTextComponent) invoker).isEditable() ) {
+            cutItem.setEnabled( true );
+            pasteItem.setEnabled( true );
+        } else {
+            cutItem.setEnabled( false );
+            pasteItem.setEnabled( false );
+        }
+        super.show( invoker, x, y );
     }
     
     private class MenuItemHandler implements ActionListener {

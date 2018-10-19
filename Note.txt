@@ -1,3 +1,8 @@
+---- version 0.1.6-alpha----
+1. Bug fix: User could perform cutting and pasting operation through right clicking pop up menu in non-editable text field.
+2. Display the income and expenses amount in current month.
+3. Display different colors between income and expenses items.
+
 ---- version 0.1.5-alpha----
 1. Add cut, copy, and paste mouse right clicking pop up menu in text component.
 2. Upgrade JUnit 3.8.2 to 4.12.

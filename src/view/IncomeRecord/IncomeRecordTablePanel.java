@@ -1,5 +1,6 @@
 package view.IncomeRecord;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -116,8 +117,8 @@ public class IncomeRecordTablePanel extends JPanel {
             public void actionPerformed( ActionEvent event ) { /* do nothing */ }
         });
         
-        // 設定 JTable 特定欄位的文字對齊方式
-        initializeTableAlignment();
+        // 設定 JTable 特定欄位的文字對齊方式，以及型態為"收入"資料列的背景顏色
+        initializeTableStyle();
         
         dataTableScrollPane = new JScrollPane( dataTable );
         dataTableScrollPane.setBounds( 0, 10, TABLE_WIDTH, TABLE_HEIGHT + TABLE_HEADER_HEIGHT + BORDER_HEIGHT_FIX );
@@ -246,40 +247,49 @@ public class IncomeRecordTablePanel extends JPanel {
         }
     }
     
-    private void initializeTableAlignment() {
-        DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer() {
+    private void initializeTableStyle() {
+        dataTable.setDefaultRenderer( Object.class, new DefaultTableCellRenderer() {
             private static final long serialVersionUID = 1L;
-            private Border padding = BorderFactory.createEmptyBorder( 0, 3, 0, 0 );
+            
+            private Border leftPadding = BorderFactory.createEmptyBorder( 0, 3, 0, 0 );
+            private Border rightPadding = BorderFactory.createEmptyBorder( 0, 0, 0, 3 );
+            
             @Override
-            public Component getTableCellRendererComponent( JTable table, Object value, 
-                    boolean isSelected, boolean hasFocus, int row, int column ) {
+            public Component getTableCellRendererComponent( JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column ) {
                 super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
-                setBorder( BorderFactory.createCompoundBorder( getBorder(), padding ) );
+                
+                // 設定 JTable 特定欄位的文字對齊方式
+                switch( column ) {
+                case DATE_COLUMN:
+                    setHorizontalAlignment( SwingConstants.LEFT );
+                    setBorder( BorderFactory.createCompoundBorder( getBorder(), leftPadding ) );
+                    break;
+                case ITEM_COLUMN:
+                    setHorizontalAlignment( SwingConstants.LEFT );
+                    setBorder( BorderFactory.createCompoundBorder( getBorder(), leftPadding ) );
+                    break;
+                case TYPE_COLUMN:
+                    setHorizontalAlignment( SwingConstants.CENTER );
+                    break;
+                case AMOUNT_COLUMN:
+                    setHorizontalAlignment( SwingConstants.RIGHT );
+                    setBorder( BorderFactory.createCompoundBorder( getBorder(), rightPadding ) );
+                    break;
+                }
+                
+                // set background of income type data row to light gray
+                if( isSelected || hasFocus ) {
+                    return this;
+                }
+                String itemType = (String)table.getModel().getValueAt( row, TYPE_COLUMN );
+                if( ComparingUtil.compare( "收", itemType ) == 0 ) {
+                    setBackground( Color.LIGHT_GRAY );
+                } else {
+                    setBackground( table.getBackground() );
+                }
                 return this;
             }
-        };
-        leftRenderer.setHorizontalAlignment( SwingConstants.LEFT );
-        dataTable.getColumnModel().getColumn( 0 ).setCellRenderer( leftRenderer );
-        dataTable.getColumnModel().getColumn( 1 ).setCellRenderer( leftRenderer );
-        
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment( SwingConstants.CENTER );
-        dataTable.getColumnModel().getColumn( 2 ).setCellRenderer( centerRenderer );
-        
-        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer() {
-            private static final long serialVersionUID = 1L;
-            private Border padding = BorderFactory.createEmptyBorder( 0, 0, 0, 3 );
-            @Override
-            public Component getTableCellRendererComponent( JTable table, Object value, 
-                    boolean isSelected, boolean hasFocus, int row, int column ) {
-                super.getTableCellRendererComponent( table, value, isSelected, hasFocus, row, column );
-                setBorder( BorderFactory.createCompoundBorder( getBorder(), padding ) );
-                return this;
-            }
-        };
-        rightRenderer.setHorizontalAlignment( SwingConstants.RIGHT );
-        dataTable.getColumnModel().getColumn( 3 ).setCellRenderer( rightRenderer );
-        
+        });
     }
     
     private class SpecialFocusTraversalPolicyHandler implements KeyListener {

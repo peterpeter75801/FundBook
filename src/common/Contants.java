@@ -44,5 +44,5 @@ public class Contants {
     public static final String CHECK_RECORD_SEQ_FILE_PATH = "./data/CheckRecord/CheckRecordSeq.txt";
     
     // Version Number
-    public static final String VERSION = "Version 0.1.5-alpha";
+    public static final String VERSION = "Version 0.1.6-alpha";
 }

@@ -58,7 +58,12 @@ public class IncomeRecordPanel extends JPanel {
     private JButton sortButton;
     private JButton copyButton;
     private JButton detailButton;
-    private JLabel incomeStateInCurrentMonthLabel;
+    private JLabel revenueInCurrentMonthLabel;
+    private JTextField revenueInCurrentMonthTextField;
+    private JLabel costInCurrentMonthLabel;
+    private JTextField costInCurrentMonthTextField;
+    private JLabel incomeStateInCurrentMonthLabel1;
+    private JLabel incomeStateInCurrentMonthLabel2;
     private JTextField incomeStateInCurrentMonthTextField;
     private JLabel totalPropertyLabel;
     private JTextField totalPropertyTextField;
@@ -200,16 +205,51 @@ public class IncomeRecordPanel extends JPanel {
             }
         });
         add( detailButton );
+        incomeStateInCurrentMonthLabel1 = new JLabel( "本月收支狀況( " );
+        incomeStateInCurrentMonthLabel1.setBounds( 16, 479, 112, 22 );
+        incomeStateInCurrentMonthLabel1.setFont( generalFont );
+        add( incomeStateInCurrentMonthLabel1 );
         
-        incomeStateInCurrentMonthLabel = new JLabel( "本月收支狀況(收入-支出): " );
-        incomeStateInCurrentMonthLabel.setBounds( 16, 479, 200, 22 );
-        incomeStateInCurrentMonthLabel.setFont( generalFont );
-        add( incomeStateInCurrentMonthLabel );
+        revenueInCurrentMonthLabel = new JLabel( "收入 " );
+        revenueInCurrentMonthLabel.setBounds( 128, 479, 40, 22 );
+        revenueInCurrentMonthLabel.setFont( generalFont );
+        add( revenueInCurrentMonthLabel );
+        
+        revenueInCurrentMonthTextField = new JTextField();
+        revenueInCurrentMonthTextField.setBounds( 168, 479, 56, 22 );
+        revenueInCurrentMonthTextField.setFont( generalFont );
+        revenueInCurrentMonthTextField.setEditable( false );
+        revenueInCurrentMonthTextField.setHorizontalAlignment( SwingConstants.RIGHT );
+        revenueInCurrentMonthTextField.addFocusListener( focusHandler );
+        revenueInCurrentMonthTextField.addKeyListener( copyPasteMenuKeyHandler );      
+        revenueInCurrentMonthTextField.addMouseListener( copyPasteMouseMenuHandler );
+        add( revenueInCurrentMonthTextField );
+        
+        costInCurrentMonthLabel = new JLabel( " - 支出 " );
+        costInCurrentMonthLabel.setBounds( 224, 479, 64, 22 );
+        costInCurrentMonthLabel.setFont( generalFont );
+        add( costInCurrentMonthLabel );
+        
+        costInCurrentMonthTextField = new JTextField();
+        costInCurrentMonthTextField.setBounds( 288, 479, 56, 22 );
+        costInCurrentMonthTextField.setFont( generalFont );
+        costInCurrentMonthTextField.setEditable( false );
+        costInCurrentMonthTextField.setHorizontalAlignment( SwingConstants.RIGHT );
+        costInCurrentMonthTextField.addFocusListener( focusHandler );
+        costInCurrentMonthTextField.addKeyListener( copyPasteMenuKeyHandler );      
+        costInCurrentMonthTextField.addMouseListener( copyPasteMouseMenuHandler );
+        add( costInCurrentMonthTextField );
+        
+        incomeStateInCurrentMonthLabel2 = new JLabel( " ): " );
+        incomeStateInCurrentMonthLabel2.setBounds( 344, 479, 32, 22 );
+        incomeStateInCurrentMonthLabel2.setFont( generalFont );
+        add( incomeStateInCurrentMonthLabel2 );
         
         incomeStateInCurrentMonthTextField = new JTextField();
-        incomeStateInCurrentMonthTextField.setBounds( 216, 479, 80, 22 );
+        incomeStateInCurrentMonthTextField.setBounds( 376, 479, 80, 22 );
         incomeStateInCurrentMonthTextField.setFont( generalFont );
         incomeStateInCurrentMonthTextField.setEditable( false );
+        incomeStateInCurrentMonthTextField.setHorizontalAlignment( SwingConstants.RIGHT );
         incomeStateInCurrentMonthTextField.addFocusListener( focusHandler );
         incomeStateInCurrentMonthTextField.addKeyListener( copyPasteMenuKeyHandler );      
         incomeStateInCurrentMonthTextField.addMouseListener( copyPasteMouseMenuHandler );
@@ -251,11 +291,20 @@ public class IncomeRecordPanel extends JPanel {
     }
     
     public void computeIncomeStateInCurrentMonth() {
+        int totalRevenue = 0;
+        int totalCost = 0;
         int totalAmount = 0;
         List<Integer> amountsOfSelectedMonth = incomeRecordTablePanel.getAllAmount();
         for( Integer amount : amountsOfSelectedMonth ) {
+            if( amount < 0 ) {
+                totalCost -= amount;
+            } else {
+                totalRevenue += amount;
+            }
             totalAmount += amount;
         }
+        revenueInCurrentMonthTextField.setText( String.format( "%d", totalRevenue ) );
+        costInCurrentMonthTextField.setText( String.format( "%d", totalCost ) );
         incomeStateInCurrentMonthTextField.setText( String.format( "%d", totalAmount ) );
     }
     
