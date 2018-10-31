@@ -29,23 +29,26 @@ public class CheckRecordServiceImplTests {
     private final String CHECK_RECORD_CSV_FILE_PATH_BACKUP = "./data/CheckRecord/CheckRecord_backup.csv";
     private final String CHECK_RECORD_SEQ_FILE_PATH_BACKUP = "./data/CheckRecord/CheckRecordSeq_backup.txt";
     
+    private CheckRecordService checkRecordService;
+    
     @Before
     public void setUp() throws IOException {
+        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
+        checkRecordService = new CheckRecordServiceImpl( checkRecordDAO );
+        
     	backupFile( CHECK_RECORD_CSV_FILE_PATH, CHECK_RECORD_CSV_FILE_PATH_BACKUP );
         backupFile( Contants.CHECK_RECORD_SEQ_FILE_PATH, CHECK_RECORD_SEQ_FILE_PATH_BACKUP );
     }
     
     @After
     public void tearDown() throws IOException {
+        checkRecordService = null;
     	restoreFile( CHECK_RECORD_SEQ_FILE_PATH_BACKUP, Contants.CHECK_RECORD_SEQ_FILE_PATH );
         restoreFile( CHECK_RECORD_CSV_FILE_PATH_BACKUP, CHECK_RECORD_CSV_FILE_PATH );
     }
     
     @Test
     public void testInsert() throws IOException {
-        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
-        CheckRecordService checkRecordService = new CheckRecordServiceImpl( checkRecordDAO );
-        
         List<CheckRecord> expectDataList = new ArrayList<CheckRecord>();
         expectDataList.add( new CheckRecord( 1, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
         expectDataList.add( new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
@@ -69,9 +72,6 @@ public class CheckRecordServiceImplTests {
     
     @Test
     public void testFindOne() throws IOException {
-        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
-        CheckRecordService checkRecordService = new CheckRecordServiceImpl( checkRecordDAO );
-        
         CheckRecord expect = new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 );
         
         try {
@@ -91,9 +91,6 @@ public class CheckRecordServiceImplTests {
 
     @Test
     public void testUpdate() throws IOException {
-        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
-        CheckRecordService checkRecordService = new CheckRecordServiceImpl( checkRecordDAO );
-        
         List<CheckRecord> expectDataList = new ArrayList<CheckRecord>();
         expectDataList.add( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
         expectDataList.add( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
@@ -123,9 +120,6 @@ public class CheckRecordServiceImplTests {
 
     @Test
     public void testDelete() throws IOException {
-        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
-        CheckRecordService checkRecordService = new CheckRecordServiceImpl( checkRecordDAO );
-        
         List<CheckRecord> expectDataList = new ArrayList<CheckRecord>();
         expectDataList.add( new CheckRecord( 1, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
         expectDataList.add( new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );

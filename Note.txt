@@ -1,3 +1,10 @@
+---- version 0.1.7-alpha----
+1. Close a testing frame after an JUnit test method returned.
+2. Scroll to the focused IncomeRecord item When item moving up and moving down exceed the table view scope.
+3. Add "Select all" menu item into right clicking pop up menu.
+4. Display the main frame in the center of the screen while program startup.
+5. Change TotalProperty.csv when an ImcomeRecord data has been changed.
+
 ---- version 0.1.6-alpha----
 1. Bug fix: User could perform cutting and pasting operation through right clicking pop up menu in non-editable text field.
 2. Display the income and expenses amount in current month.

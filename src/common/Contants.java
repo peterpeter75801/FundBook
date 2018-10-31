@@ -13,6 +13,7 @@ public class Contants {
     public static final int ERROR_NOT_EXIST = -8;
     public static final int ERROR_EMPTY_FILE = -9;
     public static final int ERROR_EMPTY_NECESSARY_PARAMETER = -10;
+    public static final int ERROR_TOTAL_PROPERTY_INCONSISTENT = -12;
     public static final int DUPLICATE_DATA = -3;
     public static final int NO_DATA_MODIFIED = -11;
     
@@ -44,5 +45,5 @@ public class Contants {
     public static final String CHECK_RECORD_SEQ_FILE_PATH = "./data/CheckRecord/CheckRecordSeq.txt";
     
     // Version Number
-    public static final String VERSION = "Version 0.1.6-alpha";
+    public static final String VERSION = "Version 0.1.7-alpha";
 }

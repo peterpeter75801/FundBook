@@ -478,8 +478,9 @@ public class IncomeRecordPanel extends JPanel {
         }
         
         if( status == Contants.SUCCESS ) {
+            int selectedDataId = incomeRecordTablePanel.getItemTableSelectedId();
             reselectDateList();
-            incomeRecordTablePanel.getDataTable().setRowSelectionInterval( selectedIndex - 1, selectedIndex - 1 );
+            incomeRecordTablePanel.selectDataById( selectedDataId );
         } else if( status == Contants.NO_DATA_MODIFIED ) {
             incomeRecordTablePanel.getDataTable().setRowSelectionInterval( selectedIndex, selectedIndex );
         } else {
@@ -509,8 +510,9 @@ public class IncomeRecordPanel extends JPanel {
         }
         
         if( status == Contants.SUCCESS ) {
+            int selectedDataId = incomeRecordTablePanel.getItemTableSelectedId();
             reselectDateList();
-            incomeRecordTablePanel.getDataTable().setRowSelectionInterval( selectedIndex + 1, selectedIndex + 1 );
+            incomeRecordTablePanel.selectDataById( selectedDataId );
         } else if( status == Contants.NO_DATA_MODIFIED ) {
             incomeRecordTablePanel.getDataTable().setRowSelectionInterval( selectedIndex, selectedIndex );
         } else {

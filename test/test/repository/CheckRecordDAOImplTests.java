@@ -30,21 +30,24 @@ public class CheckRecordDAOImplTests {
     private final String CHECK_RECORD_CSV_FILE_PATH_BACKUP = "./data/CheckRecord/CheckRecord_backup.csv";
     private final String CHECK_RECORD_SEQ_FILE_PATH_BACKUP = "./data/CheckRecord/CheckRecordSeq_backup.txt";
     
+    private CheckRecordDAO checkRecordDAO;
+    
     @Before
     public void setUp() throws IOException {
+        checkRecordDAO = new CheckRecordDAOImpl();
         backupFile( CHECK_RECORD_CSV_FILE_PATH, CHECK_RECORD_CSV_FILE_PATH_BACKUP );
         backupFile( Contants.CHECK_RECORD_SEQ_FILE_PATH, CHECK_RECORD_SEQ_FILE_PATH_BACKUP );
     }
     
     @After
     public void tearDown() throws IOException {
+        checkRecordDAO = null;
         restoreFile( CHECK_RECORD_SEQ_FILE_PATH_BACKUP, Contants.CHECK_RECORD_SEQ_FILE_PATH );
         restoreFile( CHECK_RECORD_CSV_FILE_PATH_BACKUP, CHECK_RECORD_CSV_FILE_PATH );
     }
     
     @Test
     public void testInsert() throws IOException {
-        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
         String[] expectedData = {
                 "1,2017,10,1,12,30,0,100,20000,20100", 
                 "2,2017,10,15,12,30,0,-500,20000,19500", 
@@ -84,7 +87,6 @@ public class CheckRecordDAOImplTests {
 
     @Test
     public void testFindOne() throws IOException {
-        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
         CheckRecord expect = new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 );
         CheckRecord actual = null;
         try {
@@ -104,7 +106,6 @@ public class CheckRecordDAOImplTests {
 
     @Test
     public void testFindAll() throws IOException {
-        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
         List<CheckRecord> expectedDataList = new ArrayList<CheckRecord>();
         expectedDataList.add( new CheckRecord( 1, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
         expectedDataList.add( new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
@@ -129,8 +130,6 @@ public class CheckRecordDAOImplTests {
 
     @Test
     public void testUpdate() throws IOException {
-        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
-        
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "1,2017,10,1,12,30,0,100,20000,20100" );
         expectedDataList.add( "2,2017,10,15,12,30,0,-500,20000,19500" );
@@ -171,8 +170,6 @@ public class CheckRecordDAOImplTests {
 
     @Test
     public void testDelete() throws IOException {
-        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
-        
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "1,2017,10,1,12,30,0,100,20000,20100" );
         expectedDataList.add( "2,2017,10,15,12,30,0,-500,20000,19500" );
@@ -212,8 +209,6 @@ public class CheckRecordDAOImplTests {
 
     @Test
     public void testGetCurrentSeqNumber() throws IOException {
-        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
-        
         try {
             // 測試初始情況
             int expect1 = Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) - 1;

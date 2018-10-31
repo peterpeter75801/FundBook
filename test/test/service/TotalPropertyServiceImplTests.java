@@ -29,23 +29,26 @@ public class TotalPropertyServiceImplTests {
     private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
     private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
     
+    private TotalPropertyService totalPropertyService;
+    
     @Before
     public void setUp() throws IOException {
+        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
+        totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
+        
     	backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
         backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
     }
     
     @After
     public void tearDown() throws IOException {
+        totalPropertyService = null;
         restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
         restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
     }
     
     @Test
     public void testInsert() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
-        TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
-        
         List<TotalProperty> expectDataList = new ArrayList<TotalProperty>();
         expectDataList.add( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 ) );
         try {
@@ -64,9 +67,6 @@ public class TotalPropertyServiceImplTests {
     
     @Test
     public void testFindOne() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
-        TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
-        
         TotalProperty expect = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 );
         
         try {
@@ -84,9 +84,6 @@ public class TotalPropertyServiceImplTests {
 
     @Test
     public void testGetMainTotalAmount() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
-        TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
-        
         int expect1 = 0;
         int expect2 = 1000;
         
@@ -106,9 +103,6 @@ public class TotalPropertyServiceImplTests {
 
     @Test
     public void testSetMainTotalAmount() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
-        TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
-        
         int expect1 = 1000;
         int expect2 = 2000;
         
@@ -127,12 +121,30 @@ public class TotalPropertyServiceImplTests {
             assertTrue( e.getMessage(), false );
         }
     }
+    
+    @Test
+    public void testAddToMainTotalAmount() {
+        int expect1 = 1000;
+        int expect2 = 3000;
+        
+        try {
+            totalPropertyService.insert( new TotalProperty( 0, 2017, 10, 1, 12, 0, 0, 1000 ) );
+            
+            int actual1 = totalPropertyService.getMainTotalAmount();
+            assertEquals( expect1, actual1 );
+            
+            totalPropertyService.addToMainTotalAmount( 2000 );
+            
+            int actual2 = totalPropertyService.getMainTotalAmount();
+            assertEquals( expect2, actual2 );
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        }
+    }
 
     @Test
     public void testUpdate() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
-        TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
-        
         List<TotalProperty> expectDataList = new ArrayList<TotalProperty>();
         expectDataList.add( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 2000 ) );
         
@@ -155,9 +167,6 @@ public class TotalPropertyServiceImplTests {
 
     @Test
     public void testDelete() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
-        TotalPropertyService totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
-        
         List<TotalProperty> expectDataList = new ArrayList<TotalProperty>();
         expectDataList.add( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 ) );
         

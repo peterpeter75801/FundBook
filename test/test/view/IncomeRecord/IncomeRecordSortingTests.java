@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import common.Contants;
+
 import static org.junit.Assert.*;
 
 @RunWith(value=JUnit4.class)
@@ -33,17 +35,30 @@ public class IncomeRecordSortingTests {
     private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
     private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
+    private final String TOTAL_PROPERTY_CSV_FILE_PATH = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
+    private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
+    private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
+    
+    private MainFrame mainFrame = null;
     
     @Before
     public void setUp() throws IOException {
         backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
         backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+        backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
+        backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
     }
     
     @After
-    public void tearDown() throws IOException {
+    public void tearDown() throws IOException, InterruptedException {
+        restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
+        restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
         restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
+        if( mainFrame != null ) {
+            mainFrame.dispose();
+            Thread.sleep( 1000 );
+        }
     }
     
     @Test
@@ -60,7 +75,7 @@ public class IncomeRecordSortingTests {
             incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
             
             // 執行視窗程式
-            MainFrame mainFrame = new MainFrame( fundBookServices );
+            mainFrame = new MainFrame( fundBookServices );
             mainFrame.setVisible( true );
             
             JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
@@ -144,12 +159,13 @@ public class IncomeRecordSortingTests {
         
         try {
             // 新增初始資料
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
+        	for( int i = 1; i <= 30; i++ ) {
+                IncomeRecord incomeRecord = new IncomeRecord( 0, 2017, 10, i, "測試帳" + i, 0, 100 * i, "", 0 );
+                incomeRecordService.insert( incomeRecord );
+            }
             
             // 執行視窗程式
-            MainFrame mainFrame = new MainFrame( fundBookServices );
+            mainFrame = new MainFrame( fundBookServices );
             mainFrame.setVisible( true );
             
             JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
@@ -165,7 +181,7 @@ public class IncomeRecordSortingTests {
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             Thread.sleep( 1000 );
             
-            // 選擇第一筆資料，點選下移按鈕
+            // 選擇第一筆資料，點選下移按鈕30次
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
             bot.keyPress( KeyEvent.VK_UP ); bot.keyRelease( KeyEvent.VK_UP ); Thread.sleep( 100 );
@@ -174,31 +190,17 @@ public class IncomeRecordSortingTests {
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
-            Thread.sleep( 500 );
-            
-            // 選擇第三筆資料，點選下移按鈕
-            bot.keyPress( KeyEvent.VK_SHIFT );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyRelease( KeyEvent.VK_SHIFT );
-            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
-            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
+            for( int i = 0; i < 30; i++ ) {
+                bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
+            }
             Thread.sleep( 500 );
             
             // 檢查執行結果
             List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
-            expectDataList.add( new IncomeRecord( 2, 2017, 10, 1, "測試帳2", 0, 200, "", 1 ) );
-            expectDataList.add( new IncomeRecord( 1, 2017, 10, 1, "測試帳1", 0, 100, "", 2 ) );
-            expectDataList.add( new IncomeRecord( 3, 2017, 10, 1, "測試帳3", 0, 300, "", 3 ) );
+            for( int i = 2; i <= 30; i++ ) {
+                expectDataList.add( new IncomeRecord( i, 2017, 10, i, "測試帳" + i, 0, 100 * i, "", i - 1 ) );
+            }
+            expectDataList.add( new IncomeRecord( 1, 2017, 10, 1, "測試帳1", 0, 100, "", 30 ) );
             List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( 2017, 10 );
             assertEquals( expectDataList.size(), actualDataList.size() );
             for( int i = 0; i < expectDataList.size(); i++ ) {
@@ -212,10 +214,14 @@ public class IncomeRecordSortingTests {
                     "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
                 "<body><p>顯示的收支記錄資料是否如下:</p><table>" + 
                     "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
-                    "<tr><td>2017.10.01</td><td>測試帳2</td><td>收</td><td>200</td></tr>" + 
+                    "<tr><td>...</td><td>...</td><td>...</td><td>...</td></tr>" + 
+                    "<tr><td>2017.10.12</td><td>測試帳12</td><td>收</td><td>1200</td></tr>" + 
+                    "<tr><td>2017.10.13</td><td>測試帳13</td><td>收</td><td>1300</td></tr>" + 
+                    "<tr><td>2017.10.14</td><td>測試帳14</td><td>收</td><td>1400</td></tr>" + 
+                    "<tr><td>...</td><td>...</td><td>...</td><td>...</td></tr>" + 
+                    "<tr><td>2017.10.30</td><td>測試帳30</td><td>收</td><td>3000</td></tr>" + 
                     "<tr><td>2017.10.01</td><td>測試帳1</td><td>收</td><td>100</td></tr>" + 
-                    "<tr><td>2017.10.01</td><td>測試帳3</td><td>收</td><td>300</td></tr>" + 
-                "</table></body></html>", 
+                "</table>並在右側顯示垂直捲軸?</body></html>", 
                 "Check", JOptionPane.YES_NO_OPTION );
             assertEquals( JOptionPane.YES_OPTION, testerSelection );
                     
@@ -242,7 +248,7 @@ public class IncomeRecordSortingTests {
             incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 2, "測試帳5", 0, 500, "", 0 ) );
             
             // 執行視窗程式
-            MainFrame mainFrame = new MainFrame( fundBookServices );
+            mainFrame = new MainFrame( fundBookServices );
             mainFrame.setVisible( true );
             
             JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
@@ -325,7 +331,7 @@ public class IncomeRecordSortingTests {
         }
     }
     
-    private void inputString( Robot bot, String s ) {
+    private void inputString( Robot bot, String s ) throws InterruptedException {
         HashMap<Character, Integer> charToKeyCodeMap = new HashMap<Character, Integer>();
         charToKeyCodeMap.put( 'a', KeyEvent.VK_A ); charToKeyCodeMap.put( 'A', KeyEvent.VK_A );
         charToKeyCodeMap.put( 'b', KeyEvent.VK_B ); charToKeyCodeMap.put( 'B', KeyEvent.VK_B );
@@ -385,6 +391,7 @@ public class IncomeRecordSortingTests {
             }
             bot.keyPress( charToKeyCodeMap.get( s.charAt( i ) ) );
             bot.keyRelease( charToKeyCodeMap.get( s.charAt( i ) ) );
+            Thread.sleep( 100 );
             if( Character.isUpperCase( s.charAt( i ) ) || 
                     shiftPunctuationList.indexOf( s.charAt( i ) ) >= 0 ) {
                 bot.keyRelease( KeyEvent.VK_SHIFT );

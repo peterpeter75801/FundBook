@@ -19,6 +19,7 @@ public class CopyAndPastePopUpMenu extends JPopupMenu {
     private JMenuItem cutItem;
     private JMenuItem copyItem;
     private JMenuItem pasteItem;
+    private JMenuItem selectAllItem;
     
     public CopyAndPastePopUpMenu() {
         menuItemHandler = new MenuItemHandler( this );
@@ -37,6 +38,13 @@ public class CopyAndPastePopUpMenu extends JPopupMenu {
         pasteItem.setMnemonic( 'P' );
         pasteItem.addActionListener( menuItemHandler );
         add( pasteItem );
+        
+        addSeparator();
+        
+        selectAllItem = new JMenuItem( "全選(A)" );
+        selectAllItem.setMnemonic( 'A' );
+        selectAllItem.addActionListener( menuItemHandler );
+        add( selectAllItem );
     }
     
     @Override
@@ -70,6 +78,10 @@ public class CopyAndPastePopUpMenu extends JPopupMenu {
                     ClipboardUtil.paste( ownerPopupMenu.getInvoker() );
                 } catch ( Exception e ) {
                     e.printStackTrace();
+                }
+            } else if( event.getSource() == selectAllItem ) {
+                if( ownerPopupMenu.getInvoker() instanceof JTextComponent ) {
+                    ((JTextComponent)ownerPopupMenu.getInvoker()).selectAll();
                 }
             }
         }

@@ -11,6 +11,8 @@ import service.TotalPropertyService;
 
 public class TotalPropertyServiceImpl implements TotalPropertyService {
     
+    private final int MAIN_ID = 1;
+    
     private TotalPropertyDAO totalPropertyDAO;
     
     public TotalPropertyServiceImpl( TotalPropertyDAO totalPropertyDAO ) {
@@ -45,7 +47,6 @@ public class TotalPropertyServiceImpl implements TotalPropertyService {
 
     @Override
     public int getMainTotalAmount() throws Exception {
-        final int MAIN_ID = 1;
         TotalProperty totalProperty = totalPropertyDAO.findOne( MAIN_ID );
         
         if( totalProperty == null || totalProperty.getTotalAmount() == null ) {
@@ -57,7 +58,6 @@ public class TotalPropertyServiceImpl implements TotalPropertyService {
 
     @Override
     public int setMainTotalAmount( int totalAmount ) throws Exception {
-        final int MAIN_ID = 1;
         boolean returnCode;
         
         Calendar calendar = Calendar.getInstance();
@@ -72,6 +72,38 @@ public class TotalPropertyServiceImpl implements TotalPropertyService {
         totalProperty.setMinute( calendar.get( Calendar.MINUTE ) );
         totalProperty.setSecond( calendar.get( Calendar.SECOND ) );
         totalProperty.setTotalAmount( totalAmount );
+        
+        if( totalPropertyDAO.findOne( MAIN_ID ) == null ) {
+            returnCode = totalPropertyDAO.create( totalProperty );
+        } else {
+            returnCode = totalPropertyDAO.update( totalProperty );
+        }
+        
+        if( !returnCode ) {
+            return Contants.ERROR;
+        } else {
+            return Contants.SUCCESS;
+        }
+    }
+    
+    @Override
+    public int addToMainTotalAmount( int amount ) throws Exception {
+        boolean returnCode;
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        
+        int currentMainTotalAmount = getMainTotalAmount();
+        
+        TotalProperty totalProperty = new TotalProperty();
+        totalProperty.setId( MAIN_ID );
+        totalProperty.setYear( calendar.get( Calendar.YEAR ) );
+        totalProperty.setMonth( calendar.get( Calendar.MONTH ) + 1 );
+        totalProperty.setDay( calendar.get( Calendar.DAY_OF_MONTH ) );
+        totalProperty.setHour( calendar.get( Calendar.HOUR_OF_DAY ) );
+        totalProperty.setMinute( calendar.get( Calendar.MINUTE ) );
+        totalProperty.setSecond( calendar.get( Calendar.SECOND ) );
+        totalProperty.setTotalAmount( currentMainTotalAmount + amount );
         
         if( totalPropertyDAO.findOne( MAIN_ID ) == null ) {
             returnCode = totalPropertyDAO.create( totalProperty );

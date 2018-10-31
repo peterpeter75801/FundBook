@@ -26,6 +26,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import common.Contants;
+
 import static org.junit.Assert.*;
 
 @RunWith(value=JUnit4.class)
@@ -35,16 +37,23 @@ public class IncomeRecordDeletingTests {
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
     private final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
     private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
+    private final String TOTAL_PROPERTY_CSV_FILE_PATH = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
+    private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
+    private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
     
     private Calendar calendar;
     private int currentYear;
     private int currentMonth;
+    
+    private MainFrame mainFrame = null;
     
     @Before
     public void setUp() throws IOException {
         backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
         backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
         backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
+        backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
+        backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
         
         calendar = Calendar.getInstance();
         calendar.setTime( new Date() );
@@ -53,10 +62,17 @@ public class IncomeRecordDeletingTests {
     }
     
     @After
-    public void tearDown() throws IOException {
+    public void tearDown() throws IOException, InterruptedException {
+        restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
+        restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
         restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         restoreFile( getIncomeRecordCsvFilePathBackupOfCurrentDay(), getIncomeRecordCsvFilePathOfCurrentDay() );
+        
+        if( mainFrame != null ) {
+            mainFrame.dispose();
+            Thread.sleep( 1000 );
+        }
     }
     
     @Test
@@ -75,7 +91,7 @@ public class IncomeRecordDeletingTests {
             incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 5, "test item 5", 0, -500, "", 0 ) );
             
             // 執行視窗程式
-            MainFrame mainFrame = new MainFrame( fundBookServices );
+            mainFrame = new MainFrame( fundBookServices );
             mainFrame.setVisible( true );
             
             JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
@@ -151,7 +167,7 @@ public class IncomeRecordDeletingTests {
             incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 5, "test item 5", 0, -500, "", 0 ) );
             
             // 執行視窗程式
-            MainFrame mainFrame = new MainFrame( fundBookServices );
+            mainFrame = new MainFrame( fundBookServices );
             mainFrame.setVisible( true );
             
             JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
@@ -251,7 +267,7 @@ public class IncomeRecordDeletingTests {
         }
     }
     
-    private void inputString( Robot bot, String s ) {
+    private void inputString( Robot bot, String s ) throws InterruptedException {
         HashMap<Character, Integer> charToKeyCodeMap = new HashMap<Character, Integer>();
         charToKeyCodeMap.put( 'a', KeyEvent.VK_A ); charToKeyCodeMap.put( 'A', KeyEvent.VK_A );
         charToKeyCodeMap.put( 'b', KeyEvent.VK_B ); charToKeyCodeMap.put( 'B', KeyEvent.VK_B );
@@ -311,6 +327,7 @@ public class IncomeRecordDeletingTests {
             }
             bot.keyPress( charToKeyCodeMap.get( s.charAt( i ) ) );
             bot.keyRelease( charToKeyCodeMap.get( s.charAt( i ) ) );
+            Thread.sleep( 100 );
             if( Character.isUpperCase( s.charAt( i ) ) || 
                     shiftPunctuationList.indexOf( s.charAt( i ) ) >= 0 ) {
                 bot.keyRelease( KeyEvent.VK_SHIFT );

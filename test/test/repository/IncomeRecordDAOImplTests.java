@@ -33,8 +33,11 @@ public class IncomeRecordDAOImplTests {
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
     private final String FILE_CHARSET = "big5";
     
+    private IncomeRecordDAO incomeRecordDAO;
+    
     @Before
     public void setUp() throws IOException {
+        incomeRecordDAO = new IncomeRecordDAOImpl();
         backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
         backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
         backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
@@ -42,6 +45,7 @@ public class IncomeRecordDAOImplTests {
     
     @After
     public void tearDown() throws IOException {
+        incomeRecordDAO = null;
         restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
         restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
         restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
@@ -49,7 +53,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testInsert() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         String[] expectedData = {
                 "1,2017,10,1,\"測試帳1\",0,100,\"\",0",
                 "2,2017,10,1,\"測試帳2\",0,200,\"\",0",
@@ -86,7 +89,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testFindOne() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         IncomeRecord expect = new IncomeRecord( 2, 2017, 10, 1, "測試帳2", 0, 200, "", 0 );
         IncomeRecord actual = null;
         try {
@@ -106,7 +108,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testFindByMonth() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         List<IncomeRecord> expectedDataList = new ArrayList<IncomeRecord>();
         expectedDataList.add( new IncomeRecord( 1, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
         expectedDataList.add( new IncomeRecord( 2, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
@@ -131,8 +132,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testUpdate() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
-        
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",0" );
         expectedDataList.add( "2,2017,10,1,\"測試帳2\",0,250,\"\",0" );
@@ -172,8 +171,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testUpdateDifferentMonth() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
-        
         List<String> expectedDataList1 = new ArrayList<String>();
         expectedDataList1.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",0" );
         expectedDataList1.add( "2,2017,10,1,\"測試帳2\",0,200,\"\",0" );
@@ -232,8 +229,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testDelete() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
-        
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "2,2017,10,1,\"測試帳2\",0,200,\"\",0" );
         expectedDataList.add( "3,2017,10,1,\"測試帳3\",0,300,\"\",0" );
@@ -272,8 +267,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testGetCurrentSeqNumber() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
-        
         try {
             // 測試初始情況
             int expect1 = INITIAL_SEQ_NUMBER - 1;
@@ -297,7 +290,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testRefreshOrderNo() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",1" );
         expectedDataList.add( "2,2017,10,1,\"測試帳2\",0,200,\"\",2" );
@@ -336,7 +328,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testGetCount() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         int expect = 3;
         int actual = 0;
         
@@ -358,7 +349,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testMoveUp() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",1" );
         expectedDataList.add( "3,2017,10,1,\"測試帳3\",0,300,\"\",3" );
@@ -397,7 +387,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testMoveDown() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",1" );
         expectedDataList.add( "3,2017,10,1,\"測試帳3\",0,300,\"\",3" );
@@ -436,7 +425,6 @@ public class IncomeRecordDAOImplTests {
     
     @Test
     public void testSort() throws IOException {
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "1,2017,10,1,\"測試帳1\",0,100,\"\",1" );
         expectedDataList.add( "3,2017,10,1,\"測試帳3\",0,300,\"\",3" );

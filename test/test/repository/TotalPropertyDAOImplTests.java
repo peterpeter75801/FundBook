@@ -30,21 +30,24 @@ public class TotalPropertyDAOImplTests {
     private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
     private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
     
+    private TotalPropertyDAO totalPropertyDAO;
+    
     @Before
     public void setUp() throws IOException {
+        totalPropertyDAO = new TotalPropertyDAOImpl();
     	backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
         backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
     }
     
     @After
     public void tearDown() throws IOException {
+        totalPropertyDAO = null;
     	restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
         restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
     }
     
     @Test
     public void testCreate() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         String[] expectedData = { "1,2017,10,1,12,0,0,1000" };
         String[] actualData = new String[ 1 ];
         
@@ -79,7 +82,6 @@ public class TotalPropertyDAOImplTests {
     
     @Test
     public void testInsert() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         String[] expectedData = { "1,2017,10,1,12,0,0,1000" };
         String[] actualData = new String[ 1 ];
         try {
@@ -111,7 +113,6 @@ public class TotalPropertyDAOImplTests {
     
     @Test
     public void testFindOne() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         TotalProperty expect = new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 );
         TotalProperty actual = null;
         try {
@@ -129,7 +130,6 @@ public class TotalPropertyDAOImplTests {
 
     @Test
     public void testFindAll() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         List<TotalProperty> expectedDataList = new ArrayList<TotalProperty>();
         expectedDataList.add( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 ) );
         List<TotalProperty> actualDataList = null;
@@ -150,8 +150,6 @@ public class TotalPropertyDAOImplTests {
 
     @Test
     public void testUpdate() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
-        
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "1,2017,10,1,12,0,0,2000" );
         List<String> actualDataList = new ArrayList<String>();
@@ -187,8 +185,6 @@ public class TotalPropertyDAOImplTests {
 
     @Test
     public void testDelete() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
-        
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "1,2017,10,1,12,0,0,1000" );
         List<String> actualDataList = new ArrayList<String>();
@@ -225,8 +221,6 @@ public class TotalPropertyDAOImplTests {
 
     @Test
     public void testGetCurrentSeqNumber() throws IOException {
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
-        
         try {
             // 測試初始情況
             int expect1 = Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) - 1;

@@ -1,5 +1,8 @@
 package view;
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -33,6 +36,16 @@ public class MainFrame extends JFrame {
     
     public IncomeRecordPanel getIncomeRecordPanel() {
         return incomeRecordPanel;
+    }
+    
+    @Override
+    public void setVisible( boolean b ) {
+        if( b == true ) {
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            Point middle = new Point(screenSize.width / 2, screenSize.height / 2);
+            setLocation( new Point( middle.x - (getWidth() / 2), middle.y - (getHeight() / 2) ) );
+        }
+        super.setVisible( b );
     }
     
     private class MnemonicKeyHandler implements KeyListener {

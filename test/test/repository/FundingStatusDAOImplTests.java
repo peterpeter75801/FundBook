@@ -30,21 +30,24 @@ public class FundingStatusDAOImplTests {
     private final String FUNDING_STATUS_CSV_FILE_PATH_BACKUP = "./data/FundingStatus/FundingStatus_backup.csv";
     private final String FUNDING_STATUS_SEQ_FILE_PATH_BACKUP = "./data/FundingStatus/FundingStatusSeq_backup.txt";
     
+    private FundingStatusDAO fundingStatusDAO;
+    
     @Before
     public void setUp() throws IOException {
+        fundingStatusDAO = new FundingStatusDAOImpl();
         backupFile( FUNDING_STATUS_CSV_FILE_PATH, FUNDING_STATUS_CSV_FILE_PATH_BACKUP );
         backupFile( Contants.FUNDING_STATUS_SEQ_FILE_PATH, FUNDING_STATUS_SEQ_FILE_PATH_BACKUP );
     }
     
     @After
     public void tearDown() throws IOException {
+        fundingStatusDAO = null;
         restoreFile( FUNDING_STATUS_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_SEQ_FILE_PATH );
         restoreFile( FUNDING_STATUS_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_CSV_FILE_PATH );
     }
     
     @Test
     public void testInsert() throws IOException {
-        FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
         String[] expectedData = {
                 "1,D,0,0,0,\"700\",\"中華郵政\",\"12345671234567\",\"12345671234567\",10000", 
                 "2,C,0,0,0,\"\",\"\",\"\",\"\",5000", 
@@ -85,7 +88,6 @@ public class FundingStatusDAOImplTests {
     
     @Test
     public void testFindOne() throws IOException {
-        FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
         FundingStatus expect = new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 );
         FundingStatus actual = null;
         try {
@@ -107,7 +109,6 @@ public class FundingStatusDAOImplTests {
     
     @Test
     public void testFindAll() throws IOException {
-        FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
         List<FundingStatus> expectedDataList = new ArrayList<FundingStatus>();
         expectedDataList.add( new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
         expectedDataList.add( new FundingStatus( 2, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
@@ -139,8 +140,6 @@ public class FundingStatusDAOImplTests {
     
     @Test
     public void testUpdate() throws IOException {
-        FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
-        
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "1,D,0,0,0,\"700\",\"中華郵政\",\"12345671234567\",\"12345671234567\",12000" );
         expectedDataList.add( "2,C,0,0,0,\"\",\"\",\"\",\"\",5000" );
@@ -185,8 +184,6 @@ public class FundingStatusDAOImplTests {
     
     @Test
     public void testDelete() throws IOException {
-        FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
-        
         List<String> expectedDataList = new ArrayList<String>();
         expectedDataList.add( "1,D,0,0,0,\"700\",\"中華郵政\",\"12345671234567\",\"12345671234567\",10000" );
         expectedDataList.add( "2,C,0,0,0,\"\",\"\",\"\",\"\",5000" );
@@ -230,8 +227,6 @@ public class FundingStatusDAOImplTests {
     
     @Test
     public void testGetCurrentSeqNumber() throws IOException {
-        FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
-        
         try {
             // 測試初始情況
             int expect1 = Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) - 1;

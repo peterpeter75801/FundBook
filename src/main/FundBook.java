@@ -30,6 +30,10 @@ public class FundBook {
         fundBookServices.setFundingStatusService( new FundingStatusServiceImpl( fundingStatusDAO ) );
         fundBookServices.setCheckRecordService( new CheckRecordServiceImpl( checkRecordDAO ) );
         
+        // Set services wired relation
+        ((IncomeRecordServiceImpl)fundBookServices.getIncomeRecordService()).setTotalPropertyService(
+                fundBookServices.getTotalPropertyService() );
+        
         // Initialize UI
         MainFrame mainFrame = new MainFrame( fundBookServices );
         mainFrame.setVisible( true );
