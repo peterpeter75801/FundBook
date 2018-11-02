@@ -1,3 +1,8 @@
+---- version 0.1.8-alpha----
+1. Display the book total amount in income record tab panel, and add a button for hiding/displaying the book total amount.
+2. Select the next data after deleting an income record.
+3. Bug fix: Unit tests in "test.view.IncomeRecord" package can not be run.
+
 ---- version 0.1.7-alpha----
 1. Close a testing frame after an JUnit test method returned.
 2. Scroll to the focused IncomeRecord item When item moving up and moving down exceed the table view scope.

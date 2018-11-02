@@ -16,8 +16,11 @@ import commonUtil.IncomeRecordUtil;
 import domain.IncomeRecord;
 import main.FundBookServices;
 import repository.impl.IncomeRecordDAOImpl;
+import repository.impl.TotalPropertyDAOImpl;
 import service.IncomeRecordService;
+import service.TotalPropertyService;
 import service.impl.IncomeRecordServiceImpl;
+import service.impl.TotalPropertyServiceImpl;
 import view.MainFrame;
 
 import org.junit.After;
@@ -41,6 +44,10 @@ public class IncomeRecordDeletingTests {
     private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
     private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
     
+    private FundBookServices fundBookServices;
+    private IncomeRecordService incomeRecordService;
+    private TotalPropertyService totalPropertyService;
+    
     private Calendar calendar;
     private int currentYear;
     private int currentMonth;
@@ -49,6 +56,13 @@ public class IncomeRecordDeletingTests {
     
     @Before
     public void setUp() throws IOException {
+        incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
+        totalPropertyService = new TotalPropertyServiceImpl( new TotalPropertyDAOImpl() );
+        ((IncomeRecordServiceImpl)incomeRecordService).setTotalPropertyService( totalPropertyService );
+        fundBookServices = new FundBookServices();
+        fundBookServices.setIncomeRecordService( incomeRecordService );
+        fundBookServices.setTotalPropertyService( totalPropertyService );
+        
         backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
         backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
         backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
@@ -63,6 +77,10 @@ public class IncomeRecordDeletingTests {
     
     @After
     public void tearDown() throws IOException, InterruptedException {
+        fundBookServices = null;
+        incomeRecordService = null;
+        totalPropertyService = null;
+        
         restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
         restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
@@ -78,10 +96,6 @@ public class IncomeRecordDeletingTests {
     @Test
     public void testDeleteIncomeRecord() throws IOException {
         int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
         try {
             // 新增初始資料
             incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 1, "test item 1", 0, -100, "", 0 ) );
@@ -154,10 +168,6 @@ public class IncomeRecordDeletingTests {
     @Test
     public void testDeleteIncomeRecord2() throws IOException {
         int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
         try {
             // 新增初始資料
             incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "test item 1", 0, -100, "", 0 ) );
@@ -183,8 +193,7 @@ public class IncomeRecordDeletingTests {
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
             
-            // 選擇第四筆資料，點選"刪除"按鈕
-            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
+            // 選擇第三筆資料，連點2次"刪除"按鈕
             bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
             bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
             bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( 100 );
@@ -195,13 +204,16 @@ public class IncomeRecordDeletingTests {
             Thread.sleep( 500 );
             bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
             Thread.sleep( 1000 );
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
+            Thread.sleep( 500 );
+            bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( 100 );
+            Thread.sleep( 1000 );
             
             // 檢查是否刪除成功
             List<IncomeRecord> expectDataList = new ArrayList<IncomeRecord>();
             expectDataList.add( new IncomeRecord( 1, 2017, 10, 1, "test item 1", 0, -100, "", 1 ) );
             expectDataList.add( new IncomeRecord( 2, 2017, 10, 2, "test item 2", 0, -200, "", 2 ) );
-            expectDataList.add( new IncomeRecord( 3, 2017, 10, 3, "test item 3", 0, -300, "", 3 ) );
-            expectDataList.add( new IncomeRecord( 5, 2017, 10, 5, "test item 5", 0, -500, "", 4 ) );
+            expectDataList.add( new IncomeRecord( 5, 2017, 10, 5, "test item 5", 0, -500, "", 3 ) );
             List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( 2017, 10 );
             assertEquals( expectDataList.size(), actualDataList.size() );
             for( int i = 0; i < expectDataList.size(); i++ ) {
@@ -218,7 +230,6 @@ public class IncomeRecordDeletingTests {
                     "<tr><th>日期</th><th>項目</th><th>收支</th><th>金額</th></tr>" + 
                     "<tr><td>" + expectDateString + "01" + "</td><td>test item 1</td><td>支</td><td>100</td></tr>" + 
                     "<tr><td>" + expectDateString + "02" + "</td><td>test item 2</td><td>支</td><td>200</td></tr>" + 
-                    "<tr><td>" + expectDateString + "03" + "</td><td>test item 3</td><td>支</td><td>300</td></tr>" + 
                     "<tr><td>" + expectDateString + "05" + "</td><td>test item 5</td><td>支</td><td>500</td></tr>" + 
                 "</table></body></html>", 
                 "Check", JOptionPane.YES_NO_OPTION );

@@ -17,8 +17,11 @@ import commonUtil.IncomeRecordUtil;
 import domain.IncomeRecord;
 import main.FundBookServices;
 import repository.impl.IncomeRecordDAOImpl;
+import repository.impl.TotalPropertyDAOImpl;
 import service.IncomeRecordService;
+import service.TotalPropertyService;
 import service.impl.IncomeRecordServiceImpl;
+import service.impl.TotalPropertyServiceImpl;
 import view.MainFrame;
 
 import org.junit.After;
@@ -45,6 +48,10 @@ public class IncomeRecordUpdateDialogTests{
     private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
     private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
     
+    private FundBookServices fundBookServices;
+    private IncomeRecordService incomeRecordService;
+    private TotalPropertyService totalPropertyService;
+    
     private Calendar calendar;
     private int currentYear;
     private int currentMonth;
@@ -55,6 +62,13 @@ public class IncomeRecordUpdateDialogTests{
     
     @Before
     public void setUp() throws IOException {
+        incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
+        totalPropertyService = new TotalPropertyServiceImpl( new TotalPropertyDAOImpl() );
+        ((IncomeRecordServiceImpl)incomeRecordService).setTotalPropertyService( totalPropertyService );
+        fundBookServices = new FundBookServices();
+        fundBookServices.setIncomeRecordService( incomeRecordService );
+        fundBookServices.setTotalPropertyService( totalPropertyService );
+        
         backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
         backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
         backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
@@ -77,6 +91,10 @@ public class IncomeRecordUpdateDialogTests{
     
     @After
     public void tearDown() throws IOException, InterruptedException {
+        fundBookServices = null;
+        incomeRecordService = null;
+        totalPropertyService = null;
+        
         restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
         restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
@@ -97,10 +115,6 @@ public class IncomeRecordUpdateDialogTests{
     @Test
     public void testUpdateIncomeRecord() throws IOException {
         int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
         try {
             // 新增初始資料
         	incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 1, "test item 1", 0, -100, "", 0 ) );
@@ -211,10 +225,6 @@ public class IncomeRecordUpdateDialogTests{
     @Test
     public void testUpdateIncomeRecord2() throws IOException {
         int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
         try {
             // 新增初始資料
         	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "test item 1", 0, -100, "", 0 ) );
@@ -387,10 +397,6 @@ public class IncomeRecordUpdateDialogTests{
     @Test
     public void testUpdateIncomeRecord3() throws IOException {
         int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
         try {
             // 新增初始資料
         	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "test item 1", 0, -100, "", 0 ) );
@@ -530,6 +536,7 @@ public class IncomeRecordUpdateDialogTests{
                 "</table></body></html>", 
                 "Check", JOptionPane.YES_NO_OPTION );
             assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            Thread.sleep( 1000 );
             
             // 修改description欄位 (測試Undo & 貼上功能)
             bot.keyPress( KeyEvent.VK_SPACE ); bot.keyRelease( KeyEvent.VK_SPACE ); Thread.sleep( TAB_DELAY );

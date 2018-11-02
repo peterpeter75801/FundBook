@@ -63,7 +63,7 @@ public class IncomeRecordUpdateDialog extends JDialog {
     private FocusHandler focusHandler;
     private MnemonicKeyHandler mnemonicKeyHandler;
     private CopyPasteMenuKeyHandler copyPasteMenuKeyHandler;
-    private CopyPasteMouseMenuHandler copyPasteMouseMenuHandler; 
+    private CopyPasteMouseMenuHandler copyPasteMouseMenuHandler;
     private RadioButtonKeyHandler radioButtonKeyHandler;
     private UndoEditHandler undoEditHandler;
     private UndoHotKeyHandler undoHotKeyHandler;
@@ -428,6 +428,7 @@ public class IncomeRecordUpdateDialog extends JDialog {
             } else {
                 ownerFrame.getIncomeRecordPanel().reselectDateList();
             }
+            ownerFrame.getIncomeRecordPanel().loadTotalProperty();
             break;
         case Contants.ERROR:
             JOptionPane.showMessageDialog( null, "更新失敗", "Error", JOptionPane.ERROR_MESSAGE );

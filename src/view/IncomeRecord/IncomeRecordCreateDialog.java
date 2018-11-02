@@ -409,6 +409,7 @@ public class IncomeRecordCreateDialog extends JDialog {
             finishButton.setText( "結束" );
             
             ownerFrame.getIncomeRecordPanel().reselectDateList();
+            ownerFrame.getIncomeRecordPanel().loadTotalProperty();
             
             itemTextField.setText( "" );
             amountTextField.setText( "" );

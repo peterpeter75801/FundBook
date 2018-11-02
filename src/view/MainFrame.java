@@ -78,6 +78,8 @@ public class MainFrame extends JFrame {
                 case KeyEvent.VK_R:
                     incomeRecordPanel.openIncomeRecordPropertyDialog();
                     break;
+                case KeyEvent.VK_T:
+                    incomeRecordPanel.displayOrHideTotalProperty();
                 default:
                     break;
                 }

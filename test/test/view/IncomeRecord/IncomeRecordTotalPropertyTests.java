@@ -12,8 +12,11 @@ import javax.swing.JOptionPane;
 import domain.IncomeRecord;
 import main.FundBookServices;
 import repository.impl.IncomeRecordDAOImpl;
+import repository.impl.TotalPropertyDAOImpl;
 import service.IncomeRecordService;
+import service.TotalPropertyService;
 import service.impl.IncomeRecordServiceImpl;
+import service.impl.TotalPropertyServiceImpl;
 import view.MainFrame;
 
 import org.junit.After;
@@ -29,19 +32,34 @@ import static org.junit.Assert.*;
 @RunWith(value=JUnit4.class)
 public class IncomeRecordTotalPropertyTests {
     
+    private final int TAB_DELAY = 100;
     private final String INCOME_RECORD_CSV_FILE_PATH = "./data/IncomeRecord/2017.10.csv";
     private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP = "./data/IncomeRecord/2017.10_backup.csv";
+    private final String INCOME_RECORD_CSV_FILE_PATH_2 = "./data/IncomeRecord/2018.01.csv";
+    private final String INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 = "./data/IncomeRecord/2018.01_backup.csv";
     private final String INCOME_RECORD_SEQ_FILE_PATH = "./data/IncomeRecord/IncomeRecordSeq.txt";
     private final String INCOME_RECORD_SEQ_FILE_PATH_BACKUP = "./data/IncomeRecord/IncomeRecordSeq_backup.txt";
     private final String TOTAL_PROPERTY_CSV_FILE_PATH = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
     private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
     private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
     
+    private FundBookServices fundBookServices;
+    private IncomeRecordService incomeRecordService;
+    private TotalPropertyService totalPropertyService;
+    
     private MainFrame mainFrame = null;
     
     @Before
     public void setUp() throws IOException {
+        incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
+        totalPropertyService = new TotalPropertyServiceImpl( new TotalPropertyDAOImpl() );
+        ((IncomeRecordServiceImpl)incomeRecordService).setTotalPropertyService( totalPropertyService );
+        fundBookServices = new FundBookServices();
+        fundBookServices.setIncomeRecordService( incomeRecordService );
+        fundBookServices.setTotalPropertyService( totalPropertyService );
+        
         backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
+        backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
         backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
         backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
         backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
@@ -49,9 +67,14 @@ public class IncomeRecordTotalPropertyTests {
     
     @After
     public void tearDown() throws IOException, InterruptedException {
+        fundBookServices = null;
+        incomeRecordService = null;
+        totalPropertyService = null;
+        
         restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
         restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+        restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
         restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
         if( mainFrame != null ) {
             mainFrame.dispose();
@@ -61,10 +84,7 @@ public class IncomeRecordTotalPropertyTests {
     
     @Test
     public void testTotalPropertyDisplaying() throws IOException {
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
+        int testerSelection = 0;
         try {
             // 新增初始資料
         	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
@@ -81,16 +101,157 @@ public class IncomeRecordTotalPropertyTests {
             Thread.sleep( 3000 );
             
             // 在月份選單選擇2017.10
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "2017" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             inputString( bot, "10" );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
             
-            // TODO: 選擇"顯示總金額"按鈕
-            // bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( 100 );
+            // 檢查"TotalProperty.csv"檔案內容是否正確
+            int expectTotalAmount = 600;
+            int actualTotalAmount = totalPropertyService.getMainTotalAmount();
+            assertEquals( expectTotalAmount, actualTotalAmount );
             
+            // 選擇"顯示帳面總金額"按鈕 & 檢查"帳面總金額"是否正確
+            bot.keyPress( KeyEvent.VK_T ); bot.keyRelease( KeyEvent.VK_T ); Thread.sleep( TAB_DELAY );
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, "是否有在左下角顯示\"帳面總金額：600元\"", "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            Thread.sleep( 1000 );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        }
+    }
+    
+    @Test
+    public void testTotalPropertyDisplayingAftercChangingIncomeRecord() {
+        int testerSelection = 0;
+        try {
+            // 新增初始資料
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
+            
+            // 執行視窗程式
+            mainFrame = new MainFrame( fundBookServices );
+            mainFrame.setVisible( true );
+            
+            JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
+            
+            Robot bot =  new Robot();
+            Thread.sleep( 3000 );
+            
+            // 在月份選單選擇2017.10
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "2017" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "10" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            
+            // 新增資料 (2017.10.01, test item 1, -400)
+            bot.keyPress( KeyEvent.VK_C ); bot.keyRelease( KeyEvent.VK_C ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            inputString( bot, "test item 1" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "400" );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            
+            // 新增資料 (2018.01.30, test item 2, -200)
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            inputString( bot, "2018" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "01" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "30" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "test item 2" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "200" );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            
+            // 新增資料 (2018.01.30, test item 3, 300)
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_I ); bot.keyRelease( KeyEvent.VK_I ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "2018" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "01" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "30" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "test item 3" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "300" );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            
+            // 完成新增 & 檢查"帳面總金額"是否正確
+            bot.keyPress( KeyEvent.VK_ESCAPE ); bot.keyRelease( KeyEvent.VK_ESCAPE ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            bot.keyPress( KeyEvent.VK_T ); bot.keyRelease( KeyEvent.VK_T ); Thread.sleep( TAB_DELAY );
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, "是否有在左下角顯示\"帳面總金額：300元\"", "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            Thread.sleep( 1000 );
+            
+            // 修改資料 (2018.01.30, test item 2, -200) -> (2018.01.30, test item 2, -100)
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_CONTROL );
+            bot.keyPress( KeyEvent.VK_HOME ); bot.keyRelease( KeyEvent.VK_HOME ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_CONTROL );
+            bot.keyPress( KeyEvent.VK_U ); bot.keyRelease( KeyEvent.VK_U ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "100" );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 1000 );
+            
+            // 檢查"帳面總金額"是否正確
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, "左下角顯示的\"帳面總金額\"是否變為\"400元\"", "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            Thread.sleep( 1000 );
+            
+            // 刪除資料 (2017.10.01, test item 1, -400)
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_SHIFT );
+            inputString( bot, "2017" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "10" );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_CONTROL );
+            bot.keyPress( KeyEvent.VK_HOME ); bot.keyRelease( KeyEvent.VK_HOME ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_CONTROL );
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_D ); bot.keyRelease( KeyEvent.VK_D ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 500 );
+            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
+            
+            // 檢查"帳面總金額"是否正確
+            testerSelection = JOptionPane.showConfirmDialog( 
+                mainFrame, "左下角顯示的\"帳面總金額\"是否變為\"800元\"", "Check", JOptionPane.YES_NO_OPTION );
+            assertEquals( JOptionPane.YES_OPTION, testerSelection );
+            Thread.sleep( 1000 );
         } catch ( Exception e ) {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );

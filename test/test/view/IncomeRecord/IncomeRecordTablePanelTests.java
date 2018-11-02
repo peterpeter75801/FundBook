@@ -14,9 +14,12 @@ import javax.swing.JOptionPane;
 import domain.IncomeRecord;
 import main.FundBookServices;
 import service.IncomeRecordService;
+import service.TotalPropertyService;
 import service.impl.IncomeRecordServiceImpl;
+import service.impl.TotalPropertyServiceImpl;
 import view.MainFrame;
 import repository.impl.IncomeRecordDAOImpl;
+import repository.impl.TotalPropertyDAOImpl;
 
 import org.junit.After;
 import org.junit.Before;
@@ -42,6 +45,10 @@ public class IncomeRecordTablePanelTests {
     private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
     private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
     
+    private FundBookServices fundBookServices;
+    private IncomeRecordService incomeRecordService;
+    private TotalPropertyService totalPropertyService;
+    
     private Calendar calendar;
     private int currentYear;
     private int currentMonth;
@@ -50,6 +57,13 @@ public class IncomeRecordTablePanelTests {
     
     @Before
     public void setUp() throws IOException {
+        incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
+        totalPropertyService = new TotalPropertyServiceImpl( new TotalPropertyDAOImpl() );
+        ((IncomeRecordServiceImpl)incomeRecordService).setTotalPropertyService( totalPropertyService );
+        fundBookServices = new FundBookServices();
+        fundBookServices.setIncomeRecordService( incomeRecordService );
+        fundBookServices.setTotalPropertyService( totalPropertyService );
+        
         backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
         backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
         backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
@@ -65,6 +79,10 @@ public class IncomeRecordTablePanelTests {
     
     @After
     public void tearDown() throws IOException, InterruptedException {
+        fundBookServices = null;
+        incomeRecordService = null;
+        totalPropertyService = null;
+        
         restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
         restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
@@ -80,9 +98,6 @@ public class IncomeRecordTablePanelTests {
     @Test
     public void testIncomeRecordTablePanelDisplay1() throws IOException {
         int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
         try {
             // 新增初始資料
             incomeRecordService.insert( new IncomeRecord( 0, currentYear, currentMonth, 1, "測試帳1", 0, 100, "", 0 ) );
@@ -126,10 +141,6 @@ public class IncomeRecordTablePanelTests {
     @Test
     public void testIncomeRecordTablePanelDisplay2() throws IOException {
         int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
         try {
             // 新增初始資料
             for( int i = 1; i <= 30; i++ ) {
@@ -181,10 +192,6 @@ public class IncomeRecordTablePanelTests {
     @Test
     public void testIncomeRecordTablePanelDisplay3() throws IOException {
         int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
         try {
             // 新增初始資料
             for( int i = 1; i <= 30; i++ ) {

@@ -47,7 +47,7 @@ public class IncomeRecordPropertyDialog extends JDialog {
     private CopyAndPastePopUpMenu copyAndPastePopUpMenu;
     private FocusHandler focusHandler;
     private MnemonicKeyHandler mnemonicKeyHandler;
-    private CopyPasteMenuKeyHandler copyPasteMenuKeyHandler;        
+    private CopyPasteMenuKeyHandler copyPasteMenuKeyHandler;
     private CopyPasteMouseMenuHandler copyPasteMouseMenuHandler;
     private Font generalFont;
     private JPanel dialogPanel;
@@ -78,12 +78,12 @@ public class IncomeRecordPropertyDialog extends JDialog {
         
         this.incomeRecordService = incomeRecordService;
         
-        copyAndPastePopUpMenu = new CopyAndPastePopUpMenu();        
+        copyAndPastePopUpMenu = new CopyAndPastePopUpMenu();
         copyAndPastePopUpMenu.addPopupMenuListener( new PopupMenuClosingHandler() );
         
         focusHandler = new FocusHandler();
         mnemonicKeyHandler = new MnemonicKeyHandler();
-        copyPasteMenuKeyHandler = new CopyPasteMenuKeyHandler( copyAndPastePopUpMenu );     
+        copyPasteMenuKeyHandler = new CopyPasteMenuKeyHandler( copyAndPastePopUpMenu );
         copyPasteMouseMenuHandler = new CopyPasteMouseMenuHandler( copyAndPastePopUpMenu );
         
         generalFont = new Font( "細明體", Font.PLAIN, 16 );
@@ -101,7 +101,7 @@ public class IncomeRecordPropertyDialog extends JDialog {
         classTextField.setFont( generalFont );
         classTextField.addFocusListener( focusHandler );
         classTextField.addKeyListener( mnemonicKeyHandler );
-        classTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        classTextField.addKeyListener( copyPasteMenuKeyHandler );
         classTextField.addMouseListener( copyPasteMouseMenuHandler );
         classTextField.setEditable( false );
         //dialogPanel.add( classTextField );
@@ -110,7 +110,7 @@ public class IncomeRecordPropertyDialog extends JDialog {
         classNameTextField.setBounds( 128, 10, 168, 22 );
         classNameTextField.setFont( generalFont );
         classNameTextField.addFocusListener( focusHandler );
-        classNameTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        classNameTextField.addKeyListener( copyPasteMenuKeyHandler );
         classNameTextField.addMouseListener( copyPasteMouseMenuHandler );
         classNameTextField.setEditable( false );
         //dialogPanel.add( classNameTextField );
@@ -125,7 +125,7 @@ public class IncomeRecordPropertyDialog extends JDialog {
         //incomeTypeTextField.setBounds( 64, 42, 24, 22 );
         incomeTypeTextField.setBounds( 64, 42-32, 24, 22 );
         incomeTypeTextField.setFont( generalFont );
-        incomeTypeTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        incomeTypeTextField.addKeyListener( copyPasteMenuKeyHandler );
         incomeTypeTextField.addMouseListener( copyPasteMouseMenuHandler );
         incomeTypeTextField.setEditable( false );
         dialogPanel.add( incomeTypeTextField );
@@ -143,7 +143,7 @@ public class IncomeRecordPropertyDialog extends JDialog {
         yearTextField.setEditable( false );
         yearTextField.addFocusListener( focusHandler );
         yearTextField.addKeyListener( mnemonicKeyHandler );
-        yearTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        yearTextField.addKeyListener( copyPasteMenuKeyHandler );
         yearTextField.addMouseListener( copyPasteMouseMenuHandler );
         dialogPanel.add( yearTextField );
         
@@ -160,7 +160,7 @@ public class IncomeRecordPropertyDialog extends JDialog {
         monthTextField.setEditable( false );
         monthTextField.addFocusListener( focusHandler );
         monthTextField.addKeyListener( mnemonicKeyHandler );
-        monthTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        monthTextField.addKeyListener( copyPasteMenuKeyHandler );
         monthTextField.addMouseListener( copyPasteMouseMenuHandler );
         dialogPanel.add( monthTextField );
         
@@ -177,7 +177,7 @@ public class IncomeRecordPropertyDialog extends JDialog {
         dayTextField.setEditable( false );
         dayTextField.addFocusListener( focusHandler );
         dayTextField.addKeyListener( mnemonicKeyHandler );
-        dayTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        dayTextField.addKeyListener( copyPasteMenuKeyHandler );
         dayTextField.addMouseListener( copyPasteMouseMenuHandler );
         dialogPanel.add( dayTextField );
         
@@ -200,7 +200,7 @@ public class IncomeRecordPropertyDialog extends JDialog {
         itemTextField.setEditable( false );
         itemTextField.addFocusListener( focusHandler );
         itemTextField.addKeyListener( mnemonicKeyHandler );
-        itemTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        itemTextField.addKeyListener( copyPasteMenuKeyHandler );
         itemTextField.addMouseListener( copyPasteMouseMenuHandler );
         dialogPanel.add( itemTextField );
         
@@ -217,7 +217,7 @@ public class IncomeRecordPropertyDialog extends JDialog {
         amountTextField.setEditable( false );
         amountTextField.addFocusListener( focusHandler );
         amountTextField.addKeyListener( mnemonicKeyHandler );
-        amountTextField.addKeyListener( copyPasteMenuKeyHandler );       
+        amountTextField.addKeyListener( copyPasteMenuKeyHandler );
         amountTextField.addMouseListener( copyPasteMouseMenuHandler );
         dialogPanel.add( amountTextField );
         
@@ -239,7 +239,7 @@ public class IncomeRecordPropertyDialog extends JDialog {
         descriptionTextArea.setEditable( false );
         descriptionTextArea.setLineWrap( true );
         descriptionTextArea.setWrapStyleWord( true );
-        descriptionTextArea.addKeyListener( copyPasteMenuKeyHandler );       
+        descriptionTextArea.addKeyListener( copyPasteMenuKeyHandler );
         descriptionTextArea.addMouseListener( copyPasteMouseMenuHandler );
         descriptionScrollPane = new JScrollPane( descriptionTextArea );
         //descriptionScrollPane.setBounds( 16, 128, 449, 137 );

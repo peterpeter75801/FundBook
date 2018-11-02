@@ -65,7 +65,7 @@ public class IncomeRecordServiceImplTests {
         
         restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
         restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
-    	restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
+        restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
         restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP_2, INCOME_RECORD_CSV_FILE_PATH_2 );
         restoreFile( INCOME_RECORD_CSV_FILE_PATH_BACKUP, INCOME_RECORD_CSV_FILE_PATH );
     }
@@ -80,9 +80,9 @@ public class IncomeRecordServiceImplTests {
         int expectTotalAmount = 600;
         
         try {
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
             
             List<IncomeRecord> actualDataList = incomeRecordService.findByMonth( 2017, 10 );
             assertEquals( expectDataList.size(), actualDataList.size() );
@@ -103,9 +103,9 @@ public class IncomeRecordServiceImplTests {
         IncomeRecord expect = new IncomeRecord( 2, 2017, 10, 1, "測試帳2", 0, 200, "", 2 );
         
         try {
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
             
             IncomeRecord actual = incomeRecordService.findOne( 2, 2017, 10 );
             assertTrue( IncomeRecordUtil.equals( expect, actual ) );
@@ -125,9 +125,9 @@ public class IncomeRecordServiceImplTests {
         int expectTotalAmount = 650;
         
         try {
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
             
             IncomeRecord modifiedData = new IncomeRecord( 3, 2017, 10, 1, "test123", 0, 350, "", 0 );
             incomeRecordService.update( modifiedData, 2017, 10 );
@@ -157,9 +157,9 @@ public class IncomeRecordServiceImplTests {
         int expectTotalAmount = 650;
         
         try {
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
             
             IncomeRecord modifiedData = new IncomeRecord( 3, 2017, 12, 1, "test123", 0, 350, "", 0 );
             incomeRecordService.update( modifiedData, 2017, 10 );
@@ -192,9 +192,9 @@ public class IncomeRecordServiceImplTests {
         int expectTotalAmount = 500;
         
         try {
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
             
             IncomeRecord deletedData = new IncomeRecord( 1, 2017, 10, 1, "測試帳", 0, 100, "", 0 );
             incomeRecordService.delete( deletedData );
@@ -223,11 +223,11 @@ public class IncomeRecordServiceImplTests {
         expectDataList.add( new IncomeRecord( 4, 2017, 10, 1, "測試帳4", 0, 400, "", 5 ) );
         
         try {
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳4", 0, 400, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳5", 0, 500, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳4", 0, 400, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳5", 0, 500, "", 0 ) );
             
             incomeRecordService.moveUp( 2017, 10, 1 );
             incomeRecordService.moveUp( 2017, 10, 5 );
@@ -252,9 +252,9 @@ public class IncomeRecordServiceImplTests {
         expectDataList.add( new IncomeRecord( 3, 2017, 10, 1, "測試帳3", 0, 300, "", 3 ) );
         
         try {
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
-        	incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳1", 0, 100, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳2", 0, 200, "", 0 ) );
+            incomeRecordService.insert( new IncomeRecord( 0, 2017, 10, 1, "測試帳3", 0, 300, "", 0 ) );
             
             incomeRecordService.moveDown( 2017, 10, 1 );
             

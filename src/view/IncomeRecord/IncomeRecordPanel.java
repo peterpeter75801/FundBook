@@ -28,6 +28,7 @@ import common.Contants;
 import domain.IncomeRecord;
 import main.FundBookServices;
 import service.IncomeRecordService;
+import service.TotalPropertyService;
 import view.MainFrame;
 import view.common.CopyAndPastePopUpMenu;
 
@@ -36,6 +37,7 @@ public class IncomeRecordPanel extends JPanel {
     private static final long serialVersionUID = 1L;
     
     private IncomeRecordService incomeRecordService;
+    private TotalPropertyService totalPropertyService;
     
     private MainFrame ownerFrame;
     private IncomeRecordDatePanel incomeRecordDatePanel; 
@@ -47,7 +49,7 @@ public class IncomeRecordPanel extends JPanel {
     private CopyAndPastePopUpMenu copyAndPastePopUpMenu;
     private FocusHandler focusHandler;
     private MnemonicKeyHandler mnemonicKeyHandler;
-    private CopyPasteMenuKeyHandler copyPasteMenuKeyHandler;        
+    private CopyPasteMenuKeyHandler copyPasteMenuKeyHandler;
     private CopyPasteMouseMenuHandler copyPasteMouseMenuHandler; 
     private Font generalFont;
     private JButton createButton;
@@ -65,24 +67,27 @@ public class IncomeRecordPanel extends JPanel {
     private JLabel incomeStateInCurrentMonthLabel1;
     private JLabel incomeStateInCurrentMonthLabel2;
     private JTextField incomeStateInCurrentMonthTextField;
+    private JButton totalPropertyDisplayButton;
     private JLabel totalPropertyLabel;
     private JTextField totalPropertyTextField;
     private JLabel versionLabel;
     
     private boolean popupMenuClosedFlag;
+    private boolean totalPropertyDisplayFlag;
     
     public IncomeRecordPanel( FundBookServices fundBookServices, MainFrame ownerFrame ) {
         setLayout( null );
         
         incomeRecordService = fundBookServices.getIncomeRecordService();
+        totalPropertyService = fundBookServices.getTotalPropertyService();
         
-        copyAndPastePopUpMenu = new CopyAndPastePopUpMenu();        
+        copyAndPastePopUpMenu = new CopyAndPastePopUpMenu();
         copyAndPastePopUpMenu.addPopupMenuListener( new PopupMenuClosingHandler() );
         
         focusHandler = new FocusHandler();
         mnemonicKeyHandler = new MnemonicKeyHandler();
-        copyPasteMenuKeyHandler = new CopyPasteMenuKeyHandler( copyAndPastePopUpMenu );     
-        copyPasteMouseMenuHandler = new CopyPasteMouseMenuHandler( copyAndPastePopUpMenu );     
+        copyPasteMenuKeyHandler = new CopyPasteMenuKeyHandler( copyAndPastePopUpMenu );
+        copyPasteMouseMenuHandler = new CopyPasteMouseMenuHandler( copyAndPastePopUpMenu );
         
         generalFont = new Font( "細明體", Font.PLAIN, 16 );
         
@@ -221,7 +226,7 @@ public class IncomeRecordPanel extends JPanel {
         revenueInCurrentMonthTextField.setEditable( false );
         revenueInCurrentMonthTextField.setHorizontalAlignment( SwingConstants.RIGHT );
         revenueInCurrentMonthTextField.addFocusListener( focusHandler );
-        revenueInCurrentMonthTextField.addKeyListener( copyPasteMenuKeyHandler );      
+        revenueInCurrentMonthTextField.addKeyListener( copyPasteMenuKeyHandler );
         revenueInCurrentMonthTextField.addMouseListener( copyPasteMouseMenuHandler );
         add( revenueInCurrentMonthTextField );
         
@@ -236,7 +241,7 @@ public class IncomeRecordPanel extends JPanel {
         costInCurrentMonthTextField.setEditable( false );
         costInCurrentMonthTextField.setHorizontalAlignment( SwingConstants.RIGHT );
         costInCurrentMonthTextField.addFocusListener( focusHandler );
-        costInCurrentMonthTextField.addKeyListener( copyPasteMenuKeyHandler );      
+        costInCurrentMonthTextField.addKeyListener( copyPasteMenuKeyHandler );
         costInCurrentMonthTextField.addMouseListener( copyPasteMouseMenuHandler );
         add( costInCurrentMonthTextField );
         
@@ -251,23 +256,39 @@ public class IncomeRecordPanel extends JPanel {
         incomeStateInCurrentMonthTextField.setEditable( false );
         incomeStateInCurrentMonthTextField.setHorizontalAlignment( SwingConstants.RIGHT );
         incomeStateInCurrentMonthTextField.addFocusListener( focusHandler );
-        incomeStateInCurrentMonthTextField.addKeyListener( copyPasteMenuKeyHandler );      
+        incomeStateInCurrentMonthTextField.addKeyListener( copyPasteMenuKeyHandler );
         incomeStateInCurrentMonthTextField.addMouseListener( copyPasteMouseMenuHandler );
         add( incomeStateInCurrentMonthTextField );
         
-        totalPropertyLabel = new JLabel( "總金額: " );
-        totalPropertyLabel.setBounds( 16, 506, 64, 22 );
+        totalPropertyDisplayButton = new JButton( "顯示帳面總金額(T)" );
+        totalPropertyDisplayButton.setBounds( 16, 506, 144, 22 );
+        totalPropertyDisplayButton.setFont( generalFont );
+        totalPropertyDisplayButton.addKeyListener( mnemonicKeyHandler );
+        totalPropertyDisplayButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        totalPropertyDisplayButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                displayOrHideTotalProperty();
+            }
+        });
+        add( totalPropertyDisplayButton );
+        
+        totalPropertyLabel = new JLabel( "帳面總金額: " );
+        totalPropertyLabel.setBounds( 16, 506, 96, 22 );
         totalPropertyLabel.setFont( generalFont );
-        //add( totalPropertyLabel );
+        totalPropertyLabel.setVisible( false );
+        add( totalPropertyLabel );
         
         totalPropertyTextField = new JTextField();
-        totalPropertyTextField.setBounds( 80, 506, 216, 22 );
+        totalPropertyTextField.setBounds( 112, 506, 120, 22 );
         totalPropertyTextField.setFont( generalFont );
         totalPropertyTextField.setEditable( false );
+        totalPropertyTextField.setHorizontalAlignment( SwingConstants.RIGHT );
         totalPropertyTextField.addFocusListener( focusHandler );
-        totalPropertyTextField.addKeyListener( copyPasteMenuKeyHandler );      
+        totalPropertyTextField.addKeyListener( copyPasteMenuKeyHandler );
         totalPropertyTextField.addMouseListener( copyPasteMouseMenuHandler );
-        //add( totalPropertyTextField );
+        totalPropertyTextField.setVisible( false );
+        add( totalPropertyTextField );
         
         versionLabel = new JLabel( Contants.VERSION, SwingConstants.RIGHT );
         versionLabel.setBounds( 561, 506, 224, 22 );
@@ -277,9 +298,13 @@ public class IncomeRecordPanel extends JPanel {
         setPreferredSize( new Dimension( 793, 533 ) );
 
         popupMenuClosedFlag = false;
+        totalPropertyDisplayFlag = false;
         
         // 載入目前月份資料
         incomeRecordDatePanel.reselectDateList();
+        
+        // 載入帳面總金額
+        loadTotalProperty();
     }
     
     public JButton getCreateButton() {
@@ -315,7 +340,31 @@ public class IncomeRecordPanel extends JPanel {
     public void selectTableDataById( int id ) {
         incomeRecordTablePanel.selectDataById( id );
     }
-    // incomeRecordTablePanel.selectDataById( dataToFind.getId() );
+    
+    public void loadTotalProperty() {
+        try {
+            totalPropertyTextField.setText( String.format( "%d", totalPropertyService.getMainTotalAmount() ) );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog( null, "載入帳面總金額錯誤", "Error", JOptionPane.ERROR_MESSAGE );
+        }
+    }
+    
+    public void displayOrHideTotalProperty() {
+        if( totalPropertyDisplayFlag ) {
+            totalPropertyDisplayButton.setText( "顯示帳面總金額(T)" );
+            totalPropertyDisplayButton.setBounds( 16, 506, 144, 22 );
+            totalPropertyLabel.setVisible( false );
+            totalPropertyTextField.setVisible( false );
+            totalPropertyDisplayFlag = false;
+        } else {
+            totalPropertyDisplayButton.setText( "隱藏(T)" );
+            totalPropertyDisplayButton.setBounds( 256, 506, 64, 22 );
+            totalPropertyLabel.setVisible( true );
+            totalPropertyTextField.setVisible( true );
+            totalPropertyDisplayFlag = true;
+        }
+    }
     
     public void copyIncomeRecordData() {
         int selectedYear, selectedMonth;
@@ -396,7 +445,18 @@ public class IncomeRecordPanel extends JPanel {
         }
         switch( returnCode ) {
         case Contants.SUCCESS:
-            reselectDateList();
+            int nextSelectedItemId = incomeRecordTablePanel.getItemIdByIndex( incomeRecordTablePanel.getDataTable().getSelectedRow() + 1 );
+            if( nextSelectedItemId == -1 ) {
+                nextSelectedItemId = incomeRecordTablePanel.getItemIdByIndex( incomeRecordTablePanel.getDataTable().getSelectedRow() - 1 );
+            }
+            
+            if( nextSelectedItemId != -1 ) {
+                refreshAndFind( new IncomeRecord( nextSelectedItemId, selectedYear, selectedMonth, 0, "", 0, 0, "", 0 ) );
+            } else {
+                reselectDateList();
+            }
+            
+            loadTotalProperty();
             break;
         case Contants.ERROR:
             JOptionPane.showMessageDialog( null, "刪除失敗", "Error", JOptionPane.ERROR_MESSAGE );
@@ -643,6 +703,12 @@ public class IncomeRecordPanel extends JPanel {
                     detailButton.requestFocus();
                 }
                 openIncomeRecordPropertyDialog();
+                break;
+            case KeyEvent.VK_T:
+                if( event.getSource() != incomeRecordTablePanel.getDataTable() ) {
+                    totalPropertyDisplayButton.requestFocus();
+                }
+                displayOrHideTotalProperty();
                 break;
             default:
                 break;

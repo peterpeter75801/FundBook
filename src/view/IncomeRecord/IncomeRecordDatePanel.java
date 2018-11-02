@@ -100,7 +100,7 @@ public class IncomeRecordDatePanel extends JPanel {
         yearTextField.addFocusListener( focusHandler );
         yearTextField.addFocusListener( monthTextFieldCheckingHandler );
         yearTextField.addKeyListener( monthTextFieldArrowKeyHandler );
-        yearTextField.addKeyListener( copyPasteMenuKeyHandler );      
+        yearTextField.addKeyListener( copyPasteMenuKeyHandler );
         yearTextField.addMouseListener( copyPasteMouseMenuHandler );
         yearTextField.addKeyListener( undoHotKeyHandler );
         yearTextField.getDocument().addUndoableEditListener( undoEditHandler );
@@ -118,7 +118,7 @@ public class IncomeRecordDatePanel extends JPanel {
         monthTextField.addFocusListener( focusHandler );
         monthTextField.addFocusListener( monthTextFieldCheckingHandler );
         monthTextField.addKeyListener( monthTextFieldArrowKeyHandler );
-        monthTextField.addKeyListener( copyPasteMenuKeyHandler );      
+        monthTextField.addKeyListener( copyPasteMenuKeyHandler );
         monthTextField.addMouseListener( copyPasteMouseMenuHandler );
         monthTextField.addKeyListener( undoHotKeyHandler );
         monthTextField.getDocument().addUndoableEditListener( undoEditHandler );
@@ -641,6 +641,8 @@ public class IncomeRecordDatePanel extends JPanel {
             case KeyEvent.VK_R:
                 ownerPanel.openIncomeRecordPropertyDialog();
                 break;
+            case KeyEvent.VK_T:
+                ownerPanel.displayOrHideTotalProperty();
             default:
                 break;
             }

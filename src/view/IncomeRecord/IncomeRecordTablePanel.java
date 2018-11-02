@@ -92,7 +92,7 @@ public class IncomeRecordTablePanel extends JPanel {
         dataTable.getColumnModel().getColumn( 1 ).setPreferredWidth( TABLE_COLUMN_WIDTH[ 1 ] );
         dataTable.getColumnModel().getColumn( 2 ).setPreferredWidth( TABLE_COLUMN_WIDTH[ 2 ] );
         dataTable.getColumnModel().getColumn( 3 ).setPreferredWidth( TABLE_COLUMN_WIDTH[ 3 ] );
-        dataTable.removeColumn( dataTable.getColumnModel().getColumn( 4 ) );        
+        dataTable.removeColumn( dataTable.getColumnModel().getColumn( 4 ) );
         
         dataTable.setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
         dataTable.setPreferredScrollableViewportSize( new Dimension( TABLE_WIDTH, TABLE_HEIGHT ) );
@@ -101,7 +101,7 @@ public class IncomeRecordTablePanel extends JPanel {
         dataTable.getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT ).put(
             KeyStroke.getKeyStroke( KeyEvent.VK_TAB, 0 ), "none" );
         dataTable.getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT ).put(
-            KeyStroke.getKeyStroke( KeyEvent.VK_TAB, InputEvent.SHIFT_DOWN_MASK ), "none" );        
+            KeyStroke.getKeyStroke( KeyEvent.VK_TAB, InputEvent.SHIFT_DOWN_MASK ), "none" );
         
         dataTable.addKeyListener( new MnemonicKeyHandler() );
         dataTable.addKeyListener( new SpecialFocusTraversalPolicyHandler() );
@@ -153,6 +153,27 @@ public class IncomeRecordTablePanel extends JPanel {
         }
         
         return amountList;
+    }
+    
+    public int getItemCount() {
+        DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
+        for( int i = 0; i < dataTable.getRowCount(); i++ ) {
+            if( model.getValueAt( i, ID_COLUMN ) == null || ((String)model.getValueAt( i, ID_COLUMN )).length() <= 0 ) {
+                return i;
+            }
+        }
+        return dataTable.getRowCount();
+    }
+    
+    public int getItemIdByIndex( int index ) {
+        int id = -1;
+        try {
+            String itemTableSelectedIdValue = (String) dataTable.getModel().getValueAt( index, ID_COLUMN );
+            id = Integer.parseInt( itemTableSelectedIdValue );
+        } catch( Exception e ) {
+            return -1;
+        }
+        return id;
     }
     
     public int getItemTableSelectedId() {
@@ -346,6 +367,8 @@ public class IncomeRecordTablePanel extends JPanel {
             case KeyEvent.VK_R:
                 ownerPanel.openIncomeRecordPropertyDialog();
                 break;
+            case KeyEvent.VK_T:
+                ownerPanel.displayOrHideTotalProperty();
             default:
                 break;
             }

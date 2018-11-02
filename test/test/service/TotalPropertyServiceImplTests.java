@@ -36,7 +36,7 @@ public class TotalPropertyServiceImplTests {
         TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
         totalPropertyService = new TotalPropertyServiceImpl( totalPropertyDAO );
         
-    	backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
+        backupFile( TOTAL_PROPERTY_CSV_FILE_PATH, TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP );
         backupFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH, TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP );
     }
     
@@ -171,8 +171,8 @@ public class TotalPropertyServiceImplTests {
         expectDataList.add( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 ) );
         
         try {
-        	totalPropertyService.insert( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 ) );
-        	totalPropertyService.insert( new TotalProperty( 2, 2017, 10, 1, 12, 0, 0, 2000 ) );
+            totalPropertyService.insert( new TotalProperty( 1, 2017, 10, 1, 12, 0, 0, 1000 ) );
+            totalPropertyService.insert( new TotalProperty( 2, 2017, 10, 1, 12, 0, 0, 2000 ) );
             
             TotalProperty deletedData = new TotalProperty( 2, 2017, 10, 1, 12, 0, 0, 1000 );
             totalPropertyService.delete( deletedData );

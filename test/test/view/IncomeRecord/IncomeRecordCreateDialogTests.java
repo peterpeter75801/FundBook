@@ -17,8 +17,11 @@ import commonUtil.IncomeRecordUtil;
 import domain.IncomeRecord;
 import main.FundBookServices;
 import repository.impl.IncomeRecordDAOImpl;
+import repository.impl.TotalPropertyDAOImpl;
 import service.IncomeRecordService;
+import service.TotalPropertyService;
 import service.impl.IncomeRecordServiceImpl;
+import service.impl.TotalPropertyServiceImpl;
 import view.MainFrame;
 
 import org.junit.After;
@@ -45,6 +48,10 @@ public class IncomeRecordCreateDialogTests {
     private final String TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP = "./data/TotalProperty/TotalProperty_backup.csv";
     private final String TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP = "./data/TotalProperty/TotalPropertySeq_backup.txt";
     
+    private FundBookServices fundBookServices;
+    private IncomeRecordService incomeRecordService;
+    private TotalPropertyService totalPropertyService;
+    
     private Calendar calendar;
     private int currentYear;
     private int currentMonth;
@@ -56,6 +63,13 @@ public class IncomeRecordCreateDialogTests {
     
     @Before
     public void setUp() throws IOException {
+        incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
+        totalPropertyService = new TotalPropertyServiceImpl( new TotalPropertyDAOImpl() );
+        ((IncomeRecordServiceImpl)incomeRecordService).setTotalPropertyService( totalPropertyService );
+        fundBookServices = new FundBookServices();
+        fundBookServices.setIncomeRecordService( incomeRecordService );
+        fundBookServices.setTotalPropertyService( totalPropertyService );
+        
         backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
         backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
         backupFile( INCOME_RECORD_CSV_FILE_PATH_2, INCOME_RECORD_CSV_FILE_PATH_BACKUP_2 );
@@ -79,6 +93,10 @@ public class IncomeRecordCreateDialogTests {
     
     @After
     public void tearDown() throws IOException, InterruptedException {
+        fundBookServices = null;
+        incomeRecordService = null;
+        totalPropertyService = null;
+        
         restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
         restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
@@ -99,10 +117,6 @@ public class IncomeRecordCreateDialogTests {
     @Test
     public void testCreateIncomeRecord() throws IOException {
         int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
         try {
             // 執行視窗程式
             mainFrame = new MainFrame( fundBookServices );
@@ -199,10 +213,6 @@ public class IncomeRecordCreateDialogTests {
     @Test
     public void testCreateIncomeRecord2() throws IOException {
         int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
         try {
             // 執行視窗程式
             mainFrame = new MainFrame( fundBookServices );
@@ -327,10 +337,6 @@ public class IncomeRecordCreateDialogTests {
     @Test
     public void testCreateIncomeRecord3() throws IOException {
         int testerSelection = 0;
-        IncomeRecordService incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        FundBookServices fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        
         try {
             // 執行視窗程式
             mainFrame = new MainFrame( fundBookServices );
