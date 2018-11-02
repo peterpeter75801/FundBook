@@ -399,6 +399,7 @@ public class IncomeRecordPanel extends JPanel {
             } else {
                 reselectDateList();
             }
+            loadTotalProperty();
             break;
         case Contants.ERROR:
             JOptionPane.showMessageDialog( null, "複製失敗", "Error", JOptionPane.ERROR_MESSAGE );
