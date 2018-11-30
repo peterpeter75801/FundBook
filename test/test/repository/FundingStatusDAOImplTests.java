@@ -49,18 +49,18 @@ public class FundingStatusDAOImplTests {
     @Test
     public void testInsert() throws IOException {
         String[] expectedData = {
-                "1,D,0,0,0,\"700\",\"中華郵政\",\"12345671234567\",\"12345671234567\",10000", 
-                "2,C,0,0,0,\"\",\"\",\"\",\"\",5000", 
-                "3,T,2017,11,28,\"005\",\"土地銀行\",\"01234560123456\",\"01234567890123\",100000", 
-                "4,D,0,0,0,\"005\",\"土地銀行\",\"01234567890123\",\"01234567890123\",50000", 
-                "5,T,2017,10,28,\"005\",\"土地銀行\",\"11223344556677\",\"01234567890123\",200000" };
+                "1,D,2017,12,30,\"中華郵政 #12345671234567\",10000,\"\"", 
+                "2,C,2017,12,30,\"隨身現金\",5000,\"\"", 
+                "3,T,2017,11,28,\"土地銀行 #01234560123456\",100000,\"\"", 
+                "4,D,2017,10,1,\"土地銀行 #01234567890123\",50000,\"\"", 
+                "5,T,2017,10,28,\"土地銀行 #11223344556677\",200000,\"\"" };
         String[] actualData = new String[ 5 ];
         try {
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "005", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
             
             BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                     new FileInputStream( new File( FUNDING_STATUS_CSV_FILE_PATH ) ),
@@ -88,14 +88,14 @@ public class FundingStatusDAOImplTests {
     
     @Test
     public void testFindOne() throws IOException {
-        FundingStatus expect = new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 );
+        FundingStatus expect = new FundingStatus( 5, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" );
         FundingStatus actual = null;
         try {
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "005", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
             
             actual = fundingStatusDAO.findOne( 5 );
             assertTrue( FundingStatusUtil.equals( expect, actual ) );
@@ -110,22 +110,19 @@ public class FundingStatusDAOImplTests {
     @Test
     public void testFindAll() throws IOException {
         List<FundingStatus> expectedDataList = new ArrayList<FundingStatus>();
-        expectedDataList.add( new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-        expectedDataList.add( new FundingStatus( 2, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-        expectedDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "005", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-        expectedDataList.add( new FundingStatus( 4, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-        expectedDataList.add( new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+        expectedDataList.add( new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+        expectedDataList.add( new FundingStatus( 2, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+        expectedDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+        expectedDataList.add( new FundingStatus( 4, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+        expectedDataList.add( new FundingStatus( 5, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
         List<FundingStatus> actualDataList = null;
         
         try {
-            backupFile( FUNDING_STATUS_CSV_FILE_PATH, FUNDING_STATUS_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.FUNDING_STATUS_SEQ_FILE_PATH, FUNDING_STATUS_SEQ_FILE_PATH_BACKUP );
-            
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "005", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
             
             actualDataList = fundingStatusDAO.findAll();
             assertEquals( 5, actualDataList.size() );
@@ -141,21 +138,21 @@ public class FundingStatusDAOImplTests {
     @Test
     public void testUpdate() throws IOException {
         List<String> expectedDataList = new ArrayList<String>();
-        expectedDataList.add( "1,D,0,0,0,\"700\",\"中華郵政\",\"12345671234567\",\"12345671234567\",12000" );
-        expectedDataList.add( "2,C,0,0,0,\"\",\"\",\"\",\"\",5000" );
-        expectedDataList.add( "3,T,2017,11,28,\"005\",\"土地銀行\",\"01234560123456\",\"01234567890123\",100000" );
-        expectedDataList.add( "4,D,0,0,0,\"005\",\"土地銀行\",\"01234567890123\",\"01234567890123\",50000" );
-        expectedDataList.add( "5,T,2017,10,28,\"005\",\"土地銀行\",\"11223344556677\",\"01234567890123\",200000" );
+        expectedDataList.add( "1,D,2017,12,30,\"中華郵政 #12345671234567\",12000,\"\"" );
+        expectedDataList.add( "2,C,2017,12,30,\"隨身現金\",5000,\"\"" );
+        expectedDataList.add( "3,T,2017,11,28,\"土地銀行 #01234560123456\",100000,\"\"" );
+        expectedDataList.add( "4,D,2017,10,1,\"土地銀行 #01234567890123\",50000,\"\"" );
+        expectedDataList.add( "5,T,2017,10,28,\"土地銀行 #11223344556677\",200000,\"\"" );
         List<String> actualDataList = new ArrayList<String>();
         
         try {
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "005", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
             
-            FundingStatus modifiedData = new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 12000 );
+            FundingStatus modifiedData = new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 12000, "" );
             
             fundingStatusDAO.update( modifiedData );
             
@@ -185,20 +182,20 @@ public class FundingStatusDAOImplTests {
     @Test
     public void testDelete() throws IOException {
         List<String> expectedDataList = new ArrayList<String>();
-        expectedDataList.add( "1,D,0,0,0,\"700\",\"中華郵政\",\"12345671234567\",\"12345671234567\",10000" );
-        expectedDataList.add( "2,C,0,0,0,\"\",\"\",\"\",\"\",5000" );
-        expectedDataList.add( "3,T,2017,11,28,\"005\",\"土地銀行\",\"01234560123456\",\"01234567890123\",100000" );
-        expectedDataList.add( "4,D,0,0,0,\"005\",\"土地銀行\",\"01234567890123\",\"01234567890123\",50000" );
+        expectedDataList.add( "1,D,2017,12,30,\"中華郵政 #12345671234567\",10000,\"\"" );
+        expectedDataList.add( "2,C,2017,12,30,\"隨身現金\",5000,\"\"" );
+        expectedDataList.add( "3,T,2017,11,28,\"土地銀行 #01234560123456\",100000,\"\"" );
+        expectedDataList.add( "4,D,2017,10,1,\"土地銀行 #01234567890123\",50000,\"\"" );
         List<String> actualDataList = new ArrayList<String>();
         
         try {
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "005", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
             
-            FundingStatus deletedData = new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 );
+            FundingStatus deletedData = new FundingStatus( 5, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" );
             
             fundingStatusDAO.delete( deletedData );
             
@@ -236,11 +233,11 @@ public class FundingStatusDAOImplTests {
             // 測試新增資料後的情況
             int expect2 = Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) + 5;
 
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "005", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+            fundingStatusDAO.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
             
             int actual2 = fundingStatusDAO.getCurrentSeqNumber();
             assertEquals( expect2, actual2 );

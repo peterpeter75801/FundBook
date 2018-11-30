@@ -2,31 +2,27 @@ package domain;
 
 public class FundingStatus {
 
-    private Integer id;             // ID
-    private Character type;         // 儲存型態: C-現金, D-活存, T-定存
-    private Integer year;           // 定存到期日-年
-    private Integer month;          // 定存到期日-月
-    private Integer day;            // 定存到期日-日
-    private String bankCode;        // 銀行代碼
-    private String bankName;        // 銀行名稱
-    private String account;         // 帳號
-    private String interestAccount; // 利息轉入帳號
-    private Integer balance;        // 結餘
+    private Integer id;                         // ID
+    private Character type;                     // 種類: C-現金, D-活存, T-定存, R-信用卡
+    private Integer year;                       // 建立日期-年
+    private Integer month;                      // 建立日期-月
+    private Integer day;                        // 建立日期-日
+    private String storedPlaceOrInstitution;    // 儲存地點/儲存機構
+    private Integer amount;                     // 金額
+    private String description;                 // 描述
     
     public FundingStatus() {}
     
     public FundingStatus( int id, char type, int year, int month, int day, 
-            String bankCode, String bankName, String account, String interestAccount, int balance ) {
+            String storedPlaceOrInstitution, int amount, String description ) {
         this.id = id;
         this.type = type;
         this.year = year;
         this.month = month;
         this.day = day;
-        this.bankCode = bankCode;
-        this.bankName = bankName;
-        this.account = account;
-        this.interestAccount = interestAccount;
-        this.balance = balance;
+        this.storedPlaceOrInstitution = storedPlaceOrInstitution;
+        this.amount = amount;
+        this.description = description;
     }
     
     public void setId( Integer id ) {
@@ -68,44 +64,28 @@ public class FundingStatus {
     public Integer getDay() {
         return day;
     }
-
-    public void setBankCode( String bankCode ) {
-        this.bankCode = bankCode;
+    
+    public void setStoredPlaceOrInstitution( String storedPlaceOrInstitution ) {
+        this.storedPlaceOrInstitution = storedPlaceOrInstitution;
     }
-
-    public String getBankCode() {
-        return bankCode;
+    
+    public String getStoredPlaceOrInstitution() {
+        return storedPlaceOrInstitution;
     }
-
-    public void setBankName( String bankName ) {
-        this.bankName = bankName;
+    
+    public void setAmount( Integer amount ) {
+        this.amount = amount;
     }
-
-    public String getBankName() {
-        return bankName;
+    
+    public Integer getAmount() {
+        return amount;
     }
-
-    public void setAccount( String account ) {
-        this.account = account;
+    
+    public void setDescription( String description ) {
+        this.description = description;
     }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setInterestAccount( String interestAccount ) {
-        this.interestAccount = interestAccount;
-    }
-
-    public String getInterestAccount() {
-        return interestAccount;
-    }
-
-    public void setBalance( Integer balance ) {
-        this.balance = balance;
-    }
-
-    public Integer getBalance() {
-        return balance;
+    
+    public String getDescription() {
+        return description;
     }
 }

@@ -5,11 +5,20 @@ IncomeRecord(收支記錄):
 
 TotalProperty(總經費):
   id(ID, 固定為1), year(年), month(月), day(日), hour(時), minute(分), second(秒), totalAmount(總金額)
-  
+
 FundingStatus(經費儲存狀況):
-  id(ID), type(儲存型態: 現金, 活存, 定存), year(定存到期日-年), month(定存到期日-月), day(定存到期日-日), 
-  bankCode(銀行代碼), bankName(銀行名稱), account(帳號), interestAccount(利息轉入帳號), balance(結餘)
+  id(ID), type(種類: 現金, 活存, 定存), year(建立日期-年), month(建立日期-月), day(建立日期-日),
+  storedPlaceOrInstitution(儲存地點/儲存機構), amount(金額), description(描述)
+
+FundingStatusHistory(經費儲存狀況更動歷程):
+  id(ID), fundingStatusId(經費儲存狀況id), year(更動日期-年), month(更動日期-月), day(更動日期-日),
+  hour(更動日期-時), minute(更動日期-分), second(更動日期-秒), action(更動種類: 新增, 修改, 刪除, 搬動),
+  originAmount(更動前金額), modifiedAmount(更動後金額), difference(差額), description(描述)
 
 CheckRecord(對帳記錄):
-  id(ID), year(年), month(月), day(日), hour(時), minute(分), second(秒), 
-  difference(對帳差額, 實際-帳面), bookAmount(帳面金額), actualAmount(實際金額)
+  id(ID), year(年), month(月), day(日), hour(時), minute(分), second(秒),
+  difference(對帳差額, 實際-帳面), bookAmount(帳面金額), actualAmount(實際金額), description(描述)
+
+DigitalWallet(電子票證)：
+  id(ID), name(名稱)，year(建立日期-年), month(建立日期-月), day(建立日期-日), 
+  issuer(發行機構), amount(金額), description(描述)

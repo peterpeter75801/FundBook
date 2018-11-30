@@ -49,17 +49,14 @@ public class CheckRecordDAOImplTests {
     @Test
     public void testInsert() throws IOException {
         String[] expectedData = {
-                "1,2017,10,1,12,30,0,100,20000,20100", 
-                "2,2017,10,15,12,30,0,-500,20000,19500", 
-                "3,2017,10,20,12,30,0,0,30000,30000" };
+                "1,2017,10,1,12,30,0,100,20000,20100,\"\"", 
+                "2,2017,10,15,12,30,0,-500,20000,19500,\"\"", 
+                "3,2017,10,20,12,30,0,0,30000,30000,\"\"" };
         String[] actualData = new String[ 3 ];
         try {
-            backupFile( CHECK_RECORD_CSV_FILE_PATH, CHECK_RECORD_CSV_FILE_PATH_BACKUP );
-            backupFile( Contants.CHECK_RECORD_SEQ_FILE_PATH, CHECK_RECORD_SEQ_FILE_PATH_BACKUP );
-            
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
             
             BufferedReader bufReader = new BufferedReader( new InputStreamReader(
                     new FileInputStream( new File( CHECK_RECORD_CSV_FILE_PATH ) ),
@@ -87,12 +84,12 @@ public class CheckRecordDAOImplTests {
 
     @Test
     public void testFindOne() throws IOException {
-        CheckRecord expect = new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 );
+        CheckRecord expect = new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" );
         CheckRecord actual = null;
         try {
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
             
             actual = checkRecordDAO.findOne( 2 );
             assertTrue( CheckRecordUtil.equals( expect, actual ) );
@@ -107,15 +104,15 @@ public class CheckRecordDAOImplTests {
     @Test
     public void testFindAll() throws IOException {
         List<CheckRecord> expectedDataList = new ArrayList<CheckRecord>();
-        expectedDataList.add( new CheckRecord( 1, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-        expectedDataList.add( new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-        expectedDataList.add( new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+        expectedDataList.add( new CheckRecord( 1, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+        expectedDataList.add( new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+        expectedDataList.add( new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
         List<CheckRecord> actualDataList = null;
         
         try {
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
             
             actualDataList = checkRecordDAO.findAll();
             assertEquals( 3, actualDataList.size() );
@@ -131,17 +128,17 @@ public class CheckRecordDAOImplTests {
     @Test
     public void testUpdate() throws IOException {
         List<String> expectedDataList = new ArrayList<String>();
-        expectedDataList.add( "1,2017,10,1,12,30,0,100,20000,20100" );
-        expectedDataList.add( "2,2017,10,15,12,30,0,-500,20000,19500" );
-        expectedDataList.add( "3,2017,10,20,12,30,0,-100,30100,30000" );
+        expectedDataList.add( "1,2017,10,1,12,30,0,100,20000,20100,\"\"" );
+        expectedDataList.add( "2,2017,10,15,12,30,0,-500,20000,19500,\"\"" );
+        expectedDataList.add( "3,2017,10,20,12,30,0,-100,30100,30000,\"\"" );
         List<String> actualDataList = new ArrayList<String>();
         
         try {
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
             
-            CheckRecord modifiedData = new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, -100, 30100, 30000 );
+            CheckRecord modifiedData = new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, -100, 30100, 30000, "" );
             
             checkRecordDAO.update( modifiedData );
             
@@ -171,16 +168,16 @@ public class CheckRecordDAOImplTests {
     @Test
     public void testDelete() throws IOException {
         List<String> expectedDataList = new ArrayList<String>();
-        expectedDataList.add( "1,2017,10,1,12,30,0,100,20000,20100" );
-        expectedDataList.add( "2,2017,10,15,12,30,0,-500,20000,19500" );
+        expectedDataList.add( "1,2017,10,1,12,30,0,100,20000,20100,\"\"" );
+        expectedDataList.add( "2,2017,10,15,12,30,0,-500,20000,19500,\"\"" );
         List<String> actualDataList = new ArrayList<String>();
         
         try {
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
             
-            CheckRecord deletedData = new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 );
+            CheckRecord deletedData = new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" );
             
             checkRecordDAO.delete( deletedData );
             
@@ -218,9 +215,9 @@ public class CheckRecordDAOImplTests {
             // 測試新增資料後的情況
             int expect2 = Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) + 3;
 
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+            checkRecordDAO.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
             
             int actual2 = checkRecordDAO.getCurrentSeqNumber();
             assertEquals( expect2, actual2 );

@@ -33,17 +33,30 @@ public class Contants {
     public static final String TOTAL_PROPERTY_SEQ_FILE_PATH = "./data/TotalProperty/TotalPropertySeq.txt";
     
     // Funding Status Configurations
-    public static final String FUNDING_STATUS_CSV_FILE_ATTR_STRING = "id,type,year,month,day,bankCode,bankName,account,interestAccount,balance";
+    public static final String FUNDING_STATUS_CSV_FILE_ATTR_STRING = "id,type,year,month,day,storedPlaceOrInstitution,amount,description";
     public static final String FUNDING_STATUS_DATA_PATH = "./data/FundingStatus/";
     public static final String FUNDING_STATUS_FILENAME = "FundingStatus.csv";
     public static final String FUNDING_STATUS_SEQ_FILE_PATH = "./data/FundingStatus/FundingStatusSeq.txt";
     
+    // Funding Status History Configurations
+    public static final String FUNDING_STATUS_HISTORY_CSV_FILE_ATTR_STRING = 
+        "id,fundingStatusId,year,month,day,hour,minute,second,action,originAmount,modifiedAmount,difference,description";
+    public static final String FUNDING_STATUS_HISTORY_DATA_PATH = "./data/FundingStatusHistory/";
+    public static final String FUNDING_STATUS_HISTORY_FILENAME = "FundingStatusHistory.csv";
+    public static final String FUNDING_STATUS_HISTORY_SEQ_FILE_PATH = "./data/FundingStatusHistory/FundingStatusHistorySeq.txt";
+    
     // Check Record Configurations
-    public static final String CHECK_RECORD_CSV_FILE_ATTR_STRING = "id,year,month,day,hour,minute,second,difference,bookAmount,actualAmount";
+    public static final String CHECK_RECORD_CSV_FILE_ATTR_STRING = "id,year,month,day,hour,minute,second,difference,bookAmount,actualAmount,description";
     public static final String CHECK_RECORD_DATA_PATH = "./data/CheckRecord/";
     public static final String CHECK_RECORD_FILENAME = "CheckRecord.csv";
     public static final String CHECK_RECORD_SEQ_FILE_PATH = "./data/CheckRecord/CheckRecordSeq.txt";
     
+    // Digital Wallet Configurations
+    public static final String DIGITAL_WALLET_CSV_FILE_ATTR_STRING = "id,name,year,month,day,issuer,amount,description";
+    public static final String DIGITAL_WALLET_DATA_PATH = "./data/DigitalWallet/";
+    public static final String DIGITAL_WALLET_FILENAME = "DigitalWallet.csv";
+    public static final String DIGITAL_WALLET_SEQ_FILE_PATH = "./data/DigitalWallet/DigitalWalletSeq.txt";
+    
     // Version Number
-    public static final String VERSION = "Version 0.1.8-alpha";
+    public static final String VERSION = "Version 0.2.0-pre";
 }

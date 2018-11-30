@@ -12,6 +12,7 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 import domain.IncomeRecord;
+import main.FundBook;
 import main.FundBookServices;
 import repository.impl.IncomeRecordDAOImpl;
 import repository.impl.TotalPropertyDAOImpl;
@@ -104,6 +105,10 @@ public class IncomeRecordPropertyDialogTests {
             // 執行視窗程式
             mainFrame = new MainFrame( fundBookServices );
             mainFrame.setVisible( true );
+            
+            // debug
+            File executingFile = new File(FundBook.class.getProtectionDomain().getCodeSource().getLocation().toURI() );
+            System.out.println( "Current executing file path: " + executingFile.getParent() );
             
             JOptionPane.showMessageDialog( mainFrame, "請切換為英文輸入法", "Message", JOptionPane.INFORMATION_MESSAGE );
             

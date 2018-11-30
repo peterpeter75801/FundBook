@@ -50,18 +50,18 @@ public class FundingStatusServiceImplTests {
     @Test
     public void testInsert() throws IOException {
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
-        expectDataList.add( new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-        expectDataList.add( new FundingStatus( 2, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-        expectDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-        expectDataList.add( new FundingStatus( 4, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-        expectDataList.add( new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+        expectDataList.add( new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+        expectDataList.add( new FundingStatus( 2, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+        expectDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+        expectDataList.add( new FundingStatus( 4, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+        expectDataList.add( new FundingStatus( 5, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
         
         try {
-            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
             
             List<FundingStatus> actualDataList = fundingStatusService.findAll();
             assertEquals( expectDataList.size(), actualDataList.size() );
@@ -76,14 +76,14 @@ public class FundingStatusServiceImplTests {
     
     @Test
     public void testFindOne() throws IOException {
-        FundingStatus expect = new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 );
+        FundingStatus expect = new FundingStatus( 5, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" );
         
         try {
-            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
             
             FundingStatus actual = fundingStatusService.findOne( 5 );
             assertTrue( FundingStatusUtil.equals( expect, actual ) );
@@ -98,20 +98,20 @@ public class FundingStatusServiceImplTests {
     @Test
     public void testUpdate() throws IOException {
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
-        expectDataList.add( new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 12000 ) );
-        expectDataList.add( new FundingStatus( 2, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-        expectDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-        expectDataList.add( new FundingStatus( 4, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-        expectDataList.add( new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+        expectDataList.add( new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 12000, "" ) );
+        expectDataList.add( new FundingStatus( 2, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+        expectDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+        expectDataList.add( new FundingStatus( 4, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+        expectDataList.add( new FundingStatus( 5, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
         
         try {
-            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
             
-            FundingStatus modifiedData = new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 12000 );
+            FundingStatus modifiedData = new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 12000, "" );
             fundingStatusService.update( modifiedData );
             
             List<FundingStatus> actualDataList = fundingStatusService.findAll();
@@ -128,19 +128,19 @@ public class FundingStatusServiceImplTests {
     @Test
     public void testDelete() throws IOException {
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
-        expectDataList.add( new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-        expectDataList.add( new FundingStatus( 2, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-        expectDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-        expectDataList.add( new FundingStatus( 4, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
+        expectDataList.add( new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+        expectDataList.add( new FundingStatus( 2, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+        expectDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+        expectDataList.add( new FundingStatus( 4, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
         
         try {
-            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'C', 0, 0, 0, "", "", "", "", 5000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "500", "土地銀行", "01234560123456", "01234567890123", 100000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'D', 0, 0, 0, "005", "土地銀行", "01234567890123", "01234567890123", 50000 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "" ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" ) );
             
-            FundingStatus deletedData = new FundingStatus( 5, 'T', 2017, 10, 28, "005", "土地銀行", "11223344556677", "01234567890123", 200000 );
+            FundingStatus deletedData = new FundingStatus( 5, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "" );
             fundingStatusService.delete( deletedData );
             
             List<FundingStatus> actualDataList = fundingStatusService.findAll();

@@ -4,7 +4,7 @@ import domain.FundingStatus;
 
 public class FundingStatusUtil {
     
-    private final static int ATTRIBUTE_NUMBER = 10;
+    private final static int ATTRIBUTE_NUMBER = 8;
     
     public static FundingStatus getFundingStatusFromCsvTupleString( String tuple ) throws Exception {
         String[] csvDataArray = CsvFormatParser.parseFromTuple( tuple );
@@ -14,11 +14,9 @@ public class FundingStatusUtil {
         fundingStatus.setYear( Integer.parseInt( csvDataArray[ 2 ] ) );
         fundingStatus.setMonth( Integer.parseInt( csvDataArray[ 3 ] ) );
         fundingStatus.setDay( Integer.parseInt( csvDataArray[ 4 ] ) );
-        fundingStatus.setBankCode( csvDataArray[ 5 ] );
-        fundingStatus.setBankName( csvDataArray[ 6 ] );
-        fundingStatus.setAccount( csvDataArray[ 7 ] );
-        fundingStatus.setInterestAccount( csvDataArray[ 8 ] );
-        fundingStatus.setBalance( Integer.parseInt( csvDataArray[ 9 ] ) );
+        fundingStatus.setStoredPlaceOrInstitution( csvDataArray[ 5 ] );
+        fundingStatus.setAmount( Integer.parseInt( csvDataArray[ 6 ] ) );
+        fundingStatus.setDescription( csvDataArray[ 7 ] );
         return fundingStatus;
     }
     
@@ -29,11 +27,9 @@ public class FundingStatusUtil {
         csvDataArray[ 2 ] = CsvFormatParser.toCsvData( fundingStatus.getYear() );
         csvDataArray[ 3 ] = CsvFormatParser.toCsvData( fundingStatus.getMonth() );
         csvDataArray[ 4 ] = CsvFormatParser.toCsvData( fundingStatus.getDay() );
-        csvDataArray[ 5 ] = CsvFormatParser.toCsvData( fundingStatus.getBankCode() );
-        csvDataArray[ 6 ] = CsvFormatParser.toCsvData( fundingStatus.getBankName() );
-        csvDataArray[ 7 ] = CsvFormatParser.toCsvData( fundingStatus.getAccount() );
-        csvDataArray[ 8 ] = CsvFormatParser.toCsvData( fundingStatus.getInterestAccount() );
-        csvDataArray[ 9 ] = CsvFormatParser.toCsvData( fundingStatus.getBalance() );
+        csvDataArray[ 5 ] = CsvFormatParser.toCsvData( fundingStatus.getStoredPlaceOrInstitution() );
+        csvDataArray[ 6 ] = CsvFormatParser.toCsvData( fundingStatus.getAmount() );
+        csvDataArray[ 7 ] = CsvFormatParser.toCsvData( fundingStatus.getDescription() );
         return CsvFormatParser.mergeCsvDataToATuple( csvDataArray );
     }
     
@@ -47,11 +43,9 @@ public class FundingStatusUtil {
             clone.setYear( fundingStatus.getYear() );
             clone.setMonth( fundingStatus.getMonth() );
             clone.setDay( fundingStatus.getDay() );
-            clone.setBankCode( fundingStatus.getBankCode() );
-            clone.setBankName( fundingStatus.getBankName() );
-            clone.setAccount( fundingStatus.getAccount() );
-            clone.setInterestAccount( fundingStatus.getInterestAccount() );
-            clone.setBalance( fundingStatus.getBalance() );
+            clone.setStoredPlaceOrInstitution( fundingStatus.getStoredPlaceOrInstitution() );
+            clone.setAmount( fundingStatus.getAmount() );
+            clone.setDescription( fundingStatus.getDescription() );
             return clone;
         }
     }
@@ -71,15 +65,11 @@ public class FundingStatusUtil {
             return false;
         } else if( ComparingUtil.compare( data1.getDay(), data2.getDay() ) != 0 ) {
             return false;
-        } else if( ComparingUtil.compare( data1.getBankCode(), data2.getBankCode() ) != 0 ) {
+        } else if( ComparingUtil.compare( data1.getStoredPlaceOrInstitution(), data2.getStoredPlaceOrInstitution() ) != 0 ) {
             return false;
-        } else if( ComparingUtil.compare( data1.getBankName(), data2.getBankName() ) != 0 ) {
+        } else if( ComparingUtil.compare( data1.getAmount(), data2.getAmount() ) != 0 ) {
             return false;
-        } else if( ComparingUtil.compare( data1.getAccount(), data2.getAccount() ) != 0 ) {
-            return false;
-        } else if( ComparingUtil.compare( data1.getInterestAccount(), data2.getInterestAccount() ) != 0 ) {
-            return false;
-        } else if( ComparingUtil.compare( data1.getBalance(), data2.getBalance() ) != 0 ) {
+        } else if( ComparingUtil.compare( data1.getDescription(), data2.getDescription() ) != 0 ) {
             return false;
         } else {
             return true;

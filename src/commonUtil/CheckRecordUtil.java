@@ -4,7 +4,7 @@ import domain.CheckRecord;
 
 public class CheckRecordUtil {
     
-    private final static int ATTRIBUTE_NUMBER = 10;
+    private final static int ATTRIBUTE_NUMBER = 11;
     
     public static CheckRecord getCheckRecordFromCsvTupleString( String tuple ) throws Exception {
         String[] csvDataArray = CsvFormatParser.parseFromTuple( tuple );
@@ -19,6 +19,7 @@ public class CheckRecordUtil {
         checkRecord.setDifference( Integer.parseInt( csvDataArray[ 7 ] ) );
         checkRecord.setBookAmount( Integer.parseInt( csvDataArray[ 8 ] ) );
         checkRecord.setActualAmount( Integer.parseInt( csvDataArray[ 9 ] ) );
+        checkRecord.setDescription( csvDataArray[ 10 ] );
         return checkRecord;
     }
     
@@ -34,6 +35,7 @@ public class CheckRecordUtil {
         csvDataArray[ 7 ] = CsvFormatParser.toCsvData( checkRecord.getDifference() );
         csvDataArray[ 8 ] = CsvFormatParser.toCsvData( checkRecord.getBookAmount() );
         csvDataArray[ 9 ] = CsvFormatParser.toCsvData( checkRecord.getActualAmount() );
+        csvDataArray[ 10 ] = CsvFormatParser.toCsvData( checkRecord.getDescription() );
         return CsvFormatParser.mergeCsvDataToATuple( csvDataArray );
     }
     
@@ -52,6 +54,7 @@ public class CheckRecordUtil {
             clone.setDifference( checkRecord.getDifference() );
             clone.setBookAmount( checkRecord.getBookAmount() );
             clone.setActualAmount( checkRecord.getActualAmount() );
+            clone.setDescription( checkRecord.getDescription() );
             return clone;
         }
     }
@@ -80,6 +83,8 @@ public class CheckRecordUtil {
         } else if( ComparingUtil.compare( data1.getBookAmount(), data2.getBookAmount() ) != 0 ) {
             return false;
         } else if( ComparingUtil.compare( data1.getActualAmount(), data2.getActualAmount() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getDescription(), data2.getDescription() ) != 0 ) {
             return false;
         } else {
             return true;

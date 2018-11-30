@@ -14,8 +14,8 @@ public class FundingStatusUtilTests {
     
     @Test
     public void testGetFundingStatusFromCsvTupleString() {
-        String input = "1,D,0,0,0,\"700\",\"中華郵政\",\"12345671234567\",\"12345671234567\",10000";
-        FundingStatus expect = new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 );
+        String input = "1,D,2017,12,30,\"中華郵政 #12345671234567\",10000,\"\"";
+        FundingStatus expect = new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" );
         FundingStatus actual = null;
         try {
             actual = FundingStatusUtil.getFundingStatusFromCsvTupleString( input );
@@ -27,8 +27,8 @@ public class FundingStatusUtilTests {
     
     @Test
     public void testGetCsvTupleStringFromFundingStatus() {
-        FundingStatus input = new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 );
-        String expect = "1,D,0,0,0,\"700\",\"中華郵政\",\"12345671234567\",\"12345671234567\",10000";
+        FundingStatus input = new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" );
+        String expect = "1,D,2017,12,30,\"中華郵政 #12345671234567\",10000,\"\"";
         String actual = "";
         try {
             actual = FundingStatusUtil.getCsvTupleStringFromFundingStatus( input );
@@ -40,8 +40,8 @@ public class FundingStatusUtilTests {
     
     @Test
     public void testCopy() {
-        FundingStatus input = new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 );
-        FundingStatus expect = new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 );
+        FundingStatus input = new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" );
+        FundingStatus expect = new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" );
         FundingStatus clone = FundingStatusUtil.copy( input );
         
         assertTrue( FundingStatusUtil.equals( expect, clone ) );
@@ -49,9 +49,9 @@ public class FundingStatusUtilTests {
     
     @Test
     public void testEquals() {
-        FundingStatus data1 = new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 );
-        FundingStatus data2 = new FundingStatus( 2, 'C', 0, 0, 0, "", "", "", "", 5000 );
-        FundingStatus data3 = new FundingStatus( 1, 'D', 0, 0, 0, "700", "中華郵政", "12345671234567", "12345671234567", 10000 );
+        FundingStatus data1 = new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" );
+        FundingStatus data2 = new FundingStatus( 2, 'C', 2017, 12, 30, "隨身現金", 5000, "" );
+        FundingStatus data3 = new FundingStatus( 1, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "" );
         
         assertTrue( FundingStatusUtil.equals( data1, data3 ) );
         assertFalse( FundingStatusUtil.equals( data1, data2 ) );

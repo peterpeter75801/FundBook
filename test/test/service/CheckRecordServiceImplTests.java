@@ -50,14 +50,14 @@ public class CheckRecordServiceImplTests {
     @Test
     public void testInsert() throws IOException {
         List<CheckRecord> expectDataList = new ArrayList<CheckRecord>();
-        expectDataList.add( new CheckRecord( 1, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-        expectDataList.add( new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-        expectDataList.add( new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+        expectDataList.add( new CheckRecord( 1, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+        expectDataList.add( new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+        expectDataList.add( new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
         
         try {
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
             
             List<CheckRecord> actualDataList = checkRecordService.findAll();
             assertEquals( expectDataList.size(), actualDataList.size() );
@@ -72,12 +72,12 @@ public class CheckRecordServiceImplTests {
     
     @Test
     public void testFindOne() throws IOException {
-        CheckRecord expect = new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 );
+        CheckRecord expect = new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" );
         
         try {
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
             
             CheckRecord actual = checkRecordService.findOne( 2 );
             assertTrue( CheckRecordUtil.equals( expect, actual ) );
@@ -92,19 +92,19 @@ public class CheckRecordServiceImplTests {
     @Test
     public void testUpdate() throws IOException {
         List<CheckRecord> expectDataList = new ArrayList<CheckRecord>();
-        expectDataList.add( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-        expectDataList.add( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-        expectDataList.add( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, -100, 30100, 30000 ) );
+        expectDataList.add( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+        expectDataList.add( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+        expectDataList.add( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, -100, 30100, 30000, "" ) );
         for( int i = 1; i <= 3; i++ ) {
             expectDataList.get( i - 1 ).setId( i );
         }
         
         try {
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
             
-            CheckRecord modifiedData = new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, -100, 30100, 30000 );
+            CheckRecord modifiedData = new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, -100, 30100, 30000, "" );
             checkRecordService.update( modifiedData );
             
             List<CheckRecord> actualDataList = checkRecordService.findAll();
@@ -121,15 +121,15 @@ public class CheckRecordServiceImplTests {
     @Test
     public void testDelete() throws IOException {
         List<CheckRecord> expectDataList = new ArrayList<CheckRecord>();
-        expectDataList.add( new CheckRecord( 1, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-        expectDataList.add( new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
+        expectDataList.add( new CheckRecord( 1, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+        expectDataList.add( new CheckRecord( 2, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
         
         try {
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100 ) );
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500 ) );
-            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 1, 12, 30, 0, 100, 20000, 20100, "" ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 15, 12, 30, 0, -500, 20000, 19500, "" ) );
+            checkRecordService.insert( new CheckRecord( 0, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" ) );
             
-            CheckRecord deletedData = new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000 );
+            CheckRecord deletedData = new CheckRecord( 3, 2017, 10, 20, 12, 30, 0, 0, 30000, 30000, "" );
             checkRecordService.delete( deletedData );
             
             List<CheckRecord> actualDataList = checkRecordService.findAll();
