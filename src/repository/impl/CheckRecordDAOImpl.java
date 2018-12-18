@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import common.Contants;
+import common.SystemInfo;
 import commonUtil.CheckRecordUtil;
 import commonUtil.ComparingUtil;
 import domain.CheckRecord;
@@ -20,16 +21,27 @@ import repository.CheckRecordDAO;
 
 public class CheckRecordDAOImpl implements CheckRecordDAO {
     
+    private SystemInfo systemInfo;
+    
+    public CheckRecordDAOImpl() {
+        systemInfo = new SystemInfo( "." );
+    }
+    
+    public CheckRecordDAOImpl( SystemInfo systemInfo ) {
+        this.systemInfo = systemInfo;
+    }
+    
     @Override
     public boolean insert( CheckRecord checkRecord ) throws Exception {
         CheckRecord checkRecordWithNewId = CheckRecordUtil.copy( checkRecord );
         
         // 取得Check Record目前的流水號(ID)
-        if( !checkIfFileExists( Contants.CHECK_RECORD_SEQ_FILE_PATH ) ) {
-            createSeqFile( Contants.CHECK_RECORD_SEQ_FILE_PATH );
+        String seqFilePath = systemInfo.getRootDirectory() + "/" + Contants.CHECK_RECORD_SEQ_FILE_PATH;
+        if( !checkIfFileExists( seqFilePath ) ) {
+            createSeqFile( seqFilePath );
         }
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( Contants.CHECK_RECORD_SEQ_FILE_PATH ) ),
+                new FileInputStream( new File( seqFilePath ) ),
                 Contants.FILE_CHARSET
             )
         );
@@ -44,7 +56,7 @@ public class CheckRecordDAOImpl implements CheckRecordDAO {
         }
         
         // 新增Check Record資料
-        String csvFilePath = Contants.CHECK_RECORD_DATA_PATH + Contants.CHECK_RECORD_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.CHECK_RECORD_DATA_PATH + Contants.CHECK_RECORD_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             createCsvFile( csvFilePath );
         }
@@ -61,7 +73,7 @@ public class CheckRecordDAOImpl implements CheckRecordDAO {
         // 更新Check Record的流水號(ID)
         writer = new BufferedWriter(
                 new OutputStreamWriter(
-                    new FileOutputStream( new File( Contants.CHECK_RECORD_SEQ_FILE_PATH ), false ),
+                    new FileOutputStream( new File( seqFilePath ), false ),
                     Contants.FILE_CHARSET
                 )
             );
@@ -75,7 +87,7 @@ public class CheckRecordDAOImpl implements CheckRecordDAO {
 
     @Override
     public CheckRecord findOne( int id ) throws Exception {
-        String csvFilePath = Contants.CHECK_RECORD_DATA_PATH + Contants.CHECK_RECORD_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.CHECK_RECORD_DATA_PATH + Contants.CHECK_RECORD_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return null;
         }
@@ -108,7 +120,7 @@ public class CheckRecordDAOImpl implements CheckRecordDAO {
 
     @Override
     public List<CheckRecord> findAll() throws Exception {
-        String csvFilePath = Contants.CHECK_RECORD_DATA_PATH + Contants.CHECK_RECORD_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.CHECK_RECORD_DATA_PATH + Contants.CHECK_RECORD_FILENAME;
         ArrayList<CheckRecord> checkRecordList = new ArrayList<CheckRecord>();
         
         if( !checkIfFileExists( csvFilePath ) ) {
@@ -136,7 +148,7 @@ public class CheckRecordDAOImpl implements CheckRecordDAO {
 
     @Override
     public boolean update( CheckRecord checkRecord ) throws Exception {
-        String csvFilePath = Contants.CHECK_RECORD_DATA_PATH + Contants.CHECK_RECORD_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.CHECK_RECORD_DATA_PATH + Contants.CHECK_RECORD_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return false;
         }
@@ -183,7 +195,7 @@ public class CheckRecordDAOImpl implements CheckRecordDAO {
 
     @Override
     public boolean delete( CheckRecord checkRecord ) throws Exception {
-        String csvFilePath = Contants.CHECK_RECORD_DATA_PATH + Contants.CHECK_RECORD_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.CHECK_RECORD_DATA_PATH + Contants.CHECK_RECORD_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return false;
         }
@@ -227,12 +239,13 @@ public class CheckRecordDAOImpl implements CheckRecordDAO {
 
     @Override
     public int getCurrentSeqNumber() throws Exception {
-        if( !checkIfFileExists( Contants.CHECK_RECORD_SEQ_FILE_PATH ) ) {
+        String seqFilePath = systemInfo.getRootDirectory() + "/" + Contants.CHECK_RECORD_SEQ_FILE_PATH;
+        if( !checkIfFileExists( seqFilePath ) ) {
             return Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) - 1;
         }
         
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( Contants.CHECK_RECORD_SEQ_FILE_PATH ) ),
+                new FileInputStream( new File( seqFilePath ) ),
                 Contants.FILE_CHARSET
             )
         );
@@ -261,7 +274,7 @@ public class CheckRecordDAOImpl implements CheckRecordDAO {
     }
     
     private void createCsvFile( String fileName ) throws IOException {
-        File f = new File( Contants.CHECK_RECORD_DATA_PATH );
+        File f = new File( systemInfo.getRootDirectory() + "/" + Contants.CHECK_RECORD_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 
@@ -276,7 +289,7 @@ public class CheckRecordDAOImpl implements CheckRecordDAO {
     }
     
     private void createSeqFile( String fileName ) throws IOException {
-        File f = new File( Contants.CHECK_RECORD_DATA_PATH );
+        File f = new File( systemInfo.getRootDirectory() + "/" + Contants.CHECK_RECORD_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 

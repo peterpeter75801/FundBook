@@ -1,5 +1,9 @@
 package main;
 
+import java.io.File;
+import java.net.URISyntaxException;
+
+import common.SystemInfo;
 import repository.CheckRecordDAO;
 import repository.FundingStatusDAO;
 import repository.IncomeRecordDAO;
@@ -16,12 +20,16 @@ import view.MainFrame;
 
 public class FundBook {
     
-    public static void main( String args[] ) {
+    public static void main( String args[] ) throws URISyntaxException {
+        // Initialize system information
+        SystemInfo systemInfo = new SystemInfo(
+            new File( FundBook.class.getProtectionDomain().getCodeSource().getLocation().toURI() ).getParent() );
+        
         // Initialize DAOs
-        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl();
-        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl();
-        FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
-        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl();
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl( systemInfo );
+        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl( systemInfo );
+        FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl( systemInfo );
+        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl( systemInfo );
         
         // Initialize services
         FundBookServices fundBookServices = new FundBookServices();

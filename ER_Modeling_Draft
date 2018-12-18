@@ -14,6 +14,8 @@ FundingStatusHistory(經費儲存狀況更動歷程):
   id(ID), fundingStatusId(經費儲存狀況id), year(更動日期-年), month(更動日期-月), day(更動日期-日),
   hour(更動日期-時), minute(更動日期-分), second(更動日期-秒), action(更動種類: 新增, 修改, 刪除, 搬動),
   originAmount(更動前金額), modifiedAmount(更動後金額), difference(差額), description(描述)
+  [index]
+    fundingStatusId(經費儲存狀況id)
 
 CheckRecord(對帳記錄):
   id(ID), year(年), month(月), day(日), hour(時), minute(分), second(秒),

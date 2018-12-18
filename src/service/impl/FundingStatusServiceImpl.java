@@ -27,6 +27,10 @@ public class FundingStatusServiceImpl implements FundingStatusService {
         if( !returnCode ) {
             return Contants.ERROR;
         }
+        returnCode = fundingStatusDAO.refreshOrderNo();
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
                 
         return Contants.SUCCESS;
     }
@@ -56,9 +60,13 @@ public class FundingStatusServiceImpl implements FundingStatusService {
         returnCode = fundingStatusDAO.update( fundingStatus );
         if( !returnCode ) {
             return Contants.ERROR;
-        } else {
-            return Contants.SUCCESS;
         }
+        returnCode = fundingStatusDAO.refreshOrderNo();
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        return Contants.SUCCESS;
     }
 
     @Override
@@ -76,8 +84,59 @@ public class FundingStatusServiceImpl implements FundingStatusService {
         returnCode = fundingStatusDAO.delete( fundingStatus );
         if( !returnCode ) {
             return Contants.ERROR;
-        } else {
-            return Contants.SUCCESS;
         }
+        returnCode = fundingStatusDAO.refreshOrderNo();
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        return Contants.SUCCESS;
+    }
+
+    @Override
+    public int getCount() throws Exception {
+        return fundingStatusDAO.getCount();
+    }
+
+    @Override
+    public int moveUp( int orderNo ) throws Exception {
+        int count = fundingStatusDAO.getCount();
+        boolean returnCode;
+        
+        if( orderNo <= 1 || orderNo > count ) {
+            return Contants.NO_DATA_MODIFIED;
+        }
+        
+        returnCode = fundingStatusDAO.moveUp( orderNo );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        returnCode = fundingStatusDAO.refreshOrderNo();
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        return Contants.SUCCESS;
+    }
+
+    @Override
+    public int moveDown( int orderNo ) throws Exception {
+        int count = fundingStatusDAO.getCount();
+        boolean returnCode;
+        
+        if( orderNo >= count ) {
+            return Contants.NO_DATA_MODIFIED;
+        }
+        
+        returnCode = fundingStatusDAO.moveDown( orderNo );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        returnCode = fundingStatusDAO.refreshOrderNo();
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        return Contants.SUCCESS;
     }
 }

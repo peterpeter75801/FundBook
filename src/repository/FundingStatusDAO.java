@@ -17,4 +17,12 @@ public interface FundingStatusDAO {
     public boolean delete( FundingStatus fundingStatus ) throws Exception;
     
     public int getCurrentSeqNumber() throws Exception;
+    
+    public boolean refreshOrderNo() throws Exception;
+    
+    public int getCount() throws Exception;
+    
+    public boolean moveUp( int orderNo ) throws Exception;
+    
+    public boolean moveDown( int orderNo ) throws Exception;
 }

@@ -10,11 +10,12 @@ public class FundingStatus {
     private String storedPlaceOrInstitution;    // 儲存地點/儲存機構
     private Integer amount;                     // 金額
     private String description;                 // 描述
+    private Integer orderNo;                    // 排序編號
     
     public FundingStatus() {}
     
     public FundingStatus( int id, char type, int year, int month, int day, 
-            String storedPlaceOrInstitution, int amount, String description ) {
+            String storedPlaceOrInstitution, int amount, String description, int orderNo ) {
         this.id = id;
         this.type = type;
         this.year = year;
@@ -23,6 +24,7 @@ public class FundingStatus {
         this.storedPlaceOrInstitution = storedPlaceOrInstitution;
         this.amount = amount;
         this.description = description;
+        this.orderNo = orderNo;
     }
     
     public void setId( Integer id ) {
@@ -87,5 +89,13 @@ public class FundingStatus {
     
     public String getDescription() {
         return description;
+    }
+    
+    public void setOrderNo( Integer orderNo ) {
+        this.orderNo = orderNo;
+    }
+    
+    public Integer getOrderNo() {
+        return orderNo;
     }
 }

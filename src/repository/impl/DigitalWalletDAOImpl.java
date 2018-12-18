@@ -13,23 +13,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 import common.Contants;
+import common.SystemInfo;
 import commonUtil.ComparingUtil;
 import commonUtil.DigitalWalletUtil;
 import domain.DigitalWallet;
 import repository.DigitalWalletDAO;
 
 public class DigitalWalletDAOImpl implements DigitalWalletDAO {
-
+    
+    private SystemInfo systemInfo;
+    
+    public DigitalWalletDAOImpl() {
+        systemInfo = new SystemInfo( "." );
+    }
+    
+    public DigitalWalletDAOImpl( SystemInfo systemInfo ) {
+        this.systemInfo = systemInfo;
+    }
+    
     @Override
     public boolean insert( DigitalWallet digitalWallet ) throws Exception {
         DigitalWallet digitalWalletWithNewId = DigitalWalletUtil.copy( digitalWallet );
         
         // Get Digital Wallet current sequence number (ID)
-        if( !checkIfFileExists( Contants.DIGITAL_WALLET_SEQ_FILE_PATH ) ) {
-            createSeqFile( Contants.DIGITAL_WALLET_SEQ_FILE_PATH );
+        String seqFilePath = systemInfo.getRootDirectory() + "/" + Contants.DIGITAL_WALLET_SEQ_FILE_PATH;
+        if( !checkIfFileExists( seqFilePath ) ) {
+            createSeqFile( seqFilePath );
         }
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( Contants.DIGITAL_WALLET_SEQ_FILE_PATH ) ),
+                new FileInputStream( new File( seqFilePath ) ),
                 Contants.FILE_CHARSET
             )
         );
@@ -44,7 +56,7 @@ public class DigitalWalletDAOImpl implements DigitalWalletDAO {
         }
         
         // Create new Digital Wallet data
-        String csvFilePath = Contants.DIGITAL_WALLET_DATA_PATH + Contants.DIGITAL_WALLET_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.DIGITAL_WALLET_DATA_PATH + Contants.DIGITAL_WALLET_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             createCsvFile( csvFilePath );
         }
@@ -61,7 +73,7 @@ public class DigitalWalletDAOImpl implements DigitalWalletDAO {
         // Update the current sequence number of Funding Status History data table
         writer = new BufferedWriter(
                 new OutputStreamWriter(
-                    new FileOutputStream( new File( Contants.DIGITAL_WALLET_SEQ_FILE_PATH ), false ),
+                    new FileOutputStream( new File( seqFilePath ), false ),
                     Contants.FILE_CHARSET
                 )
             );
@@ -75,7 +87,7 @@ public class DigitalWalletDAOImpl implements DigitalWalletDAO {
 
     @Override
     public DigitalWallet findOne( int id ) throws Exception {
-        String csvFilePath = Contants.DIGITAL_WALLET_DATA_PATH + Contants.DIGITAL_WALLET_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.DIGITAL_WALLET_DATA_PATH + Contants.DIGITAL_WALLET_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return null;
         }
@@ -108,7 +120,7 @@ public class DigitalWalletDAOImpl implements DigitalWalletDAO {
 
     @Override
     public List<DigitalWallet> findAll() throws Exception {
-        String csvFilePath = Contants.DIGITAL_WALLET_DATA_PATH + Contants.DIGITAL_WALLET_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.DIGITAL_WALLET_DATA_PATH + Contants.DIGITAL_WALLET_FILENAME;
         ArrayList<DigitalWallet> digitalWalletList = new ArrayList<DigitalWallet>();
         
         if( !checkIfFileExists( csvFilePath ) ) {
@@ -136,7 +148,7 @@ public class DigitalWalletDAOImpl implements DigitalWalletDAO {
 
     @Override
     public boolean update( DigitalWallet digitalWallet ) throws Exception {
-        String csvFilePath = Contants.DIGITAL_WALLET_DATA_PATH + Contants.DIGITAL_WALLET_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.DIGITAL_WALLET_DATA_PATH + Contants.DIGITAL_WALLET_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return false;
         }
@@ -183,7 +195,7 @@ public class DigitalWalletDAOImpl implements DigitalWalletDAO {
 
     @Override
     public boolean delete( DigitalWallet digitalWallet ) throws Exception {
-        String csvFilePath = Contants.DIGITAL_WALLET_DATA_PATH + Contants.DIGITAL_WALLET_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.DIGITAL_WALLET_DATA_PATH + Contants.DIGITAL_WALLET_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return false;
         }
@@ -227,12 +239,13 @@ public class DigitalWalletDAOImpl implements DigitalWalletDAO {
 
     @Override
     public int getCurrentSeqNumber() throws Exception {
-        if( !checkIfFileExists( Contants.DIGITAL_WALLET_SEQ_FILE_PATH ) ) {
+        String seqFilePath = systemInfo.getRootDirectory() + "/" + Contants.DIGITAL_WALLET_SEQ_FILE_PATH;
+        if( !checkIfFileExists( seqFilePath ) ) {
             return Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) - 1;
         }
         
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( Contants.DIGITAL_WALLET_SEQ_FILE_PATH ) ),
+                new FileInputStream( new File( seqFilePath ) ),
                 Contants.FILE_CHARSET
             )
         );
@@ -261,7 +274,7 @@ public class DigitalWalletDAOImpl implements DigitalWalletDAO {
     }
     
     private void createCsvFile( String fileName ) throws IOException {
-        File f = new File( Contants.DIGITAL_WALLET_DATA_PATH );
+        File f = new File( systemInfo.getRootDirectory() + "/" + Contants.DIGITAL_WALLET_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 
@@ -276,7 +289,7 @@ public class DigitalWalletDAOImpl implements DigitalWalletDAO {
     }
     
     private void createSeqFile( String fileName ) throws IOException {
-        File f = new File( Contants.DIGITAL_WALLET_DATA_PATH );
+        File f = new File( systemInfo.getRootDirectory() + "/" + Contants.DIGITAL_WALLET_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 

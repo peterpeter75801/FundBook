@@ -15,4 +15,10 @@ public interface FundingStatusService {
     public int update( FundingStatus fundingStatus ) throws Exception;
     
     public int delete( FundingStatus fundingStatus ) throws Exception;
+    
+    public int getCount() throws Exception;
+    
+    public int moveUp( int orderNo ) throws Exception;
+    
+    public int moveDown( int orderNo ) throws Exception;
 }

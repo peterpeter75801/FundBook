@@ -4,7 +4,7 @@ import domain.FundingStatus;
 
 public class FundingStatusUtil {
     
-    private final static int ATTRIBUTE_NUMBER = 8;
+    private final static int ATTRIBUTE_NUMBER = 9;
     
     public static FundingStatus getFundingStatusFromCsvTupleString( String tuple ) throws Exception {
         String[] csvDataArray = CsvFormatParser.parseFromTuple( tuple );
@@ -17,6 +17,7 @@ public class FundingStatusUtil {
         fundingStatus.setStoredPlaceOrInstitution( csvDataArray[ 5 ] );
         fundingStatus.setAmount( Integer.parseInt( csvDataArray[ 6 ] ) );
         fundingStatus.setDescription( csvDataArray[ 7 ] );
+        fundingStatus.setOrderNo( Integer.parseInt( csvDataArray[ 8 ] ) );
         return fundingStatus;
     }
     
@@ -30,6 +31,7 @@ public class FundingStatusUtil {
         csvDataArray[ 5 ] = CsvFormatParser.toCsvData( fundingStatus.getStoredPlaceOrInstitution() );
         csvDataArray[ 6 ] = CsvFormatParser.toCsvData( fundingStatus.getAmount() );
         csvDataArray[ 7 ] = CsvFormatParser.toCsvData( fundingStatus.getDescription() );
+        csvDataArray[ 8 ] = CsvFormatParser.toCsvData( fundingStatus.getOrderNo() );
         return CsvFormatParser.mergeCsvDataToATuple( csvDataArray );
     }
     
@@ -46,6 +48,7 @@ public class FundingStatusUtil {
             clone.setStoredPlaceOrInstitution( fundingStatus.getStoredPlaceOrInstitution() );
             clone.setAmount( fundingStatus.getAmount() );
             clone.setDescription( fundingStatus.getDescription() );
+            clone.setOrderNo( fundingStatus.getOrderNo() );
             return clone;
         }
     }
@@ -70,6 +73,8 @@ public class FundingStatusUtil {
         } else if( ComparingUtil.compare( data1.getAmount(), data2.getAmount() ) != 0 ) {
             return false;
         } else if( ComparingUtil.compare( data1.getDescription(), data2.getDescription() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getOrderNo(), data2.getOrderNo() ) != 0 ) {
             return false;
         } else {
             return true;

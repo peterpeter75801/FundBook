@@ -1,3 +1,8 @@
+---- version 0.2.1-pre----
+1.Support directly execute main jar file from other directory that out of the project root directory.
+2.Consider "fundingStatusId" attribute in FundingStatusHistory as an index, and change its storage architecture.
+3.Add an "order" attribute into FundingStatus for the implementation of its "move down" and "move up" feature.
+
 ---- version 0.2.0-pre----
 1. Modify doamins: FundingStatus and CheckRecord.
 2. Add new domains: FundingStatusHistory and DigitalWallet.

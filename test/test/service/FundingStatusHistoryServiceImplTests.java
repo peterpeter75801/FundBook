@@ -24,9 +24,12 @@ import static org.junit.Assert.*;
 @RunWith(value=JUnit4.class)
 public class FundingStatusHistoryServiceImplTests {
     
-    private final String FUNDING_STATUS_HISTORY_CSV_FILE_PATH = 
-            Contants.FUNDING_STATUS_HISTORY_DATA_PATH + Contants.FUNDING_STATUS_HISTORY_FILENAME;
-    private final String FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP = "./data/FundingStatusHistory/FundingStatusHistory_backup.csv";
+    private final String FUNDING_STATUS_HISTORY_CSV_FILE_PATH = "./data/FundingStatusHistory/1.csv";
+    private final String FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP = "./data/FundingStatusHistory/1_backup.csv";
+    private final String FUNDING_STATUS_HISTORY_CSV_FILE_PATH_2 = "./data/FundingStatusHistory/2.csv";
+    private final String FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_2 = "./data/FundingStatusHistory/2_backup.csv";
+    private final String FUNDING_STATUS_HISTORY_CSV_FILE_PATH_3 = "./data/FundingStatusHistory/3.csv";
+    private final String FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_3 = "./data/FundingStatusHistory/3_backup.csv";
     private final String FUNDING_STATUS_HISTORY_SEQ_FILE_PATH_BACKUP = "./data/FundingStatusHistory/FundingStatusHistorySeq_backup.txt";
     
     private FundingStatusHistoryService fundingStatusHistoryService;
@@ -37,13 +40,17 @@ public class FundingStatusHistoryServiceImplTests {
         fundingStatusHistoryService = new FundingStatusHistoryServiceImpl( fundingStatusHistoryDAO );
         
         backupFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP );
-        backupFile( Contants.FUNDING_STATUS_SEQ_FILE_PATH, FUNDING_STATUS_HISTORY_SEQ_FILE_PATH_BACKUP );
+        backupFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_2, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_2 );
+        backupFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_3, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_3 );
+        backupFile( Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH, FUNDING_STATUS_HISTORY_SEQ_FILE_PATH_BACKUP );
     }
     
     @After
     public void tearDown() throws IOException {
         fundingStatusHistoryService = null;
         restoreFile( FUNDING_STATUS_HISTORY_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH );
+        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_3, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_3 );
+        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_2, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_2 );
         restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_HISTORY_CSV_FILE_PATH );
     }
     

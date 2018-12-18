@@ -13,16 +13,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 import common.Contants;
+import common.SystemInfo;
 import commonUtil.ComparingUtil;
 import commonUtil.TotalPropertyUtil;
 import domain.TotalProperty;
 import repository.TotalPropertyDAO;
 
 public class TotalPropertyDAOImpl implements TotalPropertyDAO {
-
+    
+    private SystemInfo systemInfo;
+    
+    public TotalPropertyDAOImpl() {
+        systemInfo = new SystemInfo( "." );
+    }
+    
+    public TotalPropertyDAOImpl( SystemInfo systemInfo ) {
+        this.systemInfo = systemInfo;
+    }
+    
     @Override
     public boolean create( TotalProperty totalProperty ) throws Exception {
-        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             createCsvFile( csvFilePath );
         }
@@ -47,11 +58,12 @@ public class TotalPropertyDAOImpl implements TotalPropertyDAO {
         TotalProperty totalPropertyWithNewId = TotalPropertyUtil.copy( totalProperty );
         
         // 取得Total Property目前的流水號(ID)
-        if( !checkIfFileExists( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH ) ) {
-            createSeqFile( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
+        String seqFilePath = systemInfo.getRootDirectory() + "/" + Contants.TOTAL_PROPERTY_SEQ_FILE_PATH;
+        if( !checkIfFileExists( seqFilePath ) ) {
+            createSeqFile( seqFilePath );
         }
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH ) ),
+                new FileInputStream( new File( seqFilePath ) ),
                 Contants.FILE_CHARSET
             )
         );
@@ -66,7 +78,7 @@ public class TotalPropertyDAOImpl implements TotalPropertyDAO {
         }
         
         // 新增Total Property資料
-        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             createCsvFile( csvFilePath );
         }
@@ -83,7 +95,7 @@ public class TotalPropertyDAOImpl implements TotalPropertyDAO {
         // 更新Total Property的流水號(ID)
         writer = new BufferedWriter(
                 new OutputStreamWriter(
-                    new FileOutputStream( new File( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH ), false ),
+                    new FileOutputStream( new File( seqFilePath ), false ),
                     Contants.FILE_CHARSET
                 )
             );
@@ -97,7 +109,7 @@ public class TotalPropertyDAOImpl implements TotalPropertyDAO {
 
     @Override
     public TotalProperty findOne( int id ) throws Exception {
-        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return null;
         }
@@ -130,7 +142,7 @@ public class TotalPropertyDAOImpl implements TotalPropertyDAO {
 
     @Override
     public List<TotalProperty> findAll() throws Exception {
-        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
         ArrayList<TotalProperty> totalPropertyList = new ArrayList<TotalProperty>();
         
         if( !checkIfFileExists( csvFilePath ) ) {
@@ -158,7 +170,7 @@ public class TotalPropertyDAOImpl implements TotalPropertyDAO {
 
     @Override
     public boolean update( TotalProperty totalProperty ) throws Exception {
-        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return false;
         }
@@ -205,7 +217,7 @@ public class TotalPropertyDAOImpl implements TotalPropertyDAO {
 
     @Override
     public boolean delete( TotalProperty totalProperty ) throws Exception {
-        String csvFilePath = Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.TOTAL_PROPERTY_DATA_PATH + Contants.TOTAL_PROPERTY_FILENAME;
         if( !checkIfFileExists( csvFilePath ) ) {
             return false;
         }
@@ -249,12 +261,13 @@ public class TotalPropertyDAOImpl implements TotalPropertyDAO {
 
     @Override
     public int getCurrentSeqNumber() throws Exception {
-        if( !checkIfFileExists( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH ) ) {
+        String seqFilePath = systemInfo.getRootDirectory() + "/" + Contants.TOTAL_PROPERTY_SEQ_FILE_PATH;
+        if( !checkIfFileExists( seqFilePath ) ) {
             return Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) - 1;
         }
         
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( Contants.TOTAL_PROPERTY_SEQ_FILE_PATH ) ),
+                new FileInputStream( new File( seqFilePath ) ),
                 Contants.FILE_CHARSET
             )
         );
@@ -283,7 +296,7 @@ public class TotalPropertyDAOImpl implements TotalPropertyDAO {
     }
     
     private void createCsvFile( String fileName ) throws IOException {
-        File f = new File( Contants.TOTAL_PROPERTY_DATA_PATH );
+        File f = new File( systemInfo.getRootDirectory() + "/" + Contants.TOTAL_PROPERTY_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 
@@ -298,7 +311,7 @@ public class TotalPropertyDAOImpl implements TotalPropertyDAO {
     }
     
     private void createSeqFile( String fileName ) throws IOException {
-        File f = new File( Contants.TOTAL_PROPERTY_DATA_PATH );
+        File f = new File( systemInfo.getRootDirectory() + "/" + Contants.TOTAL_PROPERTY_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 

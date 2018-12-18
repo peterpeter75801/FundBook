@@ -1,5 +1,7 @@
 package commonUtil;
 
+import java.util.List;
+
 import domain.FundingStatusHistory;
 
 public class FundingStatusHistoryUtil {
@@ -41,6 +43,30 @@ public class FundingStatusHistoryUtil {
         csvDataArray[ 11 ] = CsvFormatParser.toCsvData( fundingStatusHistory.getDifference() );
         csvDataArray[ 12 ] = CsvFormatParser.toCsvData( fundingStatusHistory.getDescription() );
         return CsvFormatParser.mergeCsvDataToATuple( csvDataArray );
+    }
+    
+    public static String getFundingStatusHistoryCsvFileName( FundingStatusHistory fundingStatusHistory ) {
+        return String.format( "%d.csv", fundingStatusHistory.getFundingStatusId() );
+    }
+    
+    public static String getFundingStatusHistoryCsvFileName( int fundingStatusId ) {
+        return String.format( "%d.csv", fundingStatusId );
+    }
+    
+    public static List<FundingStatusHistory> sortById( List<FundingStatusHistory> fundingStatusHistoryList ) {
+        if( fundingStatusHistoryList == null ) {
+            return fundingStatusHistoryList;
+        }
+        for( int i = 1; i < fundingStatusHistoryList.size(); i++ ) {
+            for( int j = 0; j < fundingStatusHistoryList.size() - 1; j++ ) {
+                if( fundingStatusHistoryList.get( j ).getId() > fundingStatusHistoryList.get( j + 1 ).getId() ) {
+                    FundingStatusHistory swap = fundingStatusHistoryList.get( j );
+                    fundingStatusHistoryList.set( j, fundingStatusHistoryList.get( j + 1 ) );
+                    fundingStatusHistoryList.set( j + 1, swap );
+                }
+            }
+        }
+        return fundingStatusHistoryList;
     }
     
     public static FundingStatusHistory copy( FundingStatusHistory fundingStatusHistory ) {

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import common.Contants;
+import common.SystemInfo;
 import commonUtil.ComparingUtil;
 import commonUtil.FundingStatusHistoryUtil;
 import domain.FundingStatusHistory;
@@ -20,16 +21,27 @@ import repository.FundingStatusHistoryDAO;
 
 public class FundingStatusHistoryDAOImpl implements FundingStatusHistoryDAO {
     
+    private SystemInfo systemInfo;
+    
+    public FundingStatusHistoryDAOImpl() {
+        systemInfo = new SystemInfo( "." );
+    }
+    
+    public FundingStatusHistoryDAOImpl( SystemInfo systemInfo ) {
+        this.systemInfo = systemInfo;
+    }
+    
     @Override
     public boolean insert( FundingStatusHistory fundingStatusHistory ) throws Exception {
         FundingStatusHistory fundingStatusHistoryWithNewId = FundingStatusHistoryUtil.copy( fundingStatusHistory );
         
         // Get Funding Status History current sequence number (ID)
-        if( !checkIfFileExists( Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH ) ) {
-            createSeqFile( Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH );
+        String seqFilePath = systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH;
+        if( !checkIfFileExists( seqFilePath ) ) {
+            createSeqFile( seqFilePath );
         }
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH ) ),
+                new FileInputStream( new File( seqFilePath ) ),
                 Contants.FILE_CHARSET
             )
         );
@@ -44,7 +56,8 @@ public class FundingStatusHistoryDAOImpl implements FundingStatusHistoryDAO {
         }
         
         // Create new Funding Status History data
-        String csvFilePath = Contants.FUNDING_STATUS_HISTORY_DATA_PATH + Contants.FUNDING_STATUS_HISTORY_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_HISTORY_DATA_PATH + 
+                FundingStatusHistoryUtil.getFundingStatusHistoryCsvFileName( fundingStatusHistoryWithNewId );
         if( !checkIfFileExists( csvFilePath ) ) {
             createCsvFile( csvFilePath );
         }
@@ -61,7 +74,7 @@ public class FundingStatusHistoryDAOImpl implements FundingStatusHistoryDAO {
         // Update the current sequence number of Funding Status History data table
         writer = new BufferedWriter(
                 new OutputStreamWriter(
-                    new FileOutputStream( new File( Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH ), false ),
+                    new FileOutputStream( new File( seqFilePath ), false ),
                     Contants.FILE_CHARSET
                 )
             );
@@ -75,7 +88,30 @@ public class FundingStatusHistoryDAOImpl implements FundingStatusHistoryDAO {
 
     @Override
     public FundingStatusHistory findOne( int id ) throws Exception {
-        String csvFilePath = Contants.FUNDING_STATUS_HISTORY_DATA_PATH + Contants.FUNDING_STATUS_HISTORY_FILENAME;
+        String csvFileNames[] = (new File( systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_HISTORY_DATA_PATH )).list();
+        int fundingStatusIds[] = new int[ csvFileNames.length ];
+        
+        FundingStatusHistory searchResultFundingStatusHistory = null;
+        for( int i = 0; i < fundingStatusIds.length; i++ ) {
+            try {
+                fundingStatusIds[ i ] = Integer.parseInt( csvFileNames[ i ].replaceAll( ".csv", "" ) );
+            } catch( NumberFormatException e ) {
+                fundingStatusIds[ i ] = -1;
+            }
+            
+            searchResultFundingStatusHistory = findOne( id, fundingStatusIds[ i ] );
+            if( searchResultFundingStatusHistory != null ) {
+                break;
+            }
+        }
+        
+        return searchResultFundingStatusHistory;
+    }
+
+    @Override
+    public FundingStatusHistory findOne( int id, int fundingStatusId ) throws Exception {
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_HISTORY_DATA_PATH + 
+            FundingStatusHistoryUtil.getFundingStatusHistoryCsvFileName( fundingStatusId );
         if( !checkIfFileExists( csvFilePath ) ) {
             return null;
         }
@@ -108,7 +144,33 @@ public class FundingStatusHistoryDAOImpl implements FundingStatusHistoryDAO {
 
     @Override
     public List<FundingStatusHistory> findAll() throws Exception {
-        String csvFilePath = Contants.FUNDING_STATUS_HISTORY_DATA_PATH + Contants.FUNDING_STATUS_HISTORY_FILENAME;
+        String csvFileNames[] = (new File( systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_HISTORY_DATA_PATH )).list();
+        int fundingStatusIds[] = new int[ csvFileNames.length ];
+        
+        List<FundingStatusHistory> fundingStatusHistoryList = new ArrayList<FundingStatusHistory>();
+        for( int i = 0; i < fundingStatusIds.length; i++ ) {
+            try {
+                fundingStatusIds[ i ] = Integer.parseInt( csvFileNames[ i ].replaceAll( ".csv", "" ) );
+            } catch( NumberFormatException e ) {
+                fundingStatusIds[ i ] = -1;
+            }
+            
+            List<FundingStatusHistory> fundingStatusHistoryListOfOneFile = findAll( fundingStatusIds[ i ] );
+            for( FundingStatusHistory fundingStatusHistory : fundingStatusHistoryListOfOneFile ) {
+                fundingStatusHistoryList.add( fundingStatusHistory );
+            }
+        }
+        fundingStatusHistoryList = FundingStatusHistoryUtil.sortById( fundingStatusHistoryList );
+        
+        return fundingStatusHistoryList;
+    }
+    
+
+
+    @Override
+    public List<FundingStatusHistory> findAll( int fundingStatusId ) throws Exception {
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_HISTORY_DATA_PATH + 
+            FundingStatusHistoryUtil.getFundingStatusHistoryCsvFileName( fundingStatusId );
         ArrayList<FundingStatusHistory> fundingStatusHistoryList = new ArrayList<FundingStatusHistory>();
         
         if( !checkIfFileExists( csvFilePath ) ) {
@@ -136,7 +198,8 @@ public class FundingStatusHistoryDAOImpl implements FundingStatusHistoryDAO {
 
     @Override
     public boolean delete( FundingStatusHistory fundingStatusHistory ) throws Exception {
-        String csvFilePath = Contants.FUNDING_STATUS_HISTORY_DATA_PATH + Contants.FUNDING_STATUS_HISTORY_FILENAME;
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_HISTORY_DATA_PATH + 
+            FundingStatusHistoryUtil.getFundingStatusHistoryCsvFileName( fundingStatusHistory );
         if( !checkIfFileExists( csvFilePath ) ) {
             return false;
         }
@@ -180,12 +243,13 @@ public class FundingStatusHistoryDAOImpl implements FundingStatusHistoryDAO {
 
     @Override
     public int getCurrentSeqNumber() throws Exception {
-        if( !checkIfFileExists( Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH ) ) {
+        String seqFilePath = systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH;
+        if( !checkIfFileExists( seqFilePath ) ) {
             return Integer.parseInt( Contants.INITIAL_SEQ_NUMBER ) - 1;
         }
         
         BufferedReader bufReader = new BufferedReader( new InputStreamReader(
-                new FileInputStream( new File( Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH ) ),
+                new FileInputStream( new File( seqFilePath ) ),
                 Contants.FILE_CHARSET
             )
         );
@@ -214,7 +278,7 @@ public class FundingStatusHistoryDAOImpl implements FundingStatusHistoryDAO {
     }
     
     private void createCsvFile( String fileName ) throws IOException {
-        File f = new File( Contants.FUNDING_STATUS_HISTORY_DATA_PATH );
+        File f = new File( systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_HISTORY_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 
@@ -229,7 +293,7 @@ public class FundingStatusHistoryDAOImpl implements FundingStatusHistoryDAO {
     }
     
     private void createSeqFile( String fileName ) throws IOException {
-        File f = new File( Contants.FUNDING_STATUS_HISTORY_DATA_PATH );
+        File f = new File( systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_HISTORY_DATA_PATH );
         f.mkdirs();
         
         BufferedWriter bufWriter = new BufferedWriter( 
