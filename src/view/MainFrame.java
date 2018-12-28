@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
 import main.FundBookServices;
+import view.FundingStatus.FundingStatusPanel;
 import view.IncomeRecord.IncomeRecordPanel;
 
 public class MainFrame extends JFrame {
@@ -18,6 +19,7 @@ public class MainFrame extends JFrame {
     
     private JTabbedPane tabbedPane;
     private IncomeRecordPanel incomeRecordPanel;
+    private FundingStatusPanel fundingStatusPanel;
     
     public MainFrame( FundBookServices fundBookServices ) {
         super( "Fund Book" );
@@ -27,6 +29,9 @@ public class MainFrame extends JFrame {
         incomeRecordPanel = new IncomeRecordPanel( fundBookServices, this );
         tabbedPane.addTab( "收支記錄", null, incomeRecordPanel, "記錄每個月的收支狀況" );
         tabbedPane.addKeyListener( new MnemonicKeyHandler() );
+        
+        fundingStatusPanel = new FundingStatusPanel( fundBookServices, this );
+        tabbedPane.addTab( "財務儲存狀況", null, fundingStatusPanel, "記錄目前財務儲存的狀況" );
         
         add( tabbedPane );
         

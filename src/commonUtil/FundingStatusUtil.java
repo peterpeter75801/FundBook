@@ -80,4 +80,19 @@ public class FundingStatusUtil {
             return true;
         }
     }
+    
+    public static String getTypeName( Character type ) {
+        switch( type ) {
+        case 'C':
+            return "現金";
+        case 'D':
+            return "活存";
+        case 'T':
+            return "定存";
+        case 'R':
+            return "信用卡";
+        default:
+            return "";
+        }
+    }
 }

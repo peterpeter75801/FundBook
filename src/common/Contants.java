@@ -42,7 +42,6 @@ public class Contants {
     public static final String FUNDING_STATUS_HISTORY_CSV_FILE_ATTR_STRING = 
         "id,fundingStatusId,year,month,day,hour,minute,second,action,originAmount,modifiedAmount,difference,description";
     public static final String FUNDING_STATUS_HISTORY_DATA_PATH = "./data/FundingStatusHistory/";
-    public static final String FUNDING_STATUS_HISTORY_FILENAME = "FundingStatusHistory.csv";
     public static final String FUNDING_STATUS_HISTORY_SEQ_FILE_PATH = "./data/FundingStatusHistory/FundingStatusHistorySeq.txt";
     
     // Check Record Configurations

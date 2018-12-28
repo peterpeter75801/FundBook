@@ -1,3 +1,7 @@
+---- version 0.2.2-pre----
+1. Add FundingStatus's panel.
+2. Add FundingStatus creating dialog.
+
 ---- version 0.2.1-pre----
 1.Support directly execute main jar file from other directory that out of the project root directory.
 2.Consider "fundingStatusId" attribute in FundingStatusHistory as an index, and change its storage architecture.
