@@ -4,6 +4,7 @@ import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -11,12 +12,28 @@ import java.util.Date;
 import java.util.HashMap;
 import javax.swing.JOptionPane;
 
+import common.Contants;
+import common.SystemInfo;
 import domain.IncomeRecord;
+import main.FundBook;
 import main.FundBookServices;
+import repository.CheckRecordDAO;
+import repository.DigitalWalletDAO;
+import repository.FundingStatusDAO;
+import repository.FundingStatusHistoryDAO;
+import repository.IncomeRecordDAO;
+import repository.TotalPropertyDAO;
+import repository.impl.CheckRecordDAOImpl;
+import repository.impl.DigitalWalletDAOImpl;
+import repository.impl.FundingStatusDAOImpl;
+import repository.impl.FundingStatusHistoryDAOImpl;
 import repository.impl.IncomeRecordDAOImpl;
 import repository.impl.TotalPropertyDAOImpl;
 import service.IncomeRecordService;
-import service.TotalPropertyService;
+import service.impl.CheckRecordServiceImpl;
+import service.impl.DigitalWalletServiceImpl;
+import service.impl.FundingStatusHistoryServiceImpl;
+import service.impl.FundingStatusServiceImpl;
 import service.impl.IncomeRecordServiceImpl;
 import service.impl.TotalPropertyServiceImpl;
 import view.MainFrame;
@@ -26,8 +43,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-
-import common.Contants;
 
 import static org.junit.Assert.*;
 
@@ -44,7 +59,6 @@ public class IncomeRecordCalculatingTests {
     
     private FundBookServices fundBookServices;
     private IncomeRecordService incomeRecordService;
-    private TotalPropertyService totalPropertyService;
     
     private Calendar calendar;
     private int currentYear;
@@ -53,14 +67,9 @@ public class IncomeRecordCalculatingTests {
     private MainFrame mainFrame = null;
     
     @Before
-    public void setUp() throws IOException {
-        incomeRecordService = new IncomeRecordServiceImpl( new IncomeRecordDAOImpl() );
-        totalPropertyService = new TotalPropertyServiceImpl( new TotalPropertyDAOImpl() );
-        ((IncomeRecordServiceImpl)incomeRecordService).setTotalPropertyService( totalPropertyService );
-        fundBookServices = new FundBookServices();
-        fundBookServices.setIncomeRecordService( incomeRecordService );
-        fundBookServices.setTotalPropertyService( totalPropertyService );
-        
+    public void setUp() throws IOException, URISyntaxException {
+        fundBookServices = defaultFundBookServices();
+        incomeRecordService = fundBookServices.getIncomeRecordService();
         backupFile( getIncomeRecordCsvFilePathOfCurrentDay(), getIncomeRecordCsvFilePathBackupOfCurrentDay() );
         backupFile( INCOME_RECORD_CSV_FILE_PATH, INCOME_RECORD_CSV_FILE_PATH_BACKUP );
         backupFile( INCOME_RECORD_SEQ_FILE_PATH, INCOME_RECORD_SEQ_FILE_PATH_BACKUP );
@@ -77,8 +86,6 @@ public class IncomeRecordCalculatingTests {
     public void tearDown() throws IOException, InterruptedException {
         fundBookServices = null;
         incomeRecordService = null;
-        totalPropertyService = null;
-        
         restoreFile( TOTAL_PROPERTY_SEQ_FILE_PATH_BACKUP, Contants.TOTAL_PROPERTY_SEQ_FILE_PATH );
         restoreFile( TOTAL_PROPERTY_CSV_FILE_PATH_BACKUP, TOTAL_PROPERTY_CSV_FILE_PATH );
         restoreFile( INCOME_RECORD_SEQ_FILE_PATH_BACKUP, INCOME_RECORD_SEQ_FILE_PATH );
@@ -172,6 +179,35 @@ public class IncomeRecordCalculatingTests {
         
         return String.format( "./data/IncomeRecord/%04d.%02d_backup.csv", 
             calendar.get( Calendar.YEAR ), calendar.get( Calendar.MONTH ) + 1 );
+    }
+    
+    private FundBookServices defaultFundBookServices() throws URISyntaxException {
+        // Initialize system information
+        SystemInfo systemInfo = new SystemInfo(
+            new File( FundBook.class.getProtectionDomain().getCodeSource().getLocation().toURI() ).getParent() );
+        
+        // Initialize DAOs
+        IncomeRecordDAO incomeRecordDAO = new IncomeRecordDAOImpl( systemInfo );
+        TotalPropertyDAO totalPropertyDAO = new TotalPropertyDAOImpl( systemInfo );
+        FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl( systemInfo );
+        FundingStatusHistoryDAO fundingStatusHistoryDAO = new FundingStatusHistoryDAOImpl( systemInfo );
+        CheckRecordDAO checkRecordDAO = new CheckRecordDAOImpl( systemInfo );
+        DigitalWalletDAO digitalWalletDAO = new DigitalWalletDAOImpl( systemInfo );
+        
+        // Initialize services
+        FundBookServices fundBookServices = new FundBookServices();
+        fundBookServices.setIncomeRecordService( new IncomeRecordServiceImpl( incomeRecordDAO ) );
+        fundBookServices.setTotalPropertyService( new TotalPropertyServiceImpl( totalPropertyDAO ) );
+        fundBookServices.setFundingStatusService( new FundingStatusServiceImpl( fundingStatusDAO ) );
+        fundBookServices.setFundingStatusHistoryService( new FundingStatusHistoryServiceImpl( fundingStatusHistoryDAO ) );
+        fundBookServices.setCheckRecordService( new CheckRecordServiceImpl( checkRecordDAO ) );
+        fundBookServices.setDigitalWalletService( new DigitalWalletServiceImpl( digitalWalletDAO ) );
+        
+        // Set services wired relation
+        ((IncomeRecordServiceImpl)fundBookServices.getIncomeRecordService()).setTotalPropertyService(
+                fundBookServices.getTotalPropertyService() );
+        
+        return fundBookServices;
     }
     
     private void backupFile( String filePath, String backupFilePath )
