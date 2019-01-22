@@ -92,4 +92,14 @@ public class FundingStatusHistoryUtilTests {
         assertTrue( FundingStatusHistoryUtil.equals( data1, data3 ) );
         assertFalse( FundingStatusHistoryUtil.equals( data1, data2 ) );
     }
+    
+    @Test
+    public void testEqualsIgnoreTime() {
+        FundingStatusHistory data1 = new FundingStatusHistory( 1, 1, 2017, 12, 30, 12, 0, 0, 'C', 0, 10000, 10000, "" );
+        FundingStatusHistory data2 = new FundingStatusHistory( 2, 2, 2017, 12, 30, 12, 0, 0, 'U', 5000, 10000, 5000, "" );
+        FundingStatusHistory data3 = new FundingStatusHistory( 1, 1, 2017, 12, 30, 12, 30, 0, 'C', 0, 10000, 10000, "" );
+        
+        assertTrue( FundingStatusHistoryUtil.equalsIgnoreTime( data1, data3 ) );
+        assertFalse( FundingStatusHistoryUtil.equalsIgnoreTime( data1, data2 ) );
+    }
 }

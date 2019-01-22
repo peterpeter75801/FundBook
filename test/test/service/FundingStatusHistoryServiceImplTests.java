@@ -103,6 +103,32 @@ public class FundingStatusHistoryServiceImplTests {
     }
     
     @Test
+    public void testFindByFundingStatusId() {
+        List<FundingStatusHistory> expectedDataList = new ArrayList<FundingStatusHistory>();
+        expectedDataList.add( new FundingStatusHistory( 3, 3, 2017, 10, 1, 12, 0, 0, 'C', 0, 50000, 50000, "" ) );
+        expectedDataList.add( new FundingStatusHistory( 4, 3, 2017, 11, 28, 12, 0, 0, 'U', 100000, 120000, 20000, "" ) );
+        expectedDataList.add( new FundingStatusHistory( 5, 3, 2017, 12, 1, 12, 0, 0, 'M', 120000, 90000, -30000, "" ) );
+        List<FundingStatusHistory> actualDataList = null;
+        
+        try {
+            fundingStatusHistoryService.insert( new FundingStatusHistory( 0, 1, 2017, 12, 30, 12, 0, 0, 'C', 0, 10000, 10000, "" ) );
+            fundingStatusHistoryService.insert( new FundingStatusHistory( 0, 2, 2017, 12, 30, 12, 0, 0, 'U', 5000, 10000, 5000, "" ) );
+            fundingStatusHistoryService.insert( new FundingStatusHistory( 0, 3, 2017, 10, 1, 12, 0, 0, 'C', 0, 50000, 50000, "" ) );
+            fundingStatusHistoryService.insert( new FundingStatusHistory( 0, 3, 2017, 11, 28, 12, 0, 0, 'U', 100000, 120000, 20000, "" ) );
+            fundingStatusHistoryService.insert( new FundingStatusHistory( 0, 3, 2017, 12, 1, 12, 0, 0, 'M', 120000, 90000, -30000, "" ) );
+            
+            actualDataList = fundingStatusHistoryService.findByFundingStatusId( 3 );
+            assertEquals( 3, actualDataList.size() );
+            for( int i = 0; i < 3; i++ ) {
+                assertTrue( FundingStatusHistoryUtil.equals( expectedDataList.get( i ), actualDataList.get( i ) ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        }
+    }
+    
+    @Test
     public void testDelete() throws IOException {
         List<FundingStatusHistory> expectDataList = new ArrayList<FundingStatusHistory>();
         expectDataList.add( new FundingStatusHistory( 1, 1, 2017, 12, 30, 12, 0, 0, 'C', 0, 10000, 10000, "" ) );

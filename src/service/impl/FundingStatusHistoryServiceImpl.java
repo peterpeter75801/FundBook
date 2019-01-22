@@ -1,5 +1,6 @@
 package service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import common.Contants;
@@ -33,12 +34,25 @@ public class FundingStatusHistoryServiceImpl implements FundingStatusHistoryServ
 
     @Override
     public FundingStatusHistory findOne( Integer id ) throws Exception {
-        return fundingStatusHistoryDAO.findOne( id );
+        if( id == null ) {
+            return null;
+        } else {
+            return fundingStatusHistoryDAO.findOne( id );
+        }
     }
 
     @Override
     public List<FundingStatusHistory> findAll() throws Exception {
         return fundingStatusHistoryDAO.findAll();
+    }
+
+    @Override
+    public List<FundingStatusHistory> findByFundingStatusId( Integer fundingStatusId ) throws Exception {
+        if( fundingStatusId == null ) {
+            return new ArrayList<FundingStatusHistory>();
+        } else {
+            return fundingStatusHistoryDAO.findAll( fundingStatusId );
+        }
     }
 
     @Override

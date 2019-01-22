@@ -12,5 +12,7 @@ public interface FundingStatusHistoryService {
     
     public List<FundingStatusHistory> findAll() throws Exception;
     
+    public List<FundingStatusHistory> findByFundingStatusId( Integer fundingStatusId ) throws Exception;
+    
     public int delete( FundingStatusHistory fundingStatusHistory ) throws Exception;
 }

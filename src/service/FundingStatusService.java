@@ -6,6 +6,8 @@ import domain.FundingStatus;
 
 public interface FundingStatusService {
     
+    public int initialDefault() throws Exception;
+    
     public int insert( FundingStatus fundingStatus ) throws Exception;
     
     public FundingStatus findOne( Integer id ) throws Exception;

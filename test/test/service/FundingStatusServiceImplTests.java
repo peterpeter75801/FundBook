@@ -3,14 +3,22 @@ package test.service;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import common.Contants;
+import commonUtil.FundingStatusHistoryUtil;
 import commonUtil.FundingStatusUtil;
 import domain.FundingStatus;
+import domain.FundingStatusHistory;
 import repository.FundingStatusDAO;
+import repository.FundingStatusHistoryDAO;
 import repository.impl.FundingStatusDAOImpl;
+import repository.impl.FundingStatusHistoryDAOImpl;
+import service.FundingStatusHistoryService;
 import service.FundingStatusService;
+import service.impl.FundingStatusHistoryServiceImpl;
 import service.impl.FundingStatusServiceImpl;
 
 import org.junit.After;
@@ -28,23 +36,73 @@ public class FundingStatusServiceImplTests {
             Contants.FUNDING_STATUS_DATA_PATH + Contants.FUNDING_STATUS_FILENAME;
     private final String FUNDING_STATUS_CSV_FILE_PATH_BACKUP = "./data/FundingStatus/FundingStatus_backup.csv";
     private final String FUNDING_STATUS_SEQ_FILE_PATH_BACKUP = "./data/FundingStatus/FundingStatusSeq_backup.txt";
+    private final String FUNDING_STATUS_HISTORY_CSV_FILE_PATH = "./data/FundingStatusHistory/1.csv";
+    private final String FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP = "./data/FundingStatusHistory/1_backup.csv";
+    private final String FUNDING_STATUS_HISTORY_SEQ_FILE_PATH_BACKUP = "./data/FundingStatusHistory/FundingStatusHistorySeq_backup.txt";
     
     private FundingStatusService fundingStatusService;
+    private FundingStatusHistoryService fundingStatusHistoryService;
     
     @Before
     public void setUp() throws IOException {
         FundingStatusDAO fundingStatusDAO = new FundingStatusDAOImpl();
         fundingStatusService = new FundingStatusServiceImpl( fundingStatusDAO );
+        FundingStatusHistoryDAO fundingStatusHistoryDAO = new FundingStatusHistoryDAOImpl();
+        fundingStatusHistoryService = new FundingStatusHistoryServiceImpl( fundingStatusHistoryDAO );
+        
+        ((FundingStatusServiceImpl)fundingStatusService).setFundingStatusHistoryService( fundingStatusHistoryService );
         
         backupFile( FUNDING_STATUS_CSV_FILE_PATH, FUNDING_STATUS_CSV_FILE_PATH_BACKUP );
         backupFile( Contants.FUNDING_STATUS_SEQ_FILE_PATH, FUNDING_STATUS_SEQ_FILE_PATH_BACKUP );
+        backupFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP );
+        backupFile( Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH, FUNDING_STATUS_HISTORY_SEQ_FILE_PATH_BACKUP );
     }
     
     @After
     public void tearDown() throws IOException {
         fundingStatusService = null;
+        restoreFile( FUNDING_STATUS_HISTORY_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH );
+        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_HISTORY_CSV_FILE_PATH );
         restoreFile( FUNDING_STATUS_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_SEQ_FILE_PATH );
         restoreFile( FUNDING_STATUS_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_CSV_FILE_PATH );
+    }
+    
+    @Test
+    public void testInitialDefault() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        int currentYear = calendar.get( Calendar.YEAR );
+        int currentMonth = calendar.get( Calendar.MONTH ) + 1;
+        int currentDay = calendar.get( Calendar.DAY_OF_MONTH );
+        
+        List<FundingStatus> expectFundingStatus = new ArrayList<FundingStatus>();
+        expectFundingStatus.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1 ) );
+        List<FundingStatusHistory> expectFundingStatusHistory = new ArrayList<FundingStatusHistory>();
+        expectFundingStatusHistory.add( new FundingStatusHistory( 1, 1, currentYear, currentMonth, currentDay, 0, 0, 0,
+                'C', 0, 0, 0, Contants.FUNDING_STATUS_DEFAULT_DATA_LOG_DESCRIPTION ) );
+        
+        try {
+            fundingStatusService.initialDefault();
+            
+            List<FundingStatus> actualFundingStatus = fundingStatusService.findAll();
+            assertEquals( expectFundingStatus.size(), actualFundingStatus.size() );
+            for( int i = 0; i < expectFundingStatus.size(); i++ ) {
+                assertTrue( "failed at i = " + i, FundingStatusUtil.equals( 
+                        expectFundingStatus.get( i ), actualFundingStatus.get( i ) ) );
+            }
+            
+            List<FundingStatusHistory> actualFundingStatusHistory = fundingStatusHistoryService.findByFundingStatusId(  
+                    Contants.FUNDING_STATUS_DEFAULT_ID );
+            assertEquals( expectFundingStatusHistory.size(), actualFundingStatusHistory.size() );
+            for( int i = 0; i < expectFundingStatus.size(); i++ ) {
+                assertTrue( "failed at i = " + i, FundingStatusHistoryUtil.equalsIgnoreTime( 
+                        expectFundingStatusHistory.get( i ), actualFundingStatusHistory.get( i ) ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        }
     }
     
     @Test

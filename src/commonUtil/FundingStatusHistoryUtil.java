@@ -126,4 +126,34 @@ public class FundingStatusHistoryUtil {
             return true;
         }
     }
+    
+    public static boolean equalsIgnoreTime( FundingStatusHistory data1, FundingStatusHistory data2 ) {
+        if( data1 == null && data2 == null ) {
+            return true;
+        } else if( data1 == null || data2 == null ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getId(), data2.getId() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getFundingStatusId(), data2.getFundingStatusId() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getYear(), data2.getYear() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getMonth(), data2.getMonth() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getDay(), data2.getDay() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getAction(), data2.getAction() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getOriginAmount(), data2.getOriginAmount() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getModifiedAmount(), data2.getModifiedAmount() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getDifference(), data2.getDifference() ) != 0 ) {
+            return false;
+        } else if( ComparingUtil.compare( data1.getDescription(), data2.getDescription() ) != 0 ) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

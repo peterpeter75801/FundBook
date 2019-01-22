@@ -3,7 +3,7 @@ package domain;
 public class FundingStatus {
 
     private Integer id;                         // ID
-    private Character type;                     // 種類: C-現金, D-活存, T-定存, R-信用卡
+    private Character type;                     // 種類: 0-預設, C-現金, D-活存, T-定存, R-信用卡
     private Integer year;                       // 建立日期-年
     private Integer month;                      // 建立日期-月
     private Integer day;                        // 建立日期-日

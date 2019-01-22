@@ -30,6 +30,82 @@ public class FundingStatusDAOImpl implements FundingStatusDAO {
     public FundingStatusDAOImpl( SystemInfo systemInfo ) {
         this.systemInfo = systemInfo;
     }
+
+    @Override
+    public boolean createDefault( FundingStatus fundingStatus ) throws Exception {
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_DATA_PATH + Contants.FUNDING_STATUS_FILENAME;
+        if( !checkIfFileExists( csvFilePath ) ) {
+            createCsvFile( csvFilePath );
+        }
+        
+        ArrayList<String> fileContentBuffer = new ArrayList<String>();
+        String currentTuple = "";
+        
+        BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                new FileInputStream( new File( csvFilePath ) ),
+                Contants.FILE_CHARSET
+            )
+        );
+        // read attribute titles
+        bufReader.readLine();    // skip attribute titles
+        // search data & modify data
+        while( (currentTuple = bufReader.readLine()) != null ) {
+            fileContentBuffer.add( currentTuple );
+        }
+        bufReader.close();
+        
+        if( fundingStatus.getId() != Contants.FUNDING_STATUS_DEFAULT_ID || findOne( fundingStatus.getId() ) != null ) {
+            return false;
+        }
+        BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream( new File( csvFilePath ), false ),
+                    Contants.FILE_CHARSET
+                )
+            );
+        writer.write( Contants.FUNDING_STATUS_CSV_FILE_ATTR_STRING );
+        writer.newLine();
+        writer.write( FundingStatusUtil.getCsvTupleStringFromFundingStatus( fundingStatus ) );
+        writer.newLine();
+        for( String content : fileContentBuffer ) {
+            writer.write( content );
+            writer.newLine();
+        }
+        writer.close();
+        
+        // 更新Funding Status的流水號(ID)
+        String seqFilePath = systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_SEQ_FILE_PATH;
+        if( !checkIfFileExists( seqFilePath ) ) {
+            createSeqFile( seqFilePath );
+        }
+        bufReader = new BufferedReader( new InputStreamReader(
+                new FileInputStream( new File( seqFilePath ) ),
+                Contants.FILE_CHARSET
+            )
+        );
+        Integer currentSeqNumber = null;
+        try {
+            currentSeqNumber = Integer.parseInt( bufReader.readLine() );
+        } catch( NumberFormatException e ) {
+            return false;
+        } finally {
+            bufReader.close();
+        }
+        if( currentSeqNumber == Contants.FUNDING_STATUS_DEFAULT_ID ) {
+            writer = new BufferedWriter(
+                    new OutputStreamWriter(
+                        new FileOutputStream( new File( seqFilePath ), false ),
+                        Contants.FILE_CHARSET
+                    )
+                );
+            currentSeqNumber++;
+            writer.write( currentSeqNumber.toString() );
+            writer.newLine();
+            writer.close();
+        }
+        
+        return true;
+    }
     
     @Override
     public boolean insert( FundingStatus fundingStatus ) throws Exception {

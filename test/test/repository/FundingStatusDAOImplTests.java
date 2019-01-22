@@ -47,6 +47,57 @@ public class FundingStatusDAOImplTests {
     }
     
     @Test
+    public void testCreateDefault() {
+        String[] expectedData = { "1,0,2019,1,21,\"預設可動用資金\",0,\"\",0" };
+        String[] actualData = new String[ 1 ];
+        try {
+            // testing creating default funding status data with incorrect ID
+            fundingStatusDAO.createDefault( new FundingStatus( 5, '0', 2019, 01, 21, "預設可動用資金", 0, "", 0 ) );
+            
+            BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                    new FileInputStream( new File( FUNDING_STATUS_CSV_FILE_PATH ) ),
+                    Contants.FILE_CHARSET
+                )
+            );
+            bufReader.readLine();    // skip attribute titles
+            
+            String currentTuple = "";
+            int i = 0;
+            for( ; (currentTuple = bufReader.readLine()) != null; i++ ) {
+                actualData[ i ] = currentTuple;
+            }
+            bufReader.close();
+            
+            assertEquals( 0, i );
+            
+            // testing creating default funding status data with correct ID
+            fundingStatusDAO.createDefault( new FundingStatus( 1, '0', 2019, 01, 21, "預設可動用資金", 0, "", 0 ) );
+            
+            bufReader = new BufferedReader( new InputStreamReader(
+                    new FileInputStream( new File( FUNDING_STATUS_CSV_FILE_PATH ) ),
+                    Contants.FILE_CHARSET
+                )
+            );
+            bufReader.readLine();    // skip attribute titles
+            
+            currentTuple = "";
+            i = 0;
+            for( ; (currentTuple = bufReader.readLine()) != null; i++ ) {
+                actualData[ i ] = currentTuple;
+            }
+            bufReader.close();
+            
+            assertEquals( 1, i );
+            for( i = 0; i < 1; i++ ) {
+                assertEquals( "failed at i = " + i, expectedData[ i ], actualData[ i ] );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        }
+    }
+    
+    @Test
     public void testInsert() throws IOException {
         String[] expectedData = {
                 "1,D,2017,12,30,\"中華郵政 #12345671234567\",10000,\"\",0", 

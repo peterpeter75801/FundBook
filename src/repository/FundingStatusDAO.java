@@ -6,6 +6,8 @@ import domain.FundingStatus;
 
 public interface FundingStatusDAO {
     
+    public boolean createDefault( FundingStatus fundingStatus ) throws Exception;
+    
     public boolean insert( FundingStatus fundingStatus ) throws Exception;
     
     public FundingStatus findOne( int id ) throws Exception;

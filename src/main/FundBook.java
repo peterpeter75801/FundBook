@@ -1,7 +1,6 @@
 package main;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 import common.SystemInfo;
 import repository.CheckRecordDAO;
@@ -26,7 +25,7 @@ import view.MainFrame;
 
 public class FundBook {
     
-    public static void main( String args[] ) throws URISyntaxException {
+    public static void main( String args[] ) throws Exception {
         // Initialize system information
         SystemInfo systemInfo = new SystemInfo(
             new File( FundBook.class.getProtectionDomain().getCodeSource().getLocation().toURI() ).getParent() );
@@ -51,6 +50,11 @@ public class FundBook {
         // Set services wired relation
         ((IncomeRecordServiceImpl)fundBookServices.getIncomeRecordService()).setTotalPropertyService(
                 fundBookServices.getTotalPropertyService() );
+        ((FundingStatusServiceImpl)fundBookServices.getFundingStatusService()).setFundingStatusHistoryService(
+                fundBookServices.getFundingStatusHistoryService() );
+        
+        // Initial default funding status data
+        fundBookServices.getFundingStatusService().initialDefault();
         
         // Initialize UI
         MainFrame mainFrame = new MainFrame( fundBookServices );

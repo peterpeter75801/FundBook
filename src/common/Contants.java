@@ -33,10 +33,13 @@ public class Contants {
     public static final String TOTAL_PROPERTY_SEQ_FILE_PATH = "./data/TotalProperty/TotalPropertySeq.txt";
     
     // Funding Status Configurations
-    public static final String FUNDING_STATUS_CSV_FILE_ATTR_STRING = "id,type,year,month,day,storedPlaceOrInstitution,amount,description";
+    public static final String FUNDING_STATUS_CSV_FILE_ATTR_STRING = "id,type,year,month,day,storedPlaceOrInstitution,amount,description,order";
     public static final String FUNDING_STATUS_DATA_PATH = "./data/FundingStatus/";
     public static final String FUNDING_STATUS_FILENAME = "FundingStatus.csv";
     public static final String FUNDING_STATUS_SEQ_FILE_PATH = "./data/FundingStatus/FundingStatusSeq.txt";
+    public static final int FUNDING_STATUS_DEFAULT_ID = 1;
+    public static final String FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION = "預設可動用資金";
+    public static final String FUNDING_STATUS_DEFAULT_DATA_LOG_DESCRIPTION = "初始化預設可動用資金";
     
     // Funding Status History Configurations
     public static final String FUNDING_STATUS_HISTORY_CSV_FILE_ATTR_STRING = 
