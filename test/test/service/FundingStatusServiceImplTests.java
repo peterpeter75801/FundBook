@@ -95,7 +95,7 @@ public class FundingStatusServiceImplTests {
     public void testInitialDefault() {
         List<FundingStatus> expectFundingStatus = new ArrayList<FundingStatus>();
         expectFundingStatus.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
-                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1 ) );
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1, false ) );
         List<FundingStatusHistory> expectFundingStatusHistory = new ArrayList<FundingStatusHistory>();
         expectFundingStatusHistory.add( new FundingStatusHistory( 1, 1, currentYear, currentMonth, currentDay, 0, 0, 0,
                 'C', 0, 0, 0, Contants.FUNDING_STATUS_DEFAULT_DATA_LOG_DESCRIPTION ) );
@@ -127,11 +127,11 @@ public class FundingStatusServiceImplTests {
     public void testInsert() throws IOException {
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
         expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
-                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1 ) );
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1, false ) );
         expectDataList.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
-                "中華郵政 #12345671234567", 10000, "", 2 ) );
+                "中華郵政 #12345671234567", 10000, "", 2, false ) );
         expectDataList.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
-                "土地銀行 #01234560123456", 100000, "", 3 ) );
+                "土地銀行 #01234560123456", 100000, "", 3, false ) );
         
         List<FundingStatusHistory> expectHisDataList = new ArrayList<FundingStatusHistory>();
         expectHisDataList.add( new FundingStatusHistory( 1, 1, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
@@ -144,9 +144,9 @@ public class FundingStatusServiceImplTests {
         try {
             fundingStatusService.initialDefault();
             fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
-                    "中華郵政 #12345671234567", 10000, "", 0 ) );
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
             fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
-                    "土地銀行 #01234560123456", 100000, "", 0 ) );
+                    "土地銀行 #01234560123456", 100000, "", 0, false ) );
             
             List<FundingStatus> actualDataList = fundingStatusService.findAll();
             assertEquals( expectDataList.size(), actualDataList.size() );
@@ -169,14 +169,14 @@ public class FundingStatusServiceImplTests {
     @Test
     public void testFindOne() throws IOException {
         FundingStatus expect = new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
-                "土地銀行 #01234560123456", 100000, "", 3 );
+                "土地銀行 #01234560123456", 100000, "", 3, false );
         
         try {
             fundingStatusService.initialDefault();
             fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
-                    "中華郵政 #12345671234567", 10000, "", 0 ) );
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
             fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
-                    "土地銀行 #01234560123456", 100000, "", 0 ) );
+                    "土地銀行 #01234560123456", 100000, "", 0, false ) );
             
             FundingStatus actual = fundingStatusService.findOne( 3 );
             assertTrue( FundingStatusUtil.equals( expect, actual ) );
@@ -191,19 +191,19 @@ public class FundingStatusServiceImplTests {
     @Test
     public void testUpdate() throws Exception {
         FundingStatus modifiedData1 = new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
-                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 5000, "", 1 );
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 5000, "", 1, false );
         FundingStatus modifiedData2 = new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
-                "中華郵政 #12345671234567", 12000, "", 2 );
+                "中華郵政 #12345671234567", 12000, "", 2, false );
         FundingStatus modifiedData3 = new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
-                "土地銀行 #01234560abcdef", 100000, "", 3 );
+                "土地銀行 #01234560abcdef", 100000, "", 3, false );
         
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
         expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
-                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 5000, "", 1 ) );
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 5000, "", 1, false ) );
         expectDataList.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
-                "中華郵政 #12345671234567", 12000, "", 2 ) );
+                "中華郵政 #12345671234567", 12000, "", 2, false ) );
         expectDataList.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
-                "土地銀行 #01234560abcdef", 100000, "", 3 ) );
+                "土地銀行 #01234560abcdef", 100000, "", 3, false ) );
         
         List<FundingStatusHistory> expectHisDataList = new ArrayList<FundingStatusHistory>();
         expectHisDataList.add( new FundingStatusHistory( 1, 1, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
@@ -218,9 +218,9 @@ public class FundingStatusServiceImplTests {
         try {
             fundingStatusService.initialDefault();
             fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
-                    "中華郵政 #12345671234567", 10000, "", 0 ) );
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
             fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
-                    "土地銀行 #01234560123456", 100000, "", 0 ) );
+                    "土地銀行 #01234560123456", 100000, "", 0, false ) );
             
             fundingStatusService.update( modifiedData1 );
             fundingStatusService.update( modifiedData2 );
@@ -253,11 +253,11 @@ public class FundingStatusServiceImplTests {
         
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
         expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
-                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 5000, "", 1 ) );
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 5000, "", 1, false ) );
         expectDataList.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
-                "中華郵政 #12345671234567", 15000, "", 2 ) );
+                "中華郵政 #12345671234567", 15000, "", 2, false ) );
         expectDataList.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
-                "土地銀行 #01234560123456", 100000, "", 3 ) );
+                "土地銀行 #01234560123456", 100000, "", 3, false ) );
         
         List<FundingStatusHistory> expectHisDataList = new ArrayList<FundingStatusHistory>();
         expectHisDataList.add( new FundingStatusHistory( 1, 1, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
@@ -272,9 +272,9 @@ public class FundingStatusServiceImplTests {
         try {
             fundingStatusService.initialDefault();
             fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
-                    "中華郵政 #12345671234567", 10000, "", 0 ) );
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
             fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
-                    "土地銀行 #01234560123456", 100000, "", 0 ) );
+                    "土地銀行 #01234560123456", 100000, "", 0, false ) );
             
             fundingStatusService.updateAmount( inputId1, inputAmount1 );
             fundingStatusService.updateAmount( inputId2, inputAmount2 );
@@ -304,11 +304,11 @@ public class FundingStatusServiceImplTests {
         
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
         expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
-                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1 ) );
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1, false ) );
         expectDataList.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
-                "中華郵政 #12345671234567", 10000, "", 2 ) );
+                "中華郵政 #12345671234567", 10000, "", 2, false ) );
         expectDataList.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
-                "土地銀行 #01234560abcdef", 100000, "", 3 ) );
+                "土地銀行 #01234560abcdef", 100000, "", 3, false ) );
         
         List<FundingStatusHistory> expectHisDataList = new ArrayList<FundingStatusHistory>();
         expectHisDataList.add( new FundingStatusHistory( 1, 1, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
@@ -321,9 +321,9 @@ public class FundingStatusServiceImplTests {
         try {
             fundingStatusService.initialDefault();
             fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
-                    "中華郵政 #12345671234567", 10000, "", 0 ) );
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
             fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
-                    "土地銀行 #01234560123456", 100000, "", 0 ) );
+                    "土地銀行 #01234560123456", 100000, "", 0, false ) );
             
             fundingStatusService.updateStoredPlaceOrInstitution( inputId, inputStoredPlaceOrInstitution );
             
@@ -353,11 +353,11 @@ public class FundingStatusServiceImplTests {
         
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
         expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
-                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1 ) );
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1, false ) );
         expectDataList.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
-                "中華郵政 #12345671234567", 10200, "", 2 ) );
+                "中華郵政 #12345671234567", 10200, "", 2, false ) );
         expectDataList.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
-                "土地銀行 #01234560123456", 100000, "", 3 ) );
+                "土地銀行 #01234560123456", 100000, "", 3, false ) );
         
         List<FundingStatusHistory> expectHisDataList = new ArrayList<FundingStatusHistory>();
         expectHisDataList.add( new FundingStatusHistory( 1, 1, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
@@ -374,9 +374,9 @@ public class FundingStatusServiceImplTests {
         try {
             fundingStatusService.initialDefault();
             fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
-                    "中華郵政 #12345671234567", 10000, "", 0 ) );
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
             fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
-                    "土地銀行 #01234560123456", 100200, "", 0 ) );
+                    "土地銀行 #01234560123456", 100200, "", 0, false ) );
             
             fundingStatusService.moveAmount( inputSourceId, inputDestinationId, inputAmount );
             
@@ -398,21 +398,74 @@ public class FundingStatusServiceImplTests {
         }
     }
     
-    //@Test
+    @Test
     public void testDelete() throws IOException {
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
         expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
-                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1 ) );
-        expectDataList.add( new FundingStatus( 2, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "", 2 ) );
-        expectDataList.add( new FundingStatus( 3, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "", 3 ) );
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1, false ) );
+        expectDataList.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
+                "土地銀行 #01234560123456", 100000, "", 2, false ) );
+        
+        List<FundingStatusHistory> expectHisDataList = new ArrayList<FundingStatusHistory>();
+        expectHisDataList.add( new FundingStatusHistory( 1, 1, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
+                0, 0, 0, Contants.FUNDING_STATUS_DEFAULT_DATA_LOG_DESCRIPTION ) );
+        expectHisDataList.add( new FundingStatusHistory( 2, 2, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
+                0, 10000, 10000, "" ) );
+        expectHisDataList.add( new FundingStatusHistory( 3, 3, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
+                0, 100000, 100000, "" ) );
+        expectHisDataList.add( new FundingStatusHistory( 4, 2, currentYear, currentMonth, currentDay, 0, 0, 0, 'D', 
+                10000, 10000, 0, "永久刪除" ) );
         
         try {
             fundingStatusService.initialDefault();
-            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "", 0 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "", 0 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
+                    "土地銀行 #01234560123456", 100000, "", 0, false ) );
             
-            FundingStatus deletedData = new FundingStatus( 2, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "", 2 );
+            FundingStatus deletedData = new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
+                    "中華郵政 #12345671234567", 10000, "", 2, false );
             fundingStatusService.delete( deletedData );
+            
+            List<FundingStatus> actualDataList = fundingStatusService.findAll();
+            assertEquals( expectDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectDataList.size(); i++ ) {
+                assertTrue( "failed at i = " + i, FundingStatusUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        }
+    }
+    
+    @Test
+    public void testDisable() {
+        List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
+        expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1, false ) );
+        expectDataList.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
+                "土地銀行 #01234560123456", 100000, "", 2, false ) );
+        expectDataList.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
+                "中華郵政 #12345671234567", 10000, "", 3, true ) );
+        
+        List<FundingStatusHistory> expectHisDataList = new ArrayList<FundingStatusHistory>();
+        expectHisDataList.add( new FundingStatusHistory( 1, 1, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
+                0, 0, 0, Contants.FUNDING_STATUS_DEFAULT_DATA_LOG_DESCRIPTION ) );
+        expectHisDataList.add( new FundingStatusHistory( 2, 2, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
+                0, 10000, 10000, "" ) );
+        expectHisDataList.add( new FundingStatusHistory( 3, 3, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
+                0, 100000, 100000, "" ) );
+        expectHisDataList.add( new FundingStatusHistory( 4, 2, currentYear, currentMonth, currentDay, 0, 0, 0, 'D', 
+                10000, 10000, 0, "" ) );
+        
+        try {
+            fundingStatusService.initialDefault();
+            fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
+                    "土地銀行 #01234560123456", 100000, "", 0, false ) );
+            
+            fundingStatusService.disable( 2 );
             
             List<FundingStatus> actualDataList = fundingStatusService.findAll();
             assertEquals( expectDataList.size(), actualDataList.size() );
@@ -433,9 +486,9 @@ public class FundingStatusServiceImplTests {
         try {
             fundingStatusService.initialDefault();
             fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
-                    "中華郵政 #12345671234567", 10000, "", 0 ) );
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
             fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
-                    "土地銀行 #01234560123456", 100000, "", 0 ) );
+                    "土地銀行 #01234560123456", 100000, "", 0, false ) );
             
             actual = fundingStatusService.getCount();
             assertEquals( expect, actual );
@@ -449,18 +502,18 @@ public class FundingStatusServiceImplTests {
     public void testMoveUp() throws IOException {
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
         expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
-                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1 ) );
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 1, false ) );
         expectDataList.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
-                "土地銀行 #01234560123456", 100000, "", 2 ) );
+                "土地銀行 #01234560123456", 100000, "", 2, false ) );
         expectDataList.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
-                "中華郵政 #12345671234567", 10000, "", 3 ) );
+                "中華郵政 #12345671234567", 10000, "", 3, false ) );
         
         try {
             fundingStatusService.initialDefault();
             fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
-                    "中華郵政 #12345671234567", 10000, "", 0 ) );
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
             fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
-                    "土地銀行 #01234560123456", 100000, "", 0 ) );
+                    "土地銀行 #01234560123456", 100000, "", 0, false ) );
             
             fundingStatusService.moveUp( 1 );
             fundingStatusService.moveUp( 3 );
@@ -480,21 +533,83 @@ public class FundingStatusServiceImplTests {
     public void testMoveDown() throws IOException {
         List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
         expectDataList.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
-                "中華郵政 #12345671234567", 10000, "", 1 ) );
+                "中華郵政 #12345671234567", 10000, "", 1, false ) );
         expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
-                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 2 ) );
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 2, false ) );
         expectDataList.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
-                "土地銀行 #01234560123456", 100000, "", 3 ) );
+                "土地銀行 #01234560123456", 100000, "", 3, false ) );
         
         try {
             fundingStatusService.initialDefault();
             fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
-                    "中華郵政 #12345671234567", 10000, "", 0 ) );
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
             fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
-                    "土地銀行 #01234560123456", 100000, "", 0 ) );
+                    "土地銀行 #01234560123456", 100000, "", 0, false ) );
             
             fundingStatusService.moveDown( 1 );
             fundingStatusService.moveDown( 3 );
+            
+            List<FundingStatus> actualDataList = fundingStatusService.findAll();
+            assertEquals( expectDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectDataList.size(); i++ ) {
+                assertTrue( "failed at i = " + i, FundingStatusUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        }
+    }
+    
+    @Test
+    public void testMoveUpWithDisabledData() throws IOException {
+        List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
+        expectDataList.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
+                "中華郵政 #12345671234567", 10000, "", 1, false ) );
+        expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 2, false ) );
+        expectDataList.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
+                "土地銀行 #01234560123456", 100000, "", 3, true ) );
+        
+        try {
+            fundingStatusService.initialDefault();
+            fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
+                    "土地銀行 #01234560123456", 100000, "", 0, true ) );
+            
+            fundingStatusService.moveUp( 2 );
+            fundingStatusService.moveUp( 3 );
+            
+            List<FundingStatus> actualDataList = fundingStatusService.findAll();
+            assertEquals( expectDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectDataList.size(); i++ ) {
+                assertTrue( "failed at i = " + i, FundingStatusUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        }
+    }
+    
+    @Test
+    public void testMoveDownWithDisabledData() throws IOException {
+        List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
+        expectDataList.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
+                "中華郵政 #12345671234567", 10000, "", 1, false ) );
+        expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
+                Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 2, false ) );
+        expectDataList.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
+                "土地銀行 #01234560123456", 100000, "", 3, true ) );
+        
+        try {
+            fundingStatusService.initialDefault();
+            fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay, 
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
+                    "土地銀行 #01234560123456", 100000, "", 0, true ) );
+            
+            fundingStatusService.moveDown( 1 );
+            fundingStatusService.moveDown( 2 );
             
             List<FundingStatus> actualDataList = fundingStatusService.findAll();
             assertEquals( expectDataList.size(), actualDataList.size() );

@@ -45,7 +45,7 @@ public class FundingStatusServiceImpl implements FundingStatusService {
         int currentSecond = calendar.get( Calendar.SECOND );
         
         FundingStatus defaultFundingStatus = new FundingStatus( Contants.FUNDING_STATUS_DEFAULT_ID, '0', 
-                currentYear, currentMonth, currentDay, Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 0 );
+                currentYear, currentMonth, currentDay, Contants.FUNDING_STATUS_DEFAULT_STORED_PLACE_OR_INSTITUTION, 0, "", 0, false );
         returnCode = fundingStatusDAO.createDefault( defaultFundingStatus );
         if( !returnCode ) {
             return Contants.ERROR;
@@ -311,12 +311,14 @@ public class FundingStatusServiceImpl implements FundingStatusService {
     @Override
     public int delete( FundingStatus fundingStatus ) throws Exception {
         boolean returnCode;
+        int returnStatus;
         
         if( fundingStatus.getId() == null ) {
             return Contants.ERROR_EMPTY_NECESSARY_PARAMETER;
         }
         
-        if( fundingStatusDAO.findOne( fundingStatus.getId() ) == null ) {
+        FundingStatus originalFundingStatus = fundingStatusDAO.findOne( fundingStatus.getId() );
+        if( originalFundingStatus == null ) {
             return Contants.ERROR_NOT_EXIST;
         }
         
@@ -326,6 +328,71 @@ public class FundingStatusServiceImpl implements FundingStatusService {
         }
         returnCode = fundingStatusDAO.refreshOrderNo();
         if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        int currentYear = calendar.get( Calendar.YEAR );
+        int currentMonth = calendar.get( Calendar.MONTH ) + 1;
+        int currentDay = calendar.get( Calendar.DAY_OF_MONTH );
+        int currentHour = calendar.get( Calendar.HOUR_OF_DAY );
+        int currentMinute = calendar.get( Calendar.MINUTE );
+        int currentSecond = calendar.get( Calendar.SECOND );
+        
+        FundingStatusHistory fundingStatusHistory = new FundingStatusHistory( 0, fundingStatus.getId(), 
+                currentYear, currentMonth, currentDay, currentHour, currentMinute, currentSecond, 'D', 
+                originalFundingStatus.getAmount(), originalFundingStatus.getAmount(), 0, "永久刪除" );
+        returnStatus = fundingStatusHistoryService.insert( fundingStatusHistory );
+        if( returnStatus != Contants.SUCCESS ) {
+            return Contants.ERROR;
+        }
+        
+        return Contants.SUCCESS;
+    }
+
+    @Override
+    public int disable( Integer id ) throws Exception {
+        boolean returnCode;
+        int returnStatus;
+        
+        if( id == null ) {
+            return Contants.ERROR_EMPTY_NECESSARY_PARAMETER;
+        }
+        
+        FundingStatus disabledFundingStatus = fundingStatusDAO.findOne( id );
+        if( disabledFundingStatus == null ) {
+            return Contants.ERROR_NOT_EXIST;
+        }
+        
+        disabledFundingStatus.setDisabledFlag( true );
+        returnCode = fundingStatusDAO.update( disabledFundingStatus );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        returnCode = fundingStatusDAO.moveToBottom( disabledFundingStatus.getOrderNo() );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        returnCode = fundingStatusDAO.refreshOrderNo();
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime( new Date() );
+        int currentYear = calendar.get( Calendar.YEAR );
+        int currentMonth = calendar.get( Calendar.MONTH ) + 1;
+        int currentDay = calendar.get( Calendar.DAY_OF_MONTH );
+        int currentHour = calendar.get( Calendar.HOUR_OF_DAY );
+        int currentMinute = calendar.get( Calendar.MINUTE );
+        int currentSecond = calendar.get( Calendar.SECOND );
+        
+        FundingStatusHistory fundingStatusHistory = new FundingStatusHistory( 0, id, 
+                currentYear, currentMonth, currentDay, currentHour, currentMinute, currentSecond, 'D', 
+                disabledFundingStatus.getAmount(), disabledFundingStatus.getAmount(), 0, "" );
+        returnStatus = fundingStatusHistoryService.insert( fundingStatusHistory );
+        if( returnStatus != Contants.SUCCESS ) {
             return Contants.ERROR;
         }
         
@@ -339,10 +406,10 @@ public class FundingStatusServiceImpl implements FundingStatusService {
 
     @Override
     public int moveUp( int orderNo ) throws Exception {
-        int count = fundingStatusDAO.getCount();
+        int activeCount = fundingStatusDAO.getActiveCount();
         boolean returnCode;
         
-        if( orderNo <= 1 || orderNo > count ) {
+        if( orderNo <= 1 || orderNo > activeCount ) {
             return Contants.NO_DATA_MODIFIED;
         }
         
@@ -360,10 +427,10 @@ public class FundingStatusServiceImpl implements FundingStatusService {
 
     @Override
     public int moveDown( int orderNo ) throws Exception {
-        int count = fundingStatusDAO.getCount();
+        int activeCount = fundingStatusDAO.getActiveCount();
         boolean returnCode;
         
-        if( orderNo >= count ) {
+        if( orderNo >= activeCount ) {
             return Contants.NO_DATA_MODIFIED;
         }
         

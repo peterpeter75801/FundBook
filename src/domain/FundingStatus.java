@@ -11,11 +11,12 @@ public class FundingStatus {
     private Integer amount;                     // 金額
     private String description;                 // 描述
     private Integer orderNo;                    // 排序編號
+    private Boolean disabledFlag;               // 停用flag
     
     public FundingStatus() {}
     
     public FundingStatus( int id, char type, int year, int month, int day, 
-            String storedPlaceOrInstitution, int amount, String description, int orderNo ) {
+            String storedPlaceOrInstitution, int amount, String description, int orderNo, boolean disabledFlag ) {
         this.id = id;
         this.type = type;
         this.year = year;
@@ -25,6 +26,7 @@ public class FundingStatus {
         this.amount = amount;
         this.description = description;
         this.orderNo = orderNo;
+        this.disabledFlag = disabledFlag;
     }
     
     public void setId( Integer id ) {
@@ -97,5 +99,13 @@ public class FundingStatus {
     
     public Integer getOrderNo() {
         return orderNo;
+    }
+    
+    public void setDisabledFlag( Boolean disabledFlag ) {
+        this.disabledFlag = disabledFlag;
+    }
+    
+    public Boolean getDisabledFlag() {
+        return disabledFlag;
     }
 }

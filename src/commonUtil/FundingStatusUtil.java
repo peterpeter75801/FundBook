@@ -4,7 +4,7 @@ import domain.FundingStatus;
 
 public class FundingStatusUtil {
     
-    private final static int ATTRIBUTE_NUMBER = 9;
+    private final static int ATTRIBUTE_NUMBER = 10;
     
     public static FundingStatus getFundingStatusFromCsvTupleString( String tuple ) throws Exception {
         String[] csvDataArray = CsvFormatParser.parseFromTuple( tuple );
@@ -18,6 +18,7 @@ public class FundingStatusUtil {
         fundingStatus.setAmount( Integer.parseInt( csvDataArray[ 6 ] ) );
         fundingStatus.setDescription( csvDataArray[ 7 ] );
         fundingStatus.setOrderNo( Integer.parseInt( csvDataArray[ 8 ] ) );
+        fundingStatus.setDisabledFlag( Boolean.parseBoolean( csvDataArray[ 9 ] ) );
         return fundingStatus;
     }
     
@@ -32,6 +33,7 @@ public class FundingStatusUtil {
         csvDataArray[ 6 ] = CsvFormatParser.toCsvData( fundingStatus.getAmount() );
         csvDataArray[ 7 ] = CsvFormatParser.toCsvData( fundingStatus.getDescription() );
         csvDataArray[ 8 ] = CsvFormatParser.toCsvData( fundingStatus.getOrderNo() );
+        csvDataArray[ 9 ] = CsvFormatParser.toCsvData( fundingStatus.getDisabledFlag() );
         return CsvFormatParser.mergeCsvDataToATuple( csvDataArray );
     }
     
@@ -49,6 +51,7 @@ public class FundingStatusUtil {
             clone.setAmount( fundingStatus.getAmount() );
             clone.setDescription( fundingStatus.getDescription() );
             clone.setOrderNo( fundingStatus.getOrderNo() );
+            clone.setDisabledFlag( fundingStatus.getDisabledFlag() );
             return clone;
         }
     }
@@ -76,6 +79,8 @@ public class FundingStatusUtil {
             return false;
         } else if( ComparingUtil.compare( data1.getOrderNo(), data2.getOrderNo() ) != 0 ) {
             return false;
+        } else if( ComparingUtil.compare( data1.getDisabledFlag(), data2.getDisabledFlag() ) != 0 ) {
+            return false;
         } else {
             return true;
         }
@@ -83,14 +88,16 @@ public class FundingStatusUtil {
     
     public static String getTypeName( Character type ) {
         switch( type ) {
+        case '0':
+            return "È†êË®≠";
         case 'C':
-            return "≤{™˜";
+            return "ÁèæÈáë";
         case 'D':
-            return "¨°¶s";
+            return "Ê¥ªÂ≠ò";
         case 'T':
-            return "©w¶s";
+            return "ÂÆöÂ≠ò";
         case 'R':
-            return "´H•Œ•d";
+            return "‰ø°Áî®Âç°";
         default:
             return "";
         }

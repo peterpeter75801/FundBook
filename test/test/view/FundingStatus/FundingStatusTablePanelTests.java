@@ -76,11 +76,11 @@ public class FundingStatusTablePanelTests {
         int testerSelection = 0;
         try {
             // 新增初始資料
-            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "", 0 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "", 0 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "", 0 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "", 0 ) );
-            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "", 0 ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 12, 30, "中華郵政 #12345671234567", 10000, "", 0, false ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'C', 2017, 12, 30, "隨身現金", 5000, "", 0, false ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 11, 28, "土地銀行 #01234560123456", 100000, "", 0, false ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'D', 2017, 10, 01, "土地銀行 #01234567890123", 50000, "", 0, false ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', 2017, 10, 28, "土地銀行 #11223344556677", 200000, "", 0, false ) );
             
             // 執行視窗程式
             mainFrame = new MainFrame( fundBookServices );
@@ -124,7 +124,7 @@ public class FundingStatusTablePanelTests {
         try {
             // 新增初始資料
             for( int i = 1; i <= 30; i++ ) {
-                FundingStatus fundingStatus = new FundingStatus( 0, 'D', 2017, 12, i, "活存帳號" + i, 10000 * i, "", 0 );
+                FundingStatus fundingStatus = new FundingStatus( 0, 'D', 2017, 12, i, "活存帳號" + i, 10000 * i, "", 0, false );
                 fundingStatusService.insert( fundingStatus );
             }
             

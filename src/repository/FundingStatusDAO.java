@@ -24,7 +24,11 @@ public interface FundingStatusDAO {
     
     public int getCount() throws Exception;
     
+    public int getActiveCount() throws Exception;
+    
     public boolean moveUp( int orderNo ) throws Exception;
     
     public boolean moveDown( int orderNo ) throws Exception;
+    
+    public boolean moveToBottom( int orderNo ) throws Exception;
 }

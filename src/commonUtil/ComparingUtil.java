@@ -37,4 +37,16 @@ public class ComparingUtil {
             return c1.compareTo( c2 );
         }
     }
+    
+    public static int compare( Boolean b1, Boolean b2 ) {
+        if( b1 == null && b2 == null ) {
+            return 0;
+        } else if( b1 != null && b2 == null ) {
+            return 1;
+        } else if( b1 == null && b2 != null ) {
+            return -1;
+        } else {
+            return b1.compareTo( b2 );
+        }
+    }
 }

@@ -106,6 +106,17 @@ public class CsvFormatParser {
     }
 
     /**
+     * translate Boolean type data to csv format data.
+     */
+    public static String toCsvData( Boolean data ) {
+        if( data == null || data != true ) {
+            return "\"false\"";
+        } else {
+            return "\"true\"";
+        }
+    }
+
+    /**
      * merge multiple CSV data to a tuple.
      */
     public static String mergeCsvDataToATuple( String[] csvData ) {

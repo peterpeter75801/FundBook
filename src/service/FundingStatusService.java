@@ -24,6 +24,8 @@ public interface FundingStatusService {
     
     public int delete( FundingStatus fundingStatus ) throws Exception;
     
+    public int disable( Integer id ) throws Exception;
+    
     public int getCount() throws Exception;
     
     public int moveUp( int orderNo ) throws Exception;

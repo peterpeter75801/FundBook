@@ -408,6 +408,35 @@ public class FundingStatusDAOImpl implements FundingStatusDAO {
         
         return count;
     }
+    
+    @Override
+    public int getActiveCount() throws Exception {
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_DATA_PATH + Contants.FUNDING_STATUS_FILENAME;
+        int count = 0;
+        
+        if( !checkIfFileExists( csvFilePath ) ) {
+            return count;
+        }
+        
+        String currentTuple = "";
+        BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                new FileInputStream( new File( csvFilePath ) ),
+                Contants.FILE_CHARSET
+            )
+        );
+        // read attribute titles
+        bufReader.readLine();
+        // compute data count
+        while( (currentTuple = bufReader.readLine()) != null ) {
+            FundingStatus currentFundingStatus = FundingStatusUtil.getFundingStatusFromCsvTupleString( currentTuple );
+            if( currentTuple.length() > 0 && currentFundingStatus.getDisabledFlag() == false ) {
+                count++;
+            }
+        }
+        bufReader.close();
+        
+        return count;
+    }
 
     @Override
     public boolean moveUp( int orderNo ) throws Exception {
@@ -494,6 +523,60 @@ public class FundingStatusDAOImpl implements FundingStatusDAO {
             fileContentBuffer.add( FundingStatusUtil.getCsvTupleStringFromFundingStatus( swap ) );
         }
         bufReader.close();
+        
+        // write file content buffer to CSV data file
+        BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(
+                    new FileOutputStream( new File( csvFilePath ), false ),
+                    Contants.FILE_CHARSET
+                )
+            );
+        for( String content : fileContentBuffer ) {
+            writer.write( content );
+            writer.newLine();
+        }
+        writer.close();
+        
+        return true;
+    }
+
+    @Override
+    public boolean moveToBottom( int orderNo ) throws Exception {
+        String csvFilePath = systemInfo.getRootDirectory() + "/" + Contants.FUNDING_STATUS_DATA_PATH + Contants.FUNDING_STATUS_FILENAME;
+        if( !checkIfFileExists( csvFilePath ) ) {
+            return false;
+        }
+        
+        ArrayList<String> fileContentBuffer = new ArrayList<String>();
+        String currentTuple = "";
+        FundingStatus currentFundingStatus = new FundingStatus();
+        FundingStatus swap = null;
+        
+        BufferedReader bufReader = new BufferedReader( new InputStreamReader(
+                new FileInputStream( new File( csvFilePath ) ),
+                Contants.FILE_CHARSET
+            )
+        );
+        // read attribute titles
+        fileContentBuffer.add( bufReader.readLine() );
+        // read data & refresh order number
+        while( (currentTuple = bufReader.readLine()) != null ) {
+            currentFundingStatus = FundingStatusUtil.getFundingStatusFromCsvTupleString( currentTuple );
+            if( currentFundingStatus.getOrderNo() == orderNo ) {
+                swap = currentFundingStatus;
+            } else {
+                fileContentBuffer.add( FundingStatusUtil.getCsvTupleStringFromFundingStatus( currentFundingStatus ) );
+            }
+        }
+        if( swap != null ) {
+            fileContentBuffer.add( FundingStatusUtil.getCsvTupleStringFromFundingStatus( swap ) );
+        }
+        bufReader.close();
+        
+        // No data changed
+        if( swap == null ) {
+            return false;
+        }
         
         // write file content buffer to CSV data file
         BufferedWriter writer = new BufferedWriter(
