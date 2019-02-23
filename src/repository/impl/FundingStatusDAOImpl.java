@@ -146,6 +146,9 @@ public class FundingStatusDAOImpl implements FundingStatusDAO {
         writer.newLine();
         writer.close();
         
+        // 將新增的Funding Status流水號(ID)記錄並回傳
+        fundingStatus.setId( currentSeqNumber );
+        
         // 更新Funding Status的流水號(ID)
         writer = new BufferedWriter(
                 new OutputStreamWriter(

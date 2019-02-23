@@ -39,8 +39,16 @@ public class MainFrame extends JFrame {
         pack();
     }
     
+    public JTabbedPane getTabbedPane() {
+        return tabbedPane;
+    }
+    
     public IncomeRecordPanel getIncomeRecordPanel() {
         return incomeRecordPanel;
+    }
+    
+    public FundingStatusPanel getFundingStatusPanel() {
+        return fundingStatusPanel;
     }
     
     @Override

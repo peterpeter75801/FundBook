@@ -5,13 +5,16 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
@@ -91,8 +94,8 @@ public class FundingStatusTablePanel extends JPanel {
         dataTable.getInputMap( JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT ).put( 
             KeyStroke.getKeyStroke( KeyEvent.VK_ENTER, 0 ), "none" );
             
-        // dataTable.addKeyListener( new MnemonicKeyHandler() );
-        // dataTable.addKeyListener( new SpecialFocusTraversalPolicyHandler() );
+        dataTable.addKeyListener( new MnemonicKeyHandler() );
+        dataTable.addKeyListener( new SpecialFocusTraversalPolicyHandler() );
         
         initializeTableStyle();
         
@@ -102,6 +105,10 @@ public class FundingStatusTablePanel extends JPanel {
         add( dataTableScrollPane );
         
         setPreferredSize( new Dimension( 675, 479 ) );
+    }
+    
+    public JTable getDataTable() {
+        return dataTable;
     }
     
     public int getItemTableSelectedId() {
@@ -168,10 +175,10 @@ public class FundingStatusTablePanel extends JPanel {
         }
     }
     
-    // public void loadIncomeRecordByMonthAndSelectId( int idForSelecting ) {
-    //     loadFundingStatus();
-    //     selectDataById( idForSelecting );
-    // }
+    public void loadFundingStatusAndSelectId( int idForSelecting ) {
+        loadFundingStatus();
+        selectDataById( idForSelecting );
+    }
     
     public void selectDataById( int id ) {
         DefaultTableModel model = (DefaultTableModel) dataTable.getModel();
@@ -216,5 +223,50 @@ public class FundingStatusTablePanel extends JPanel {
                 return this;
             }
         });
+    }
+    
+    private class SpecialFocusTraversalPolicyHandler implements KeyListener {
+        
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            JButton createButton = ownerPanel.getCreateButton();
+            JTabbedPane tabbedPane = ownerPanel.getOwnerFrame().getTabbedPane();
+            
+            if( event.getKeyCode() != KeyEvent.VK_TAB ) {
+                return;
+            }
+            
+            if( event.getSource() == dataTable && !event.isShiftDown() ) {
+                createButton.requestFocus();
+            } else if( event.getSource() == dataTable && event.isShiftDown() ) {
+                tabbedPane.requestFocus();
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
+    }
+    
+    private class MnemonicKeyHandler implements KeyListener {
+        
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            switch( event.getKeyCode() ) {
+            case KeyEvent.VK_C:
+                ownerPanel.openFundingStatusCreateDialog();
+                break;
+            default:
+                break;
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
     }
 }
