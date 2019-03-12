@@ -60,5 +60,5 @@ public class Contants {
     public static final String DIGITAL_WALLET_SEQ_FILE_PATH = "./data/DigitalWallet/DigitalWalletSeq.txt";
     
     // Version Number
-    public static final String VERSION = "Version 0.2.1-pre";
+    public static final String VERSION = "Version 0.2.2-pre";
 }

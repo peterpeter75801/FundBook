@@ -1,6 +1,10 @@
 ---- version 0.2.2-pre----
-1. Add FundingStatus's panel.
-2. Add FundingStatus creating dialog.
+1. Add FundingStatus's panel and FundingStatus creating dialog.
+2. Bug fix: Unit tests in "test.view.IncomeRecord" package will display error message.
+3. Add a "default" type into the type attribute of FundingStatus domain.
+4. Add "default" type FundingStatus concept into unit test of FundingStatusService.
+5. While changing FundingStatus data in FundingStatusService, recording FundingStatusHistory data.
+6. Add "disabled" property in FundingStatus domain, and add "disabled" concept in FundingStatusService.
 
 ---- version 0.2.1-pre----
 1.Support directly execute main jar file from other directory that out of the project root directory.
