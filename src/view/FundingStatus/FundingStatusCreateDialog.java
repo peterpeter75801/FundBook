@@ -372,6 +372,9 @@ public class FundingStatusCreateDialog extends JDialog {
         public void keyPressed( KeyEvent event ) {
             switch( event.getKeyCode() ) {
             case KeyEvent.VK_ENTER:
+                if( event.getSource() instanceof JTextComponent && !((JTextComponent)event.getSource()).isEditable() ) {
+                    break;
+                }
                 if( event.getSource() != finishButton ) {
                     createFundingStatus();
                 } else {

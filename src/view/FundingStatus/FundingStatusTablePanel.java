@@ -258,6 +258,9 @@ public class FundingStatusTablePanel extends JPanel {
             case KeyEvent.VK_C:
                 ownerPanel.openFundingStatusCreateDialog();
                 break;
+            case KeyEvent.VK_M:
+                ownerPanel.openFundingStatusAmountMoveDialog();
+                break;
             default:
                 break;
             }

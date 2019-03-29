@@ -26,11 +26,12 @@ public class FundingStatusPanel extends JPanel {
     private MainFrame ownerFrame;
     private FundingStatusTablePanel fundingStatusTablePanel;
     private FundingStatusCreateDialog fundingStatusCreateDialog;
+    private FundingStatusAmountMoveDialog fundingStatusAmountMoveDialog;
     
     private MnemonicKeyHandler mnemonicKeyHandler;
     private Font generalFont;
     private JButton createButton;
-    private JButton transferButton;
+    private JButton moveAmountButton;
     private JButton modifyAmountButton;
     private JButton modifyAttribute;
     private JButton disableButton;
@@ -56,6 +57,7 @@ public class FundingStatusPanel extends JPanel {
         add( fundingStatusTablePanel );
         
         fundingStatusCreateDialog = new FundingStatusCreateDialog( fundBookServices.getFundingStatusService(), ownerFrame );
+        fundingStatusAmountMoveDialog = new FundingStatusAmountMoveDialog( fundBookServices.getFundingStatusService(), ownerFrame );
         
         createButton = new JButton( "新增(C)" );
         createButton.setBounds( 685, 32, 96, 22 );
@@ -70,12 +72,18 @@ public class FundingStatusPanel extends JPanel {
         });
         add( createButton );
         
-        transferButton = new JButton( "移動金額(M)" );
-        transferButton.setBounds( 685, 76, 96, 22 );
-        transferButton.setFont( generalFont );
-        transferButton.addKeyListener( mnemonicKeyHandler );
-        transferButton.setMargin( new Insets( 0, 0, 0, 0 ) );
-        add( transferButton );
+        moveAmountButton = new JButton( "移動金額(M)" );
+        moveAmountButton.setBounds( 685, 76, 96, 22 );
+        moveAmountButton.setFont( generalFont );
+        moveAmountButton.addKeyListener( mnemonicKeyHandler );
+        moveAmountButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        moveAmountButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                openFundingStatusAmountMoveDialog();
+            }
+        });
+        add( moveAmountButton );
         
         modifyAmountButton = new JButton( "修改金額(A)" );
         modifyAmountButton.setBounds( 685, 120, 96, 22 );
@@ -162,6 +170,13 @@ public class FundingStatusPanel extends JPanel {
         fundingStatusCreateDialog.openDialog();
     }
     
+    public void openFundingStatusAmountMoveDialog() {
+        int selectedId = fundingStatusTablePanel.getItemTableSelectedId();
+        if( selectedId != -1 ) {
+            fundingStatusAmountMoveDialog.openDialog( selectedId );
+        }
+    }
+    
     public void refresh() {
         fundingStatusTablePanel.loadFundingStatus();
     }
@@ -178,13 +193,21 @@ public class FundingStatusPanel extends JPanel {
             case KeyEvent.VK_ENTER:
                 if( event.getSource() == createButton ) {
                     openFundingStatusCreateDialog();
-                } 
+                } else if( event.getSource() == moveAmountButton ) {
+                    openFundingStatusAmountMoveDialog();
+                }
                 break;
             case KeyEvent.VK_C:
                 if( event.getSource() != fundingStatusTablePanel.getDataTable() ) {
                     createButton.requestFocus();
                 }
                 openFundingStatusCreateDialog();
+                break;
+            case KeyEvent.VK_M:
+                if( event.getSource() != fundingStatusTablePanel.getDataTable() ) {
+                    moveAmountButton.requestFocus();
+                }
+                openFundingStatusAmountMoveDialog();
                 break;
             default:
                 break;
