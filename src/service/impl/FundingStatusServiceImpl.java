@@ -165,7 +165,7 @@ public class FundingStatusServiceImpl implements FundingStatusService {
     }
     
     @Override
-    public int updateAmount( Integer id, Integer amount ) throws Exception {
+    public int updateAmount( Integer id, Integer amount, String comment ) throws Exception {
         boolean returnCode;
         int returnStatus;
         
@@ -189,7 +189,7 @@ public class FundingStatusServiceImpl implements FundingStatusService {
             return Contants.ERROR;
         }
         
-        if( id == Contants.FUNDING_STATUS_DEFAULT_ID ||
+        if( (id == Contants.FUNDING_STATUS_DEFAULT_ID && "".equals( comment )) ||
                 ComparingUtil.compare( originalFundingStatus.getAmount(), amount ) == 0 ) {
             return Contants.SUCCESS;
         }
@@ -206,7 +206,7 @@ public class FundingStatusServiceImpl implements FundingStatusService {
         int difference = amount - originalFundingStatus.getAmount();
         FundingStatusHistory fundingStatusHistory = new FundingStatusHistory( 0, id, 
                 currentYear, currentMonth, currentDay, currentHour, currentMinute, currentSecond, 'U', 
-                originalFundingStatus.getAmount(), amount, difference, "" );
+                originalFundingStatus.getAmount(), amount, difference, comment );
         returnStatus = fundingStatusHistoryService.insert( fundingStatusHistory );
         if( returnStatus != Contants.SUCCESS ) {
             return Contants.ERROR;

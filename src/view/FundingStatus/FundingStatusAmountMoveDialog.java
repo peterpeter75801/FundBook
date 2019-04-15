@@ -231,7 +231,6 @@ public class FundingStatusAmountMoveDialog extends JDialog {
         addComponentListener( new ComponentAdapter() {
             @Override
             public void componentHidden( ComponentEvent e ) {
-                System.out.println("componentHidden()");
                 dialogStatus = STATUS.CLOSING;
             }
         });

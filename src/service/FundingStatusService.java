@@ -16,7 +16,7 @@ public interface FundingStatusService {
     
     public int update( FundingStatus fundingStatus ) throws Exception;
     
-    public int updateAmount( Integer id, Integer amount ) throws Exception;
+    public int updateAmount( Integer id, Integer amount, String comment ) throws Exception;
     
     public int updateStoredPlaceOrInstitution( Integer id, String storedPlaceOrInstitution ) throws Exception;
     

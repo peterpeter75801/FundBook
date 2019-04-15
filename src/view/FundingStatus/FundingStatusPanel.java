@@ -27,6 +27,7 @@ public class FundingStatusPanel extends JPanel {
     private FundingStatusTablePanel fundingStatusTablePanel;
     private FundingStatusCreateDialog fundingStatusCreateDialog;
     private FundingStatusAmountMoveDialog fundingStatusAmountMoveDialog;
+    private FundingStatusAmountUpdateDialog fundingStatusAmountUpdateDialog;
     
     private MnemonicKeyHandler mnemonicKeyHandler;
     private Font generalFont;
@@ -58,6 +59,7 @@ public class FundingStatusPanel extends JPanel {
         
         fundingStatusCreateDialog = new FundingStatusCreateDialog( fundBookServices.getFundingStatusService(), ownerFrame );
         fundingStatusAmountMoveDialog = new FundingStatusAmountMoveDialog( fundBookServices.getFundingStatusService(), ownerFrame );
+        fundingStatusAmountUpdateDialog = new FundingStatusAmountUpdateDialog( fundBookServices.getFundingStatusService(), ownerFrame );
         
         createButton = new JButton( "新增(C)" );
         createButton.setBounds( 685, 32, 96, 22 );
@@ -90,6 +92,12 @@ public class FundingStatusPanel extends JPanel {
         modifyAmountButton.setFont( generalFont );
         modifyAmountButton.addKeyListener( mnemonicKeyHandler );
         modifyAmountButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        modifyAmountButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                openFundingStatusAmountUpdateDialog();
+            }
+        });
         add( modifyAmountButton );
         
         modifyAttribute = new JButton( "修改屬性(U)" );
@@ -177,6 +185,13 @@ public class FundingStatusPanel extends JPanel {
         }
     }
     
+    public void openFundingStatusAmountUpdateDialog() {
+        int selectedId = fundingStatusTablePanel.getItemTableSelectedId();
+        if( selectedId != -1 ) {
+            fundingStatusAmountUpdateDialog.openDialog( selectedId );
+        }
+    }
+    
     public void refresh() {
         fundingStatusTablePanel.loadFundingStatus();
     }
@@ -195,6 +210,8 @@ public class FundingStatusPanel extends JPanel {
                     openFundingStatusCreateDialog();
                 } else if( event.getSource() == moveAmountButton ) {
                     openFundingStatusAmountMoveDialog();
+                } else if( event.getSource() == modifyAmountButton ) {
+                    openFundingStatusAmountUpdateDialog();
                 }
                 break;
             case KeyEvent.VK_C:
@@ -208,6 +225,12 @@ public class FundingStatusPanel extends JPanel {
                     moveAmountButton.requestFocus();
                 }
                 openFundingStatusAmountMoveDialog();
+                break;
+            case KeyEvent.VK_A:
+                if( event.getSource() != fundingStatusTablePanel.getDataTable() ) {
+                    modifyAmountButton.requestFocus();
+                }
+                openFundingStatusAmountUpdateDialog();
                 break;
             default:
                 break;

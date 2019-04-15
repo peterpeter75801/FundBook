@@ -209,7 +209,7 @@ public class FundingStatusCreateDialog extends JDialog {
         typeButtonGroup.add( timeDepositRadioButton );
         typeButtonGroup.add( creditCardRadioButton );
         
-        fundNameLabel = new JLabel( "儲存地點/儲存機構: " ); // 152
+        fundNameLabel = new JLabel( "儲存地點/儲存機構: " );
         fundNameLabel.setBounds( 16, 74, 152, 22 );
         fundNameLabel.setFont( generalFont );
         dialogPanel.add( fundNameLabel );

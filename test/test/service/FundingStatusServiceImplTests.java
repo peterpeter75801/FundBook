@@ -154,7 +154,10 @@ public class FundingStatusServiceImplTests {
                 assertTrue( "failed at i = " + i, FundingStatusUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
             }
             
-            List<FundingStatusHistory> actualHisDataList = fundingStatusHistoryService.findAll();
+            List<FundingStatusHistory> actualHisDataList = new ArrayList<FundingStatusHistory>();
+            for( int i = 1; i <= 3; i++ ) {
+                actualHisDataList.add( fundingStatusHistoryService.findOne( i ) );
+            }
             assertEquals( expectHisDataList.size(), actualHisDataList.size() );
             for( int i = 0; i < expectHisDataList.size(); i++ ) {
                 assertTrue( "failed at i = " + i, FundingStatusHistoryUtil.equalsIgnoreTime( 
@@ -232,7 +235,10 @@ public class FundingStatusServiceImplTests {
                 assertTrue( "failed at i = " + i, FundingStatusUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
             }
             
-            List<FundingStatusHistory> actualHisDataList = fundingStatusHistoryService.findAll();
+            List<FundingStatusHistory> actualHisDataList = new ArrayList<FundingStatusHistory>();
+            for( int i = 1; i <= 4; i++ ) {
+                actualHisDataList.add( fundingStatusHistoryService.findOne( i ) );
+            }
             assertEquals( expectHisDataList.size(), actualHisDataList.size() );
             for( int i = 0; i < expectHisDataList.size(); i++ ) {
                 assertTrue( "failed at i = " + i, FundingStatusHistoryUtil.equalsIgnoreTime( 
@@ -267,7 +273,7 @@ public class FundingStatusServiceImplTests {
         expectHisDataList.add( new FundingStatusHistory( 3, 3, currentYear, currentMonth, currentDay, 0, 0, 0, 'C', 
                 0, 100000, 100000, "" ) );
         expectHisDataList.add( new FundingStatusHistory( 4, 2, currentYear, currentMonth, currentDay, 0, 0, 0, 'U', 
-                10000, 15000, 5000, "" ) );
+                10000, 15000, 5000, "test" ) );
         
         try {
             fundingStatusService.initialDefault();
@@ -276,8 +282,8 @@ public class FundingStatusServiceImplTests {
             fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay, 
                     "土地銀行 #01234560123456", 100000, "", 0, false ) );
             
-            fundingStatusService.updateAmount( inputId1, inputAmount1 );
-            fundingStatusService.updateAmount( inputId2, inputAmount2 );
+            fundingStatusService.updateAmount( inputId1, inputAmount1, "" );
+            fundingStatusService.updateAmount( inputId2, inputAmount2, "test" );
             
             List<FundingStatus> actualDataList = fundingStatusService.findAll();
             assertEquals( expectDataList.size(), actualDataList.size() );
@@ -285,7 +291,10 @@ public class FundingStatusServiceImplTests {
                 assertTrue( "failed at i = " + i, FundingStatusUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
             }
             
-            List<FundingStatusHistory> actualHisDataList = fundingStatusHistoryService.findAll();
+            List<FundingStatusHistory> actualHisDataList = new ArrayList<FundingStatusHistory>();
+            for( int i = 1; i <= 4; i++ ) {
+                actualHisDataList.add( fundingStatusHistoryService.findOne( i ) );
+            }
             assertEquals( expectHisDataList.size(), actualHisDataList.size() );
             for( int i = 0; i < expectHisDataList.size(); i++ ) {
                 assertTrue( "failed at i = " + i, FundingStatusHistoryUtil.equalsIgnoreTime( 
@@ -333,7 +342,10 @@ public class FundingStatusServiceImplTests {
                 assertTrue( "failed at i = " + i, FundingStatusUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
             }
             
-            List<FundingStatusHistory> actualHisDataList = fundingStatusHistoryService.findAll();
+            List<FundingStatusHistory> actualHisDataList = new ArrayList<FundingStatusHistory>();
+            for( int i = 1; i <= 3; i++ ) {
+                actualHisDataList.add( fundingStatusHistoryService.findOne( i ) );
+            }
             assertEquals( expectHisDataList.size(), actualHisDataList.size() );
             for( int i = 0; i < expectHisDataList.size(); i++ ) {
                 assertTrue( "failed at i = " + i, FundingStatusHistoryUtil.equalsIgnoreTime( 
@@ -386,7 +398,10 @@ public class FundingStatusServiceImplTests {
                 assertTrue( "failed at i = " + i, FundingStatusUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
             }
             
-            List<FundingStatusHistory> actualHisDataList = fundingStatusHistoryService.findAll();
+            List<FundingStatusHistory> actualHisDataList = new ArrayList<FundingStatusHistory>();
+            for( int i = 1; i <= 5; i++ ) {
+                actualHisDataList.add( fundingStatusHistoryService.findOne( i ) );
+            }
             assertEquals( expectHisDataList.size(), actualHisDataList.size() );
             for( int i = 0; i < expectHisDataList.size(); i++ ) {
                 assertTrue( "failed at i = " + i, FundingStatusHistoryUtil.equalsIgnoreTime( 
