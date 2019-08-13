@@ -241,6 +241,41 @@ public class FundingStatusServiceImpl implements FundingStatusService {
         
         return Contants.SUCCESS;
     }
+    
+    @Override
+    public int updateProperty( Integer id, Character type, String storedPlaceOrInstitution, String description ) throws Exception {
+        boolean returnCode;
+        
+        if( id == null ) {
+            return Contants.ERROR_EMPTY_NECESSARY_PARAMETER;
+        }
+        
+        FundingStatus originalFundingStatus = fundingStatusDAO.findOne( id );
+        if( originalFundingStatus == null ) {
+            return Contants.ERROR_NOT_EXIST;
+        }
+        
+        FundingStatus modifiedFundingStatus = FundingStatusUtil.copy( originalFundingStatus );
+        if( type != null ) {
+            modifiedFundingStatus.setType( type );
+        }
+        if( storedPlaceOrInstitution != null ) {
+            modifiedFundingStatus.setStoredPlaceOrInstitution( storedPlaceOrInstitution );
+        }
+        if( description != null ) {
+            modifiedFundingStatus.setDescription( description );
+        }
+        returnCode = fundingStatusDAO.update( modifiedFundingStatus );
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        returnCode = fundingStatusDAO.refreshOrderNo();
+        if( !returnCode ) {
+            return Contants.ERROR;
+        }
+        
+        return Contants.SUCCESS;
+    }
 
     @Override
     public int moveAmount( Integer sourceId, Integer destinationId, Integer amount ) throws Exception {

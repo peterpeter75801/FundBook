@@ -1,3 +1,8 @@
+---- version 0.2.3-pre----
+1. Add FundingStatus amount moving dialog.
+2. Add FundingStatus amount updating dialog.
+3. Add FundingStatus property updating dialog.
+
 ---- version 0.2.2-pre----
 1. Add FundingStatus's panel and FundingStatus creating dialog.
 2. Bug fix: Unit tests in "test.view.IncomeRecord" package will display error message.

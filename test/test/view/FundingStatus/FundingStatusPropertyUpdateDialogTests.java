@@ -27,10 +27,8 @@ import org.junit.runners.JUnit4;
 
 import common.Contants;
 import common.SystemInfo;
-import commonUtil.FundingStatusHistoryUtil;
 import commonUtil.FundingStatusUtil;
 import domain.FundingStatus;
-import domain.FundingStatusHistory;
 import main.FundBook;
 import main.FundBookServices;
 import repository.CheckRecordDAO;
@@ -55,7 +53,7 @@ import service.impl.TotalPropertyServiceImpl;
 import view.MainFrame;
 
 @RunWith(value=JUnit4.class)
-public class FundingStatusAmountMoveDialogTests {
+public class FundingStatusPropertyUpdateDialogTests {
     
     private final int TAB_DELAY = 100;
     private final String FUNDING_STATUS_SEQ_FILE_PATH_BACKUP = "./data/FundingStatus/FundingStatusSeq_backup.txt";
@@ -75,9 +73,6 @@ public class FundingStatusAmountMoveDialogTests {
     private int currentYear;
     private int currentMonth;
     private int currentDay;
-    private int currentHour;
-    private int currentMinute;
-    private int currentSecond;
     
     private boolean numLockKeyStateBackup;
     
@@ -98,9 +93,6 @@ public class FundingStatusAmountMoveDialogTests {
         currentYear = calendar.get( Calendar.YEAR );
         currentMonth = calendar.get( Calendar.MONTH ) + 1;
         currentDay = calendar.get( Calendar.DAY_OF_MONTH );
-        currentHour = calendar.get( Calendar.HOUR_OF_DAY );
-        currentMinute = calendar.get( Calendar.MINUTE );
-        currentSecond = calendar.get( Calendar.SECOND );
         
         try {
             numLockKeyStateBackup = Toolkit.getDefaultToolkit().getLockingKeyState( KeyEvent.VK_NUM_LOCK );
@@ -116,12 +108,12 @@ public class FundingStatusAmountMoveDialogTests {
     @After
     public void tearDown() throws IOException, InterruptedException {
         fundBookServices = null;
-        restoreFile( Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH, FUNDING_STATUS_HISTORY_SEQ_FILE_PATH_BACKUP );
-        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_3, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_3 );
-        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_2, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_2 );
-        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP );
-        restoreFile( Contants.FUNDING_STATUS_SEQ_FILE_PATH, FUNDING_STATUS_SEQ_FILE_PATH_BACKUP );
-        restoreFile( FUNDING_STATUS_CSV_FILE_PATH, FUNDING_STATUS_CSV_FILE_PATH_BACKUP );
+        restoreFile( FUNDING_STATUS_HISTORY_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH );
+        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_3, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_3 );
+        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_2, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_2 );
+        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_HISTORY_CSV_FILE_PATH );
+        restoreFile( FUNDING_STATUS_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_SEQ_FILE_PATH );
+        restoreFile( FUNDING_STATUS_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_CSV_FILE_PATH );
         try {
             Toolkit.getDefaultToolkit().setLockingKeyState( KeyEvent.VK_NUM_LOCK, numLockKeyStateBackup );
         } catch( UnsupportedOperationException e ) {
@@ -134,7 +126,7 @@ public class FundingStatusAmountMoveDialogTests {
     }
     
     @Test
-    public void testMoveFundingStatusAmount() {
+    public void testUpdateFundingStatusProperty() {
         int testerSelection = 0;
         FundingStatusService fundingStatusService = fundBookServices.getFundingStatusService();
         try {
@@ -162,79 +154,61 @@ public class FundingStatusAmountMoveDialogTests {
             bot.keyPress( KeyEvent.VK_RIGHT ); bot.keyRelease( KeyEvent.VK_RIGHT ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
             
-            // 選擇第3筆資料，點選"移動金額"按鈕
+            // 選擇第3筆資料，點選"修改屬性"按鈕
             bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
             bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
             bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
             bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
-            bot.keyPress( KeyEvent.VK_M ); bot.keyRelease( KeyEvent.VK_M ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_U ); bot.keyRelease( KeyEvent.VK_U ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
             
-            // 在移入金額項目選擇第二筆資料
-            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
-            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
-            
-            // 輸入移動金額為200元
-            inputString( bot, "200" );
+            // 輸入(測試複製貼上)要修改的儲存地點/儲存機構為"土地銀行 #01234560abcdef"
+            bot.keyPress( KeyEvent.VK_SHIFT );
+            for( int i = 0; i < 6; i++ ) {
+                bot.keyPress( KeyEvent.VK_LEFT ); bot.keyRelease( KeyEvent.VK_LEFT ); Thread.sleep( TAB_DELAY );
+            }
+            bot.keyRelease( KeyEvent.VK_SHIFT );
             textCopyTesting( bot, isLinuxBasedOSSelection );    // 測試複製功能
+            Thread.sleep( 500 );
+            bot.keyPress( KeyEvent.VK_CONTROL );
+            bot.keyPress( KeyEvent.VK_A ); bot.keyRelease( KeyEvent.VK_A ); Thread.sleep( TAB_DELAY );
+            bot.keyRelease( KeyEvent.VK_CONTROL );
+            bot.keyPress( KeyEvent.VK_DELETE ); bot.keyRelease( KeyEvent.VK_DELETE ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 500 );
+            textPasteTesting( bot, isLinuxBasedOSSelection );   // 測試貼上功能
+            Thread.sleep( 500 );
+            inputString( bot, "abcdef" );
+            Thread.sleep( 500 );
             
-            // 預覽
+            // 輸入要修改的描述為"test123"
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            inputString( bot, "test123" );
+            
+            // 選擇要修改的種類為"活存"
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
+            bot.keyPress( KeyEvent.VK_D ); bot.keyRelease( KeyEvent.VK_D ); Thread.sleep( TAB_DELAY );
+            Thread.sleep( 500 );
+            
+            // 確認修改
             bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
             Thread.sleep( 1000 );
             
-            testerSelection = JOptionPane.showConfirmDialog( 
-                mainFrame, 
-                "<html><head><style type=\"text/css\">" + 
-                    "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
-                "<body><p>是否有顯示預覽結果:</p><table>" + 
-                    "<tr><th>儲存地點/儲存機構</th><th>移動前金額</th><th>移動後金額</th></tr>" + 
-                    "<tr><td>土地銀行 #01234560123456</td><td>100200</td><td>100000</td></tr>" + 
-                    "<tr><td>中華郵政 #12345671234567</td><td>10000</td><td>10200</td></tr>" + 
-                "</table></body></html>", 
-                "Check", JOptionPane.YES_NO_OPTION );
-            assertEquals( JOptionPane.YES_OPTION, testerSelection );
-            Thread.sleep( 1000 );
-            
-            // 確認移動金額
-            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
-            Thread.sleep( 1000 );
-            
-            // 檢查金額是否有移動成功
+            // 檢查是否有修改成功
             List<FundingStatus> expectFundingStatus = new ArrayList<FundingStatus>();
             expectFundingStatus.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
                     "預設可動用資金", 0, "", 1, false ) );
             expectFundingStatus.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
-                    "中華郵政 #12345671234567", 10200, "", 2, false ) );
+                    "中華郵政 #12345671234567", 10000, "", 2, false ) );
             expectFundingStatus.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
-                    "土地銀行 #01234560123456", 100000, "", 3, false ) );
+                    "土地銀行 #01234560abcdef", 100200, "test123", 3, false ) );
             List<FundingStatus> actualFundingStatus = fundBookServices.getFundingStatusService().findAll();
             assertEquals( expectFundingStatus.size(), actualFundingStatus.size() );
             for( int i = 0; i < expectFundingStatus.size(); i++ ) {
                 assertTrue( "failed at i = " + i, FundingStatusUtil.equals( 
                         expectFundingStatus.get( i ), actualFundingStatus.get( i ) ) );
-            }
-            
-            // 檢查財務儲存狀況歷史紀錄是否有新增成功
-            List<FundingStatusHistory> expectFundingStatusHistory = new ArrayList<FundingStatusHistory>();
-            expectFundingStatusHistory.add( new FundingStatusHistory( 1, 1, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'C', 0, 0, 0, Contants.FUNDING_STATUS_DEFAULT_DATA_LOG_DESCRIPTION ) );
-            expectFundingStatusHistory.add( new FundingStatusHistory( 2, 2, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'C', 0, 10000, 10000, "" ) );
-            expectFundingStatusHistory.add( new FundingStatusHistory( 3, 3, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'C', 0, 100200, 100200, "" ) );
-            expectFundingStatusHistory.add( new FundingStatusHistory( 4, 3, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'U', 100200, 100000, -200, "轉出金額200元至'中華郵政 #12345671234567'" ) );
-            expectFundingStatusHistory.add( new FundingStatusHistory( 5, 2, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'U', 10000, 10200, 200, "由'土地銀行 #01234560123456'轉入金額200元" ) );
-            List<FundingStatusHistory> actualFundingStatusHistory = new ArrayList<FundingStatusHistory>();
-            for( int i = 1; i <= 5; i++ ) {
-                actualFundingStatusHistory.add( fundBookServices.getFundingStatusHistoryService().findOne( i ) );
-            }
-            assertEquals( expectFundingStatusHistory.size(), actualFundingStatusHistory.size() );
-            for( int i = 0; i < expectFundingStatusHistory.size(); i++ ) {
-                assertTrue( "failed at i = " + i, FundingStatusHistoryUtil.equalsIgnoreTime( 
-                        expectFundingStatusHistory.get( i ), actualFundingStatusHistory.get( i ) ) );
             }
             
             // 檢查畫面是否顯示正確
@@ -245,97 +219,8 @@ public class FundingStatusAmountMoveDialogTests {
                 "<body><p>是否有顯示測試的財務儲存狀況資料:</p><table>" + 
                     "<tr><th>種類</th><th>儲存地點/儲存機構</th><th>金額</th></tr>" + 
                     "<tr><td>預設</td><td>預設可動用資金</td><td>0</td></tr>" + 
-                    "<tr><td>活存</td><td>中華郵政 #12345671234567</td><td>10200</td></tr>" + 
-                    "<tr><td>定存</td><td>土地銀行 #01234560123456</td><td>100000</td></tr>" + 
-                "</table></body></html>", 
-                "Check", JOptionPane.YES_NO_OPTION );
-            assertEquals( JOptionPane.YES_OPTION, testerSelection );
-            Thread.sleep( 1000 );
-            
-            // 選擇第2筆資料，點選"移動金額"按鈕
-            bot.keyPress( KeyEvent.VK_UP ); bot.keyRelease( KeyEvent.VK_UP ); Thread.sleep( TAB_DELAY );
-            bot.keyPress( KeyEvent.VK_M ); bot.keyRelease( KeyEvent.VK_M ); Thread.sleep( TAB_DELAY );
-            Thread.sleep( 1000 );
-            
-            // 在移入金額項目選擇第一筆資料
-            bot.keyPress( KeyEvent.VK_DOWN ); bot.keyRelease( KeyEvent.VK_DOWN ); Thread.sleep( TAB_DELAY );
-            bot.keyPress( KeyEvent.VK_TAB ); bot.keyRelease( KeyEvent.VK_TAB ); Thread.sleep( TAB_DELAY );
-            
-            // 輸入移動金額為200元
-            textPasteTesting( bot, isLinuxBasedOSSelection );    // 測試貼上功能
-            
-            // 預覽
-            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
-            Thread.sleep( 1000 );
-            
-            testerSelection = JOptionPane.showConfirmDialog( 
-                mainFrame, 
-                "<html><head><style type=\"text/css\">" + 
-                    "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
-                "<body><p>是否有顯示預覽結果:</p><table>" + 
-                    "<tr><th>儲存地點/儲存機構</th><th>移動前金額</th><th>移動後金額</th></tr>" + 
-                    "<tr><td>中華郵政 #12345671234567</td><td>10200</td><td>10000</td></tr>" + 
-                    "<tr><td>預設可動用資金</td><td>0</td><td>200</td></tr>" + 
-                "</table></body></html>", 
-                "Check", JOptionPane.YES_NO_OPTION );
-            assertEquals( JOptionPane.YES_OPTION, testerSelection );
-            Thread.sleep( 1000 );
-            
-            // 確認移動金額
-            bot.keyPress( KeyEvent.VK_ENTER ); bot.keyRelease( KeyEvent.VK_ENTER ); Thread.sleep( TAB_DELAY );
-            Thread.sleep( 1000 );
-            
-            // 檢查金額是否有移動成功
-            expectFundingStatus = new ArrayList<FundingStatus>();
-            expectFundingStatus.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay, 
-                    "預設可動用資金", 200, "", 1, false ) );
-            expectFundingStatus.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay, 
-                    "中華郵政 #12345671234567", 10000, "", 2, false ) );
-            expectFundingStatus.add( new FundingStatus( 3, 'T', currentYear, currentMonth, currentDay, 
-                    "土地銀行 #01234560123456", 100000, "", 3, false ) );
-            actualFundingStatus = fundBookServices.getFundingStatusService().findAll();
-            assertEquals( expectFundingStatus.size(), actualFundingStatus.size() );
-            for( int i = 0; i < expectFundingStatus.size(); i++ ) {
-                assertTrue( "failed at i = " + i, FundingStatusUtil.equals( 
-                        expectFundingStatus.get( i ), actualFundingStatus.get( i ) ) );
-            }
-            
-            // 檢查財務儲存狀況歷史紀錄是否有新增成功
-            expectFundingStatusHistory = new ArrayList<FundingStatusHistory>();
-            expectFundingStatusHistory.add( new FundingStatusHistory( 1, 1, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'C', 0, 0, 0, Contants.FUNDING_STATUS_DEFAULT_DATA_LOG_DESCRIPTION ) );
-            expectFundingStatusHistory.add( new FundingStatusHistory( 2, 2, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'C', 0, 10000, 10000, "" ) );
-            expectFundingStatusHistory.add( new FundingStatusHistory( 3, 3, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'C', 0, 100200, 100200, "" ) );
-            expectFundingStatusHistory.add( new FundingStatusHistory( 4, 3, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'U', 100200, 100000, -200, "轉出金額200元至'中華郵政 #12345671234567'" ) );
-            expectFundingStatusHistory.add( new FundingStatusHistory( 5, 2, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'U', 10000, 10200, 200, "由'土地銀行 #01234560123456'轉入金額200元" ) );
-            expectFundingStatusHistory.add( new FundingStatusHistory( 6, 2, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'U', 10200, 10000, -200, "轉出金額200元至'預設可動用資金'" ) );
-            expectFundingStatusHistory.add( new FundingStatusHistory( 7, 1, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'U', 0, 200, 200, "由'中華郵政 #12345671234567'轉入金額200元" ) );
-            actualFundingStatusHistory = new ArrayList<FundingStatusHistory>();
-            for( int i = 1; i <= 7; i++ ) {
-                actualFundingStatusHistory.add( fundBookServices.getFundingStatusHistoryService().findOne( i ) );
-            }
-            assertEquals( expectFundingStatusHistory.size(), actualFundingStatusHistory.size() );
-            for( int i = 0; i < expectFundingStatusHistory.size(); i++ ) {
-                assertTrue( "failed at i = " + i, FundingStatusHistoryUtil.equalsIgnoreTime( 
-                        expectFundingStatusHistory.get( i ), actualFundingStatusHistory.get( i ) ) );
-            }
-            
-            // 檢查畫面是否顯示正確
-            testerSelection = JOptionPane.showConfirmDialog( 
-                mainFrame, 
-                "<html><head><style type=\"text/css\">" + 
-                    "table, th, td {border: 1px solid black; border-collapse: collapse;}</style></head>" + 
-                "<body><p>是否有顯示測試的財務儲存狀況資料:</p><table>" + 
-                    "<tr><th>種類</th><th>儲存地點/儲存機構</th><th>金額</th></tr>" + 
-                    "<tr><td>預設</td><td>預設可動用資金</td><td>200</td></tr>" + 
                     "<tr><td>活存</td><td>中華郵政 #12345671234567</td><td>10000</td></tr>" + 
-                    "<tr><td>定存</td><td>土地銀行 #01234560123456</td><td>100000</td></tr>" + 
+                    "<tr><td>活存</td><td>土地銀行 #01234560abcdef</td><td>100200</td></tr>" + 
                 "</table></body></html>", 
                 "Check", JOptionPane.YES_NO_OPTION );
             assertEquals( JOptionPane.YES_OPTION, testerSelection );
@@ -344,43 +229,6 @@ public class FundingStatusAmountMoveDialogTests {
             e.printStackTrace();
             assertTrue( e.getMessage(), false );
         }
-    }
-    
-    private void textCopyTesting( Robot bot, int isLinuxBasedOSSelection ) throws InterruptedException {
-        // 全選 + 複製
-        bot.keyPress( KeyEvent.VK_CONTROL );
-        bot.keyPress( KeyEvent.VK_A ); bot.keyRelease( KeyEvent.VK_A ); Thread.sleep( TAB_DELAY );
-        bot.keyRelease( KeyEvent.VK_CONTROL );
-        
-        // 顯示複製貼上選單
-        if( isLinuxBasedOSSelection == JOptionPane.YES_OPTION ) {
-            JOptionPane.showMessageDialog( mainFrame, "Please press context menu key in 3 seconds after closing this dialog.", 
-                    "Message", JOptionPane.INFORMATION_MESSAGE );
-            Thread.sleep( 3000 );
-        } else {
-            bot.keyPress( KeyEvent.VK_CONTEXT_MENU ); bot.keyRelease( KeyEvent.VK_CONTEXT_MENU ); Thread.sleep( TAB_DELAY );
-        }
-        Thread.sleep( 1000 );
-        
-        // 選擇"複製"功能
-        bot.keyPress( KeyEvent.VK_C ); bot.keyRelease( KeyEvent.VK_C ); Thread.sleep( TAB_DELAY );
-        Thread.sleep( 1000 );
-    }
-    
-    private void textPasteTesting( Robot bot, int isLinuxBasedOSSelection ) throws InterruptedException {
-        // 顯示複製貼上選單
-        if( isLinuxBasedOSSelection == JOptionPane.YES_OPTION ) {
-            JOptionPane.showMessageDialog( mainFrame, "Please press context menu key in 3 seconds after closing this dialog.", 
-                    "Message", JOptionPane.INFORMATION_MESSAGE );
-            Thread.sleep( 3000 );
-        } else {
-            bot.keyPress( KeyEvent.VK_CONTEXT_MENU ); bot.keyRelease( KeyEvent.VK_CONTEXT_MENU ); Thread.sleep( TAB_DELAY );
-        }
-        Thread.sleep( 1000 );
-        
-        // 選擇"貼上"功能，貼上複製的字串(200)
-        bot.keyPress( KeyEvent.VK_P ); bot.keyRelease( KeyEvent.VK_P ); Thread.sleep( TAB_DELAY );
-        Thread.sleep( 1000 );
     }
     
     private FundBookServices defaultFundBookServices() throws URISyntaxException {
@@ -432,6 +280,38 @@ public class FundingStatusAmountMoveDialogTests {
         if( f.exists() && !f.isDirectory() ) {
             f.renameTo( new File( filePath ) );
         }
+    }
+    
+    private void textCopyTesting( Robot bot, int isLinuxBasedOSSelection ) throws InterruptedException {
+        // 顯示複製貼上選單
+        if( isLinuxBasedOSSelection == JOptionPane.YES_OPTION ) {
+            JOptionPane.showMessageDialog( mainFrame, "Please press context menu key in 3 seconds after closing this dialog.", 
+                    "Message", JOptionPane.INFORMATION_MESSAGE );
+            Thread.sleep( 3000 );
+        } else {
+            bot.keyPress( KeyEvent.VK_CONTEXT_MENU ); bot.keyRelease( KeyEvent.VK_CONTEXT_MENU ); Thread.sleep( TAB_DELAY );
+        }
+        Thread.sleep( 1000 );
+        
+        // 選擇"複製"功能
+        bot.keyPress( KeyEvent.VK_C ); bot.keyRelease( KeyEvent.VK_C ); Thread.sleep( TAB_DELAY );
+        Thread.sleep( 1000 );
+    }
+    
+    private void textPasteTesting( Robot bot, int isLinuxBasedOSSelection ) throws InterruptedException {
+        // 顯示複製貼上選單
+        if( isLinuxBasedOSSelection == JOptionPane.YES_OPTION ) {
+            JOptionPane.showMessageDialog( mainFrame, "Please press context menu key in 3 seconds after closing this dialog.", 
+                    "Message", JOptionPane.INFORMATION_MESSAGE );
+            Thread.sleep( 3000 );
+        } else {
+            bot.keyPress( KeyEvent.VK_CONTEXT_MENU ); bot.keyRelease( KeyEvent.VK_CONTEXT_MENU ); Thread.sleep( TAB_DELAY );
+        }
+        Thread.sleep( 1000 );
+        
+        // 選擇"貼上"功能，貼上複製的字串(200)
+        bot.keyPress( KeyEvent.VK_P ); bot.keyRelease( KeyEvent.VK_P ); Thread.sleep( TAB_DELAY );
+        Thread.sleep( 1000 );
     }
     
     private void inputString( Robot bot, String s ) throws InterruptedException {

@@ -16,12 +16,14 @@ import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -35,13 +37,12 @@ import javax.swing.undo.UndoManager;
 
 import common.Contants;
 import commonUtil.CsvFormatParser;
-import commonUtil.StringUtil;
 import domain.FundingStatus;
 import service.FundingStatusService;
 import view.MainFrame;
 import view.common.CopyAndPastePopUpMenu;
 
-public class FundingStatusAmountUpdateDialog extends JDialog {
+public class FundingStatusPropertyUpdateDialog extends JDialog {
     
     private static final long serialVersionUID = 1L;
     
@@ -49,6 +50,7 @@ public class FundingStatusAmountUpdateDialog extends JDialog {
     
     private FundingStatus originalFundingStatus;
     private boolean popupMenuClosedFlag;
+    private boolean defaultTypeFlag;
     
     private MainFrame ownerFrame;
     
@@ -58,25 +60,31 @@ public class FundingStatusAmountUpdateDialog extends JDialog {
     private MnemonicKeyHandler mnemonicKeyHandler;
     private CopyPasteMenuKeyHandler copyPasteMenuKeyHandler;
     private CopyPasteMouseMenuHandler copyPasteMouseMenuHandler;
+    private RadioButtonKeyHandler radioButtonKeyHandler;
     private UndoEditHandler undoEditHandler;
     private UndoHotKeyHandler undoHotKeyHandler;
     private Font generalFont;
     private JPanel dialogPanel;
     private JLabel typeLabel;
     private JTextField typeTextField;
+    private JRadioButton cashRadioButton;
+    private JRadioButton demandDepositRadioButton;
+    private JRadioButton timeDepositRadioButton;
+    private JRadioButton creditCardRadioButton;
+    private ButtonGroup typeButtonGroup;
     private JLabel fundNameLabel;
     private JTextField fundNameTextField;
     private JLabel amountLabel;
     private JTextField amountTextField;
     private JLabel dollarLabel;
-    private JLabel commentLabel;
-    private JTextArea commentTextArea;
-    private JScrollPane commentScrollPane;
+    private JLabel descriptionLabel;
+    private JTextArea descriptionTextArea;
+    private JScrollPane descriptionScrollPane;
     private JButton updateButton;
     private JButton cancelButton;
     
-    public FundingStatusAmountUpdateDialog( FundingStatusService fundingStatusService, MainFrame ownerFrame ) {
-        super( ownerFrame, "Update Funding Status Amount", true );
+    public FundingStatusPropertyUpdateDialog( FundingStatusService fundingStatusService, MainFrame ownerFrame ) {
+        super( ownerFrame, "Update Funding Status Property", true );
         
         this.fundingStatusService = fundingStatusService;
         
@@ -107,6 +115,7 @@ public class FundingStatusAmountUpdateDialog extends JDialog {
         typeTextField.setBounds( 64, 10, 72, 22 );
         typeTextField.setFont( generalFont );
         typeTextField.setEditable( false );
+        typeTextField.setVisible( false );
         typeTextField.addFocusListener( focusHandler );
         typeTextField.addKeyListener( mnemonicKeyHandler );
         typeTextField.addKeyListener( copyPasteMenuKeyHandler );
@@ -114,6 +123,44 @@ public class FundingStatusAmountUpdateDialog extends JDialog {
         typeTextField.addKeyListener( undoHotKeyHandler );
         typeTextField.getDocument().addUndoableEditListener( undoEditHandler );
         dialogPanel.add( typeTextField );
+        
+        cashRadioButton = new JRadioButton( "現金(C)", true );
+        cashRadioButton.setBounds( 64, 10, 80, 22 );
+        cashRadioButton.setFont( generalFont );
+        cashRadioButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        cashRadioButton.addKeyListener( mnemonicKeyHandler );
+        cashRadioButton.addKeyListener( radioButtonKeyHandler );
+        dialogPanel.add( cashRadioButton );
+        
+        demandDepositRadioButton = new JRadioButton( "活存(D)", false );
+        demandDepositRadioButton.setBounds( 152, 10, 80, 22 );
+        demandDepositRadioButton.setFont( generalFont );
+        demandDepositRadioButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        demandDepositRadioButton.addKeyListener( mnemonicKeyHandler );
+        demandDepositRadioButton.addKeyListener( radioButtonKeyHandler );
+        dialogPanel.add( demandDepositRadioButton );
+        
+        timeDepositRadioButton = new JRadioButton( "定存(T)", false );
+        timeDepositRadioButton.setBounds( 240, 10, 80, 22 );
+        timeDepositRadioButton.setFont( generalFont );
+        timeDepositRadioButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        timeDepositRadioButton.addKeyListener( mnemonicKeyHandler );
+        timeDepositRadioButton.addKeyListener( radioButtonKeyHandler );
+        dialogPanel.add( timeDepositRadioButton );
+        
+        creditCardRadioButton = new JRadioButton( "信用卡(R)", false );
+        creditCardRadioButton.setBounds( 328, 10, 96, 22 );
+        creditCardRadioButton.setFont( generalFont );
+        creditCardRadioButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        creditCardRadioButton.addKeyListener( mnemonicKeyHandler );
+        creditCardRadioButton.addKeyListener( radioButtonKeyHandler );
+        dialogPanel.add( creditCardRadioButton );
+        
+        typeButtonGroup = new ButtonGroup();
+        typeButtonGroup.add( cashRadioButton );
+        typeButtonGroup.add( demandDepositRadioButton );
+        typeButtonGroup.add( timeDepositRadioButton );
+        typeButtonGroup.add( creditCardRadioButton );
         
         fundNameLabel = new JLabel( "儲存地點/儲存機構: " );
         fundNameLabel.setBounds( 16, 42, 152, 22 );
@@ -123,7 +170,6 @@ public class FundingStatusAmountUpdateDialog extends JDialog {
         fundNameTextField = new JTextField();
         fundNameTextField.setBounds( 168, 42, 296, 22 );
         fundNameTextField.setFont( generalFont );
-        fundNameTextField.setEditable( false );
         fundNameTextField.addFocusListener( focusHandler );
         fundNameTextField.addKeyListener( mnemonicKeyHandler );
         fundNameTextField.addKeyListener( copyPasteMenuKeyHandler );
@@ -140,6 +186,7 @@ public class FundingStatusAmountUpdateDialog extends JDialog {
         amountTextField = new JTextField();
         amountTextField.setBounds( 64, 74, 72, 22 );
         amountTextField.setFont( generalFont );
+        amountTextField.setEditable( false );
         amountTextField.addFocusListener( focusHandler );
         amountTextField.addKeyListener( mnemonicKeyHandler );
         amountTextField.addKeyListener( copyPasteMenuKeyHandler );
@@ -153,47 +200,47 @@ public class FundingStatusAmountUpdateDialog extends JDialog {
         dollarLabel.setFont( generalFont );
         dialogPanel.add( dollarLabel );
         
-        commentLabel = new JLabel( "備註: " );
-        commentLabel.setBounds( 16, 106, 48, 22 );
-        commentLabel.setFont( generalFont );
-        dialogPanel.add( commentLabel );
+        descriptionLabel = new JLabel( "描述: " );
+        descriptionLabel.setBounds( 16, 106, 48, 22 );
+        descriptionLabel.setFont( generalFont );
+        dialogPanel.add( descriptionLabel );
         
-        commentTextArea = new JTextArea();
-        commentTextArea.setSize( 425, 66 );
-        commentTextArea.setFont( generalFont );
-        commentTextArea.addKeyListener( copyPasteMenuKeyHandler );
-        commentTextArea.addMouseListener( copyPasteMouseMenuHandler );
-        commentTextArea.addKeyListener( undoHotKeyHandler );
-        commentTextArea.getDocument().addUndoableEditListener( undoEditHandler );
-        commentScrollPane = new JScrollPane( commentTextArea );
-        commentScrollPane.setBounds( 16, 128, 449, 71 );
-        commentScrollPane.setPreferredSize( new Dimension( 449, 71 ) );
-        dialogPanel.add( commentScrollPane );
+        descriptionTextArea = new JTextArea();
+        descriptionTextArea.setSize( 425, 132 );
+        descriptionTextArea.setFont( generalFont );
+        descriptionTextArea.addKeyListener( copyPasteMenuKeyHandler );
+        descriptionTextArea.addMouseListener( copyPasteMouseMenuHandler );
+        descriptionTextArea.addKeyListener( undoHotKeyHandler );
+        descriptionTextArea.getDocument().addUndoableEditListener( undoEditHandler );
+        descriptionScrollPane = new JScrollPane( descriptionTextArea );
+        descriptionScrollPane.setBounds( 16, 128, 449, 137 );
+        descriptionScrollPane.setPreferredSize( new Dimension( 449, 137 ) );
+        dialogPanel.add( descriptionScrollPane );
         
         Set<AWTKeyStroke> forward = new HashSet<AWTKeyStroke>(
-            commentTextArea.getFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS ) );
+            descriptionTextArea.getFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS ) );
         forward.add( KeyStroke.getKeyStroke( "TAB" ) );
-        commentTextArea.setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, forward );
+        descriptionTextArea.setFocusTraversalKeys( KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, forward );
         Set<AWTKeyStroke> backward = new HashSet<AWTKeyStroke>(
-            commentTextArea.getFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS ) );
+            descriptionTextArea.getFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS ) );
         backward.add( KeyStroke.getKeyStroke( "shift TAB" ) );
-        commentTextArea.setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backward );
+        descriptionTextArea.setFocusTraversalKeys( KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, backward );
         
         updateButton = new JButton( "修改" );
-        updateButton.setBounds( 168, 214, 48, 22 );
+        updateButton.setBounds( 168, 275, 48, 22 );
         updateButton.setFont( generalFont );
         updateButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         updateButton.addKeyListener( mnemonicKeyHandler );
         updateButton.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed( ActionEvent event ) {
-                updateFundingStatusAmount();
+                updateFundingStatusProperty();
             }
         });
         dialogPanel.add( updateButton );
         
         cancelButton = new JButton( "取消" );
-        cancelButton.setBounds( 264, 214, 48, 22 );
+        cancelButton.setBounds( 264, 275, 48, 22 );
         cancelButton.setFont( generalFont );
         cancelButton.setMargin( new Insets( 0, 0, 0, 0 ) );
         cancelButton.addKeyListener( mnemonicKeyHandler );
@@ -205,7 +252,7 @@ public class FundingStatusAmountUpdateDialog extends JDialog {
         });
         dialogPanel.add( cancelButton );
         
-        dialogPanel.setPreferredSize( new Dimension( 482, 252 ) );
+        dialogPanel.setPreferredSize( new Dimension( 482, 308 ) );
         add( dialogPanel );
         
         pack();
@@ -224,57 +271,77 @@ public class FundingStatusAmountUpdateDialog extends JDialog {
             JOptionPane.showMessageDialog( this, "載入資料失敗", "Error", JOptionPane.ERROR_MESSAGE );
             return;
         }
-        
-        switch( originalFundingStatus.getType() ) {
-        case '0':
+
+        if( originalFundingStatus.getType() == '0' ) {
+            typeTextField.setVisible( true );
             typeTextField.setText( "預設" );
-            break;
+            cashRadioButton.setVisible( false );
+            demandDepositRadioButton.setVisible( false );
+            timeDepositRadioButton.setVisible( false );
+            creditCardRadioButton.setVisible( false );
+            defaultTypeFlag = true;
+        } else {
+            typeTextField.setVisible( false );
+            cashRadioButton.setVisible( true );
+            demandDepositRadioButton.setVisible( true );
+            timeDepositRadioButton.setVisible( true );
+            creditCardRadioButton.setVisible( true );
+            cashRadioButton.setSelected( false );
+            demandDepositRadioButton.setSelected( false );
+            timeDepositRadioButton.setSelected( false );
+            creditCardRadioButton.setSelected( false );
+            defaultTypeFlag = false;
+        }
+        switch( originalFundingStatus.getType() ) {
         case 'C':
-            typeTextField.setText( "現金" );
+            cashRadioButton.setSelected( true );
             break;
         case 'D':
-            typeTextField.setText( "活存" );
+            demandDepositRadioButton.setSelected( true );
             break;
         case 'T':
-            typeTextField.setText( "定存" );
+            timeDepositRadioButton.setSelected( true );
             break;
         case 'R':
-            typeTextField.setText( "信用卡" );
+            creditCardRadioButton.setSelected( true );
             break;
         default:
             break;
         }
         fundNameTextField.setText( originalFundingStatus.getStoredPlaceOrInstitution() );
         amountTextField.setText( Integer.toString( originalFundingStatus.getAmount() ) );
-        commentTextArea.setText( "" );
+        descriptionTextArea.setText( CsvFormatParser.restoreCharacterFromHtmlFormat( originalFundingStatus.getDescription() ) );
         
         popupMenuClosedFlag = false;
         
-        amountTextField.requestFocus();
+        fundNameTextField.requestFocus();
         setVisible( true );
     }
     
-    private void updateFundingStatusAmount() {
+    private void updateFundingStatusProperty() {
         int returnCode = 0;
+        char selectedType = '\0';
         
-        if( !StringUtil.isNumber( amountTextField.getText() ) ) {
-            JOptionPane.showMessageDialog( this, "金額需要為數字", "Warning", JOptionPane.WARNING_MESSAGE );
-            return;
+        if( defaultTypeFlag ) {
+            selectedType = 0;
+        } else if( cashRadioButton.isSelected() ) {
+            selectedType = 'C';
+        } else if ( demandDepositRadioButton.isSelected() ) {
+            selectedType = 'D';
+        } else if ( timeDepositRadioButton.isSelected() ) {
+            selectedType = 'T';
+        } else if ( creditCardRadioButton.isSelected() ) {
+            selectedType = 'R';
         }
-        if( originalFundingStatus.getId() == Contants.FUNDING_STATUS_DEFAULT_ID && "".equals( commentTextArea.getText() ) ) {
-            JOptionPane.showMessageDialog( this, "若修改項目的種類為預設，備註欄不可為空白", "Warning", JOptionPane.WARNING_MESSAGE );
-            return;
+        String description = "";
+        if( CsvFormatParser.checkSpecialCharacter( descriptionTextArea.getText() ) ) {
+            description = CsvFormatParser.specialCharacterToHtmlFormat( descriptionTextArea.getText() );
+        } else {
+            description = descriptionTextArea.getText();
         }
-        
         try {
-            String comment = "";
-            if( CsvFormatParser.checkSpecialCharacter( commentTextArea.getText() ) ) {
-                comment = CsvFormatParser.specialCharacterToHtmlFormat( commentTextArea.getText() );
-            } else {
-                comment = commentTextArea.getText();
-            }
-            returnCode = fundingStatusService.updateAmount( 
-                originalFundingStatus.getId(), Integer.parseInt( amountTextField.getText() ), comment );
+            returnCode = fundingStatusService.updateProperty( originalFundingStatus.getId(), 
+                    selectedType, fundNameTextField.getText(), description);
         } catch ( Exception e ) {
             e.printStackTrace();
             returnCode = Contants.ERROR;
@@ -320,7 +387,7 @@ public class FundingStatusAmountUpdateDialog extends JDialog {
                     break;
                 }
                 if( event.getSource() != cancelButton ) {
-                    updateFundingStatusAmount();
+                    updateFundingStatusProperty();
                 } else {
                     setVisible( false );
                 }
@@ -402,6 +469,44 @@ public class FundingStatusAmountUpdateDialog extends JDialog {
 
         @Override
         public void popupMenuWillBecomeVisible( PopupMenuEvent event ) {}
+    }
+    
+    private class RadioButtonKeyHandler implements KeyListener {
+
+        @Override
+        public void keyPressed( KeyEvent event ) {
+            if( event.getKeyCode() == KeyEvent.VK_C || event.getKeyCode() == KeyEvent.VK_D || 
+                    event.getKeyCode() == KeyEvent.VK_T || event.getKeyCode() == KeyEvent.VK_R ) {
+                cashRadioButton.setSelected( false );
+                demandDepositRadioButton.setSelected( false );
+                timeDepositRadioButton.setSelected( false );
+                creditCardRadioButton.setSelected( false );
+            }
+            switch( event.getKeyCode() ) {
+            case KeyEvent.VK_C:
+                cashRadioButton.requestFocus();
+                cashRadioButton.setSelected( true );
+                break;
+            case KeyEvent.VK_D:
+                demandDepositRadioButton.requestFocus();
+                demandDepositRadioButton.setSelected( true );
+                break;
+            case KeyEvent.VK_T:
+                timeDepositRadioButton.requestFocus();
+                timeDepositRadioButton.setSelected( true );
+                break;
+            case KeyEvent.VK_R:
+                creditCardRadioButton.requestFocus();
+                creditCardRadioButton.setSelected( true );
+                break;
+            }
+        }
+
+        @Override
+        public void keyReleased( KeyEvent event ) {}
+
+        @Override
+        public void keyTyped( KeyEvent event ) {}
     }
     
     private class UndoEditHandler implements UndoableEditListener {

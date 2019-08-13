@@ -28,13 +28,14 @@ public class FundingStatusPanel extends JPanel {
     private FundingStatusCreateDialog fundingStatusCreateDialog;
     private FundingStatusAmountMoveDialog fundingStatusAmountMoveDialog;
     private FundingStatusAmountUpdateDialog fundingStatusAmountUpdateDialog;
+    private FundingStatusPropertyUpdateDialog fundingStatusPropertyUpdateDialog;
     
     private MnemonicKeyHandler mnemonicKeyHandler;
     private Font generalFont;
     private JButton createButton;
     private JButton moveAmountButton;
     private JButton modifyAmountButton;
-    private JButton modifyAttribute;
+    private JButton modifyAttributeButton;
     private JButton disableButton;
     private JButton moveUpButton;
     private JButton moveDownButton;
@@ -60,6 +61,7 @@ public class FundingStatusPanel extends JPanel {
         fundingStatusCreateDialog = new FundingStatusCreateDialog( fundBookServices.getFundingStatusService(), ownerFrame );
         fundingStatusAmountMoveDialog = new FundingStatusAmountMoveDialog( fundBookServices.getFundingStatusService(), ownerFrame );
         fundingStatusAmountUpdateDialog = new FundingStatusAmountUpdateDialog( fundBookServices.getFundingStatusService(), ownerFrame );
+        fundingStatusPropertyUpdateDialog = new FundingStatusPropertyUpdateDialog( fundBookServices.getFundingStatusService(), ownerFrame );
         
         createButton = new JButton( "新增(C)" );
         createButton.setBounds( 685, 32, 96, 22 );
@@ -100,12 +102,18 @@ public class FundingStatusPanel extends JPanel {
         });
         add( modifyAmountButton );
         
-        modifyAttribute = new JButton( "修改屬性(U)" );
-        modifyAttribute.setBounds( 685, 164, 96, 22 );
-        modifyAttribute.setFont( generalFont );
-        modifyAttribute.addKeyListener( mnemonicKeyHandler );
-        modifyAttribute.setMargin( new Insets( 0, 0, 0, 0 ) );
-        add( modifyAttribute );
+        modifyAttributeButton = new JButton( "修改屬性(U)" );
+        modifyAttributeButton.setBounds( 685, 164, 96, 22 );
+        modifyAttributeButton.setFont( generalFont );
+        modifyAttributeButton.addKeyListener( mnemonicKeyHandler );
+        modifyAttributeButton.setMargin( new Insets( 0, 0, 0, 0 ) );
+        modifyAttributeButton.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed( ActionEvent event ) {
+                openFundingStatusPropertyUpdateDialog();
+            }
+        });
+        add( modifyAttributeButton );
         
         disableButton = new JButton( "刪除(D)" );
         disableButton.setBounds( 685, 208, 96, 22 );
@@ -192,6 +200,13 @@ public class FundingStatusPanel extends JPanel {
         }
     }
     
+    public void openFundingStatusPropertyUpdateDialog() {
+        int selectedId = fundingStatusTablePanel.getItemTableSelectedId();
+        if( selectedId != -1 ) {
+            fundingStatusPropertyUpdateDialog.openDialog( selectedId );
+        }
+    }
+    
     public void refresh() {
         fundingStatusTablePanel.loadFundingStatus();
     }
@@ -212,6 +227,8 @@ public class FundingStatusPanel extends JPanel {
                     openFundingStatusAmountMoveDialog();
                 } else if( event.getSource() == modifyAmountButton ) {
                     openFundingStatusAmountUpdateDialog();
+                } else if( event.getSource() == modifyAttributeButton ) {
+                    openFundingStatusPropertyUpdateDialog();
                 }
                 break;
             case KeyEvent.VK_C:
@@ -231,6 +248,12 @@ public class FundingStatusPanel extends JPanel {
                     modifyAmountButton.requestFocus();
                 }
                 openFundingStatusAmountUpdateDialog();
+                break;
+            case KeyEvent.VK_U:
+                if( event.getSource() != fundingStatusTablePanel.getDataTable() ) {
+                	modifyAttributeButton.requestFocus();
+                }
+                openFundingStatusPropertyUpdateDialog();
                 break;
             default:
                 break;

@@ -358,6 +358,49 @@ public class FundingStatusServiceImplTests {
     }
     
     @Test
+    public void testUpdateProperty() {
+        int inputId1 = 1;
+        String inputStoredPlaceOrInstitution1 = "現金";
+        
+        int inputId2 = 2;
+        String inputStoredPlaceOrInstitution2 = "中華郵政 #1234567test";
+        
+        int inputId3 = 3;
+        Character inputType3 = 'D';
+        String inputStoredPlaceOrInstitution3 = "土地銀行 #01234560abcdef";
+        String inputDescription3 = "test123";
+        
+        List<FundingStatus> expectDataList = new ArrayList<FundingStatus>();
+        expectDataList.add( new FundingStatus( 1, '0', currentYear, currentMonth, currentDay,
+                "現金", 0, "", 1, false ) );
+        expectDataList.add( new FundingStatus( 2, 'D', currentYear, currentMonth, currentDay,
+                "中華郵政 #1234567test", 10000, "", 2, false ) );
+        expectDataList.add( new FundingStatus( 3, 'D', currentYear, currentMonth, currentDay,
+                "土地銀行 #01234560abcdef", 100000, "test123", 3, false ) );
+        
+        try {
+            fundingStatusService.initialDefault();
+            fundingStatusService.insert( new FundingStatus( 0, 'D', currentYear, currentMonth, currentDay,
+                    "中華郵政 #12345671234567", 10000, "", 0, false ) );
+            fundingStatusService.insert( new FundingStatus( 0, 'T', currentYear, currentMonth, currentDay,
+                    "土地銀行 #01234560123456", 100000, "", 0, false ) );
+            
+            fundingStatusService.updateProperty( inputId1, null, inputStoredPlaceOrInstitution1, null );
+            fundingStatusService.updateProperty( inputId2, null, inputStoredPlaceOrInstitution2, null );
+            fundingStatusService.updateProperty( inputId3, inputType3, inputStoredPlaceOrInstitution3, inputDescription3 );
+            
+            List<FundingStatus> actualDataList = fundingStatusService.findAll();
+            assertEquals( expectDataList.size(), actualDataList.size() );
+            for( int i = 0; i < expectDataList.size(); i++ ) {
+                assertTrue( "failed at i = " + i, FundingStatusUtil.equals( expectDataList.get( i ), actualDataList.get( i ) ) );
+            }
+        } catch ( Exception e ) {
+            e.printStackTrace();
+            assertTrue( e.getMessage(), false );
+        }
+    }
+    
+    @Test
     public void testMoveAmount() {
         int inputSourceId = 3;
         int inputDestinationId = 2;

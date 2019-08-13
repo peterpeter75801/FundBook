@@ -206,7 +206,10 @@ public class FundingStatusCreateDialogTests {
                     currentHour, currentMinute, currentSecond, 'C', 0, 0, 0, "" ) );
             expectFundingStatusHistory.add( new FundingStatusHistory( 3, 3, currentYear, currentMonth, currentDay, 
                     currentHour, currentMinute, currentSecond, 'C', 0, 0, 0, "" ) );
-            List<FundingStatusHistory> actualFundingStatusHistory = fundBookServices.getFundingStatusHistoryService().findAll();
+            List<FundingStatusHistory> actualFundingStatusHistory = new ArrayList<FundingStatusHistory>();
+            for( int i = 1; i <= 3; i++ ) {
+                actualFundingStatusHistory.add( fundBookServices.getFundingStatusHistoryService().findOne( i ) );
+            }
             assertEquals( expectFundingStatusHistory.size(), actualFundingStatusHistory.size() );
             for( int i = 0; i < expectFundingStatusHistory.size(); i++ ) {
                 assertTrue( "failed at i = " + i, FundingStatusHistoryUtil.equalsIgnoreTime( 

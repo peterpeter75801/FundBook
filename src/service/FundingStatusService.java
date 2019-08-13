@@ -20,6 +20,8 @@ public interface FundingStatusService {
     
     public int updateStoredPlaceOrInstitution( Integer id, String storedPlaceOrInstitution ) throws Exception;
     
+    public int updateProperty( Integer id, Character type, String storedPlaceOrInstitution, String description ) throws Exception;
+    
     public int moveAmount( Integer sourceId, Integer destinationId, Integer amount ) throws Exception;
     
     public int delete( FundingStatus fundingStatus ) throws Exception;

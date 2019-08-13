@@ -176,7 +176,7 @@ public class IncomeRecordSortingTests {
         int testerSelection = 0;
         try {
             // 新增初始資料
-        	for( int i = 1; i <= 30; i++ ) {
+            for( int i = 1; i <= 30; i++ ) {
                 IncomeRecord incomeRecord = new IncomeRecord( 0, 2017, 10, i, "測試帳" + i, 0, 100 * i, "", 0 );
                 incomeRecordService.insert( incomeRecord );
             }

@@ -116,12 +116,12 @@ public class FundingStatusAmountUpdateDialogTests {
     @After
     public void tearDown() throws IOException, InterruptedException {
         fundBookServices = null;
-        restoreFile( Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH, FUNDING_STATUS_HISTORY_SEQ_FILE_PATH_BACKUP );
-        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_3, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_3 );
-        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_2, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_2 );
-        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP );
-        restoreFile( Contants.FUNDING_STATUS_SEQ_FILE_PATH, FUNDING_STATUS_SEQ_FILE_PATH_BACKUP );
-        restoreFile( FUNDING_STATUS_CSV_FILE_PATH, FUNDING_STATUS_CSV_FILE_PATH_BACKUP );
+        restoreFile( FUNDING_STATUS_HISTORY_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_HISTORY_SEQ_FILE_PATH );
+        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_3, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_3 );
+        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP_2, FUNDING_STATUS_HISTORY_CSV_FILE_PATH_2 );
+        restoreFile( FUNDING_STATUS_HISTORY_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_HISTORY_CSV_FILE_PATH );
+        restoreFile( FUNDING_STATUS_SEQ_FILE_PATH_BACKUP, Contants.FUNDING_STATUS_SEQ_FILE_PATH );
+        restoreFile( FUNDING_STATUS_CSV_FILE_PATH_BACKUP, FUNDING_STATUS_CSV_FILE_PATH );
         try {
             Toolkit.getDefaultToolkit().setLockingKeyState( KeyEvent.VK_NUM_LOCK, numLockKeyStateBackup );
         } catch( UnsupportedOperationException e ) {
@@ -208,8 +208,11 @@ public class FundingStatusAmountUpdateDialogTests {
             expectFundingStatusHistory.add( new FundingStatusHistory( 3, 3, currentYear, currentMonth, currentDay, 
                     currentHour, currentMinute, currentSecond, 'C', 0, 100200, 100200, "" ) );
             expectFundingStatusHistory.add( new FundingStatusHistory( 4, 3, currentYear, currentMonth, currentDay, 
-                    currentHour, currentMinute, currentSecond, 'U', 300, 100200, 100500, "test modify amount to 100500" ) );
-            List<FundingStatusHistory> actualFundingStatusHistory = fundBookServices.getFundingStatusHistoryService().findAll();
+                    currentHour, currentMinute, currentSecond, 'U', 100200, 100500, 300, "test modify amount to 100500" ) );
+            List<FundingStatusHistory> actualFundingStatusHistory = new ArrayList<FundingStatusHistory>();
+            for( int i = 1; i <= 4; i++ ) {
+                actualFundingStatusHistory.add( fundBookServices.getFundingStatusHistoryService().findOne( i ) );
+            }
             assertEquals( expectFundingStatusHistory.size(), actualFundingStatusHistory.size() );
             for( int i = 0; i < expectFundingStatusHistory.size(); i++ ) {
                 assertTrue( "failed at i = " + i, FundingStatusHistoryUtil.equalsIgnoreTime( 
